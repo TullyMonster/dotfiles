@@ -1,0 +1,33 @@
+{{- if eq .chezmoi.os "linux" -}}
+{{- $home := .chezmoi.homeDir -}}
+{{- $miseBin := or (findExecutable "mise" (list ".local/bin" "bin")) (lookPath "mise") (joinPath $home ".local" "bin" "mise") -}}
+{{- $miseConfig := joinPath $home ".config" "mise" "config.toml" -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 安装 ~/.config/mise/config.toml 中声明的工具
+# ==================================================
+
+set -eu
+
+MISE_BIN='{{ $miseBin }}'
+MISE_CONFIG='{{ $miseConfig }}'
+
+log() { printf '%s\n' "$*"; }
+
+# 1. mise 二进制不存在：跳过
+if [ ! -x "${MISE_BIN}" ]; then
+  log "[skip] mise binary not found: ${MISE_BIN}"
+  exit 0
+fi
+
+# 2. mise 配置不存在：跳过
+if [ ! -f "${MISE_CONFIG}" ]; then
+  log "[skip] mise config not found: ${MISE_CONFIG}"
+  exit 0
+fi
+
+# 3. 安装 config.toml 中声明的工具
+"${MISE_BIN}" install
+
+{{- end -}}

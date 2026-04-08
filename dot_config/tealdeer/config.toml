@@ -1,0 +1,13 @@
+[display]
+use_pager = true
+compact = false
+show_title = true
+
+[search]
+languages = ['zh', 'en']
+platforms = ['current', 'common', 'all']
+
+[updates]
+auto_update = true
+auto_update_interval_hours = 24
+download_languages = ['zh', 'en']

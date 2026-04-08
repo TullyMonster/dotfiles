@@ -1,0 +1,34 @@
+{{- if and (eq .chezmoi.os "linux") (lookPath "bat") (lookPath "curl") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# Antidote .zsh_plugins 文件 bat 语法高亮初始化
+# ==================================================
+
+set -eu  # 任意命令失败时立即退出，使用未定义变量时报错
+
+# 定义 URL、路径
+syntax_url='https://raw.githubusercontent.com/mattmc3/antidote/main/misc/zsh_plugins.sublime-syntax'
+bat_config_dir="$(bat --config-dir)"
+bat_syntax_dir="${bat_config_dir}/syntaxes"
+target_file="${bat_syntax_dir}/zsh_plugins.sublime-syntax"
+
+# 创建存放下载内容的临时文件，避免覆盖
+tmp_file="$(mktemp)"
+
+# 定义清理临时文件，防止脚本意外退出时残留的函数
+cleanup() { rm -f "${tmp_file}"; }
+# 注册，确保在正常退出 (EXIT)、Ctrl+C (INT) 或收到终止信号时自动调用 cleanup 函数
+trap cleanup EXIT INT TERM
+
+# 创建 bat 语法目录
+mkdir -p "${bat_syntax_dir}"
+# 静默下载语法文件到临时文件
+curl -fsSL "${syntax_url}" -o "${tmp_file}"
+# 目标文件不存在或内容不同 (cmp -s 静默比较) 时，替换目标文件并重建 bat 缓存，否则直接删除临时文件
+if [ ! -f "${target_file}" ] || ! cmp -s "${tmp_file}" "${target_file}"; then
+  mv "${tmp_file}" "${target_file}"; bat cache --build
+else
+  rm -f "${tmp_file}"
+fi
+{{- end -}}

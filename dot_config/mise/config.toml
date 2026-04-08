@@ -1,0 +1,16 @@
+[tools]
+bat = "latest"
+btop = "latest"
+fd = "latest"
+fzf = "latest"
+"github:tealdeer-rs/tealdeer" = { version = "latest", bin = "tldr" }
+jq = "latest"
+ripgrep = "latest"
+yq = "latest"
+zoxide = "latest"
+delta = "latest"
+usage = "latest"
+github-cli = "latest"
+lazygit = "latest"
+jd = "latest"
+"github:peteretelej/tree" = "latest"

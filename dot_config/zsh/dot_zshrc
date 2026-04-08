@@ -1,0 +1,79 @@
+# =============================================================================
+# .zshrc
+# 启动交互式 Zsh 实例时加载，是日常使用的核心配置
+# =============================================================================
+
+# 启用 Powerlevel10k 即时提示
+() { [[ -r "$1" ]] && source "$1" } "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 1. Shell 基础选项  <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+setopt autocd                   # 目录名自动 cd
+setopt extendedglob             # 启用扩展通配符
+setopt hist_ignore_dups         # [历史命令行为] 不连续重复地记录命令
+setopt hist_ignore_space        # [历史命令行为] 不记录有前导空格的命令
+setopt share_history            # [历史命令行为] 历史命令多终端窗口共享
+unsetopt beep                   # 关闭终端响铃
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 2. 历史命令配置    <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+HISTSIZE=5000                   # 内存保留历史命令的条目数
+SAVEHIST=50000                  # 退出 Zsh 时最大的历史命令写入数
+HISTFILE=~/.zsh_history         # 历史命令持久化文件路径
+HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1  # 历史搜索结果去重
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 3. 插件加载        <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+eval "$(mise activate zsh)"     # 激活 mise（多种二进制工具的管理器）
+source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
+antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 4. 补全系统初始化  <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+mkdir -p "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存目录
+
+[[ ! -f $SITE_FUNCTIONS/_mise ]]        && mise completion zsh              > $SITE_FUNCTIONS/_mise
+[[ ! -f $SITE_FUNCTIONS/_bat ]]         && bat --completion zsh             > $SITE_FUNCTIONS/_bat
+[[ ! -f $SITE_FUNCTIONS/_delta ]]       && delta --generate-completion zsh  > $SITE_FUNCTIONS/_delta
+[[ ! -f $SITE_FUNCTIONS/_fd ]]          && fd --gen-completions zsh         > $SITE_FUNCTIONS/_fd
+[[ ! -f $SITE_FUNCTIONS/_fzf ]]         && fzf --zsh                        > $SITE_FUNCTIONS/_fzf
+[[ ! -f $SITE_FUNCTIONS/_gh ]]          && gh completion -s zsh             > $SITE_FUNCTIONS/_gh
+[[ ! -f $SITE_FUNCTIONS/_lazygit ]]     && lazygit completion zsh           > $SITE_FUNCTIONS/_lazygit
+[[ ! -f $SITE_FUNCTIONS/_rg ]]          && rg --generate complete-zsh       > $SITE_FUNCTIONS/_rg
+[[ ! -f $SITE_FUNCTIONS/_tldr ]]        && curl -fsSL https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh > $SITE_FUNCTIONS/_tldr
+[[ ! -f $SITE_FUNCTIONS/_yq ]]          && yq shell-completion zsh          > $SITE_FUNCTIONS/_yq
+[[ ! -f $SITE_FUNCTIONS/_chezmoi ]]     && chezmoi completion zsh           > $SITE_FUNCTIONS/_chezmoi
+[[ ! -f $SITE_FUNCTIONS/_tailscale ]]   && tailscale completion zsh         > $SITE_FUNCTIONS/_tailscale
+
+find "$SITE_FUNCTIONS" -maxdepth 1 -type f -empty -delete  # 删除生成失败时留下的空文件，以便再次启动 Zsh 时重试
+autoload -Uz compinit
+compinit -d "${ZSH_COMPDUMP}"
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 5. 按键绑定        <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+bindkey -e                      # 将 Zsh 的键位方案设置为 Emacs 模式
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 6. 工具初始化      <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+eval "$(zoxide init zsh)"       # 初始化 zoxide
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 7. 提示符          <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+[[ -f $ZDOTDIR/.p10k.zsh ]] && source $ZDOTDIR/.p10k.zsh  # 加载 Powerlevel10k 配置
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 8. 别名            <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+alias -g -- --help='--help 2>&1 | bat --language=help --style=plain --theme="Monokai Extended Light"'  # 使用 bat 高亮显示 --help 信息
+export MANPAGER='bat -plman --theme="Monokai Extended Light"'    # 将 bat 作为 man 的彩色分页器
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>> 9. 自定义函数      <<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

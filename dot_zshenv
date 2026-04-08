@@ -1,0 +1,37 @@
+# =============================================================================
+# .zshenv
+# 所有 Zsh 实例在脚本式、交互式、登录式都会最先加载加载
+#
+# 适合写入：
+#   - 所有 Shell 类型都需要的环境变量
+#   - 工具路径
+# =============================================================================
+
+export SUDO_AS_ADMIN_SUCCESSFUL=1  # 阻止 sudo 创建 .sudo_as_admin_successful 文件
+
+# 编辑器
+export EDITOR=micro  # 默认的行编辑器
+export VISUAL=micro  # 默认的全屏编辑器
+
+# 补全系统控制与缓存
+export skip_global_compinit=1  # 跳过 /etc/zsh/zshrc 中的 compinit 初始化
+export ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}"  # 补全系统缓存路径
+
+# Zsh 目录
+export ZDOTDIR="$HOME/.config/zsh"  # .zprofile、.zshrc、.zlogin、.zlogout 路径
+export SITE_FUNCTIONS="$ZDOTDIR/site-functions"  # 第三方补全脚本路径
+
+# 命令与函数搜索路径
+typeset -U path fpath
+path=(
+    $HOME/bin
+    $HOME/.local/bin
+    /usr/local/bin
+    $HOME/.cargo/bin    # Rust 工具链
+    $HOME/.go/bin       # Go 工具
+    $path               # 与 PATH 互为绑定对
+)
+fpath=(
+    $SITE_FUNCTIONS
+    $fpath
+)

@@ -1,0 +1,28 @@
+{{- if and (eq .chezmoi.os "linux") (lookPath "curl") (lookPath "git") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 下载 mise / antidote
+# ==================================================
+
+set -eu
+install_item() {
+    check_cmd="$1"
+    install_cmd="$2"
+    if sh -c "$check_cmd"; then
+        return 0
+    fi
+    sh -c "$install_cmd"
+}
+
+# 【mise】
+install_item \
+    'command -v mise >/dev/null 2>&1 || [ -x "$HOME/.local/bin/mise" ]' \
+    'curl -fsSL https://mise.run | sh'
+
+# 【antidote】
+install_item \
+  '[ -d "${ZDOTDIR:-$HOME}/.antidote" ]' \
+  'git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-$HOME}/.antidote"'
+
+{{- end -}}
