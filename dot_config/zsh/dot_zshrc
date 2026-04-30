@@ -30,12 +30,14 @@ HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1  # 历史搜索结果去重
 eval "$(mise activate zsh)"     # 激活 mise（多种二进制工具的管理器）
 source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
 antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
+YSU_MESSAGE_POSITION="after"    # 消息显示位置（MichaelAquilina/zsh-you-should-use）
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 4. 补全系统初始化  <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 mkdir -p "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存目录
 
+# mise 源
 [[ ! -f $SITE_FUNCTIONS/_mise ]]        && mise completion zsh              > $SITE_FUNCTIONS/_mise
 [[ ! -f $SITE_FUNCTIONS/_bat ]]         && bat --completion zsh             > $SITE_FUNCTIONS/_bat
 [[ ! -f $SITE_FUNCTIONS/_delta ]]       && delta --generate-completion zsh  > $SITE_FUNCTIONS/_delta
@@ -46,7 +48,10 @@ mkdir -p "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存�
 [[ ! -f $SITE_FUNCTIONS/_rg ]]          && rg --generate complete-zsh       > $SITE_FUNCTIONS/_rg
 [[ ! -f $SITE_FUNCTIONS/_tldr ]]        && curl -fsSL https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh > $SITE_FUNCTIONS/_tldr
 [[ ! -f $SITE_FUNCTIONS/_yq ]]          && yq shell-completion zsh          > $SITE_FUNCTIONS/_yq
+# apt 源
+[[ ! -f $SITE_FUNCTIONS/_caddy ]]       && caddy completion zsh             > $SITE_FUNCTIONS/_caddy
 [[ ! -f $SITE_FUNCTIONS/_chezmoi ]]     && chezmoi completion zsh           > $SITE_FUNCTIONS/_chezmoi
+[[ ! -f $SITE_FUNCTIONS/_podman ]]      && podman completion zsh            > $SITE_FUNCTIONS/_pobman
 [[ ! -f $SITE_FUNCTIONS/_tailscale ]]   && tailscale completion zsh         > $SITE_FUNCTIONS/_tailscale
 
 find "$SITE_FUNCTIONS" -maxdepth 1 -type f -empty -delete  # 删除生成失败时留下的空文件，以便再次启动 Zsh 时重试
