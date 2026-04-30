@@ -38,22 +38,21 @@ YSU_MESSAGE_POSITION="after"    # 消息显示位置（MichaelAquilina/zsh-you-s
 mkdir -p "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存目录
 
 # mise 源
-[[ ! -f $SITE_FUNCTIONS/_mise ]]        && mise completion zsh              > $SITE_FUNCTIONS/_mise
-[[ ! -f $SITE_FUNCTIONS/_bat ]]         && bat --completion zsh             > $SITE_FUNCTIONS/_bat
-[[ ! -f $SITE_FUNCTIONS/_delta ]]       && delta --generate-completion zsh  > $SITE_FUNCTIONS/_delta
-[[ ! -f $SITE_FUNCTIONS/_fd ]]          && fd --gen-completions zsh         > $SITE_FUNCTIONS/_fd
-[[ ! -f $SITE_FUNCTIONS/_fzf ]]         && fzf --zsh                        > $SITE_FUNCTIONS/_fzf
-[[ ! -f $SITE_FUNCTIONS/_gh ]]          && gh completion -s zsh             > $SITE_FUNCTIONS/_gh
-[[ ! -f $SITE_FUNCTIONS/_lazygit ]]     && lazygit completion zsh           > $SITE_FUNCTIONS/_lazygit
-[[ ! -f $SITE_FUNCTIONS/_rg ]]          && rg --generate complete-zsh       > $SITE_FUNCTIONS/_rg
-[[ ! -f $SITE_FUNCTIONS/_tldr ]]        && curl -fsSL https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh > $SITE_FUNCTIONS/_tldr
-[[ ! -f $SITE_FUNCTIONS/_yq ]]          && yq shell-completion zsh          > $SITE_FUNCTIONS/_yq
+(( $+commands[mise] ))      && [[ ! -f $SITE_FUNCTIONS/_mise ]]        && mise completion zsh              > $SITE_FUNCTIONS/_mise
+(( $+commands[bat] ))       && [[ ! -f $SITE_FUNCTIONS/_bat ]]         && bat --completion zsh             > $SITE_FUNCTIONS/_bat
+(( $+commands[delta] ))     && [[ ! -f $SITE_FUNCTIONS/_delta ]]       && delta --generate-completion zsh  > $SITE_FUNCTIONS/_delta
+(( $+commands[fd] ))        && [[ ! -f $SITE_FUNCTIONS/_fd ]]          && fd --gen-completions zsh         > $SITE_FUNCTIONS/_fd
+(( $+commands[fzf] ))       && [[ ! -f $SITE_FUNCTIONS/_fzf ]]         && fzf --zsh                        > $SITE_FUNCTIONS/_fzf
+(( $+commands[gh] ))        && [[ ! -f $SITE_FUNCTIONS/_gh ]]          && gh completion -s zsh             > $SITE_FUNCTIONS/_gh
+(( $+commands[lazygit] ))   && [[ ! -f $SITE_FUNCTIONS/_lazygit ]]     && lazygit completion zsh           > $SITE_FUNCTIONS/_lazygit
+(( $+commands[rg] ))        && [[ ! -f $SITE_FUNCTIONS/_rg ]]          && rg --generate complete-zsh       > $SITE_FUNCTIONS/_rg
+(( $+commands[tldr] ))      && [[ ! -f $SITE_FUNCTIONS/_tldr ]]        && curl -fsSL https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh > $SITE_FUNCTIONS/_tldr
+(( $+commands[yq] ))        && [[ ! -f $SITE_FUNCTIONS/_yq ]]          && yq shell-completion zsh          > $SITE_FUNCTIONS/_yq
 # apt 源
-[[ ! -f $SITE_FUNCTIONS/_caddy ]]       && caddy completion zsh             > $SITE_FUNCTIONS/_caddy
-[[ ! -f $SITE_FUNCTIONS/_chezmoi ]]     && chezmoi completion zsh           > $SITE_FUNCTIONS/_chezmoi
-[[ ! -f $SITE_FUNCTIONS/_podman ]]      && podman completion zsh            > $SITE_FUNCTIONS/_pobman
-[[ ! -f $SITE_FUNCTIONS/_tailscale ]]   && tailscale completion zsh         > $SITE_FUNCTIONS/_tailscale
-
+(( $+commands[caddy] ))     && [[ ! -f $SITE_FUNCTIONS/_caddy ]]       && caddy completion zsh             > $SITE_FUNCTIONS/_caddy
+(( $+commands[chezmoi] ))   && [[ ! -f $SITE_FUNCTIONS/_chezmoi ]]     && chezmoi completion zsh           > $SITE_FUNCTIONS/_chezmoi
+(( $+commands[podman] ))    && [[ ! -f $SITE_FUNCTIONS/_podman ]]      && podman completion zsh            > $SITE_FUNCTIONS/_podman
+(( $+commands[tailscale] )) && [[ ! -f $SITE_FUNCTIONS/_tailscale ]]   && tailscale completion zsh         > $SITE_FUNCTIONS/_tailscale
 find "$SITE_FUNCTIONS" -maxdepth 1 -type f -empty -delete  # 删除生成失败时留下的空文件，以便再次启动 Zsh 时重试
 autoload -Uz compinit
 compinit -d "${ZSH_COMPDUMP}"
