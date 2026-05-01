@@ -42,7 +42,6 @@ mkdir -p "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存�
 (( $+commands[bat] ))       && [[ ! -f $SITE_FUNCTIONS/_bat ]]         && bat --completion zsh             > $SITE_FUNCTIONS/_bat
 (( $+commands[delta] ))     && [[ ! -f $SITE_FUNCTIONS/_delta ]]       && delta --generate-completion zsh  > $SITE_FUNCTIONS/_delta
 (( $+commands[fd] ))        && [[ ! -f $SITE_FUNCTIONS/_fd ]]          && fd --gen-completions zsh         > $SITE_FUNCTIONS/_fd
-(( $+commands[fzf] ))       && [[ ! -f $SITE_FUNCTIONS/_fzf ]]         && fzf --zsh                        > $SITE_FUNCTIONS/_fzf
 (( $+commands[gh] ))        && [[ ! -f $SITE_FUNCTIONS/_gh ]]          && gh completion -s zsh             > $SITE_FUNCTIONS/_gh
 (( $+commands[lazygit] ))   && [[ ! -f $SITE_FUNCTIONS/_lazygit ]]     && lazygit completion zsh           > $SITE_FUNCTIONS/_lazygit
 (( $+commands[rg] ))        && [[ ! -f $SITE_FUNCTIONS/_rg ]]          && rg --generate complete-zsh       > $SITE_FUNCTIONS/_rg
@@ -66,6 +65,7 @@ bindkey -e                      # 将 Zsh 的键位方案设置为 Emacs 模式
 # >>>>>>>>>> 6. 工具初始化      <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 eval "$(zoxide init zsh)"       # 初始化 zoxide
+source <(fzf --zsh)             # 初始化 fzf
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 7. 提示符          <<<<<<<<<<
