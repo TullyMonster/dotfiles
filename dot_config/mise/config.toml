@@ -1,6 +1,7 @@
 [tools]
 bat = "latest"
 btop = "latest"
+bun = "latest"
 delta = "latest"
 fd = "latest"
 fzf = "latest"
@@ -10,8 +11,14 @@ github-cli = "latest"
 jd = "latest"
 jq = "latest"
 lazygit = "latest"
+node = "lts"
 opencode = "latest"
+pnpm = "latest"
 ripgrep = "latest"
 usage = "latest"
+uv = "latest"
 yq = "latest"
 zoxide = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["node"]

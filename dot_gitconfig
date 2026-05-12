@@ -1,2 +1,33 @@
 [init]
     defaultBranch = main
+
+[core]
+    pager = delta
+
+[diff]
+    colorMoved = default
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    true-color = always
+    light = true
+    syntax-theme = Monokai Extended Light
+    side-by-side = true
+    line-numbers = true
+    line-numbers-left-style = cyan
+    line-numbers-right-style = cyan
+    line-numbers-minus-style = 124
+    line-numbers-plus-style = 28
+    line-numbers-zero-style   = "#888888"
+    file-style = bright-white "#E53E31" bold
+    file-decoration-style = "#E53E31" ul
+    hunk-header-style = file line-number syntax
+    hunk-header-file-style = "#2E76E3"
+    hunk-header-decoration-style = "#2E76E3"
+    hunk-header-line-number-style = "#0175FF"
+
+[merge]
+    conflictstyle = zdiff3

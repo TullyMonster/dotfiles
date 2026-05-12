@@ -22,6 +22,7 @@ romkatv/powerlevel10k                       # Powerlevel10k 主题
 Aloxaf/fzf-tab                              # fzf 补全选择菜单
 unixorn/fzf-zsh-plugin                      # 使用 fzf 搜索历史命令和文件
 zsh-users/zsh-autosuggestions               # 类 Fish 风格的命令建议
+zsh-users/zsh-completions                   # 额外的补全脚本
 bigH/git-fuzzy path:bin kind:path           # 基于 fzf 的交互式 git
 MichaelAquilina/zsh-you-should-use          # 提醒使用现有别名来替代上一个命令
 zdharma-continuum/fast-syntax-highlighting  # 语法高亮

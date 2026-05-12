@@ -1,0 +1,10 @@
+gui:
+  language: zh-CN
+  nerdFontsVersion: "3"
+  showFileTree: false
+  showNumstatInFilesView: true
+  filterMode: fuzzy
+
+git:
+  pagers:
+    - pager: delta --light --paging=never
