@@ -2,15 +2,12 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "description": "新增功能 (ulw)",
-      "model": "opencode/claude-opus-4-6",
+      "model": "xiaomi/mimo-v2.5-pro",
       "variant": "max",
       "fallback_models": [
         {
-          "model": "opencode-go/kimi-k2.5"
-        },
-        {
-          "model": "kimi-for-coding/k2p5"
+          "model": "opencode/claude-opus-4-6",
+          "variant": "max"
         },
         {
           "model": "opencode/kimi-k2.5"
@@ -24,33 +21,28 @@
           "variant": "medium"
         },
         {
-          "model": "zai-coding-plan/glm-5"
-        },
-        {
           "model": "opencode/glm-5"
-        },
-        {
-          "model": "opencode/big-pickle"
         }
-      ]
+      ],
+      "description": "新增功能 (ulw)"
     },
     "hephaestus": {
-      "description": "修复已知错误",
       "model": "openai/gpt-5.5",
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "opencode/gpt-5.4",
+          "model": "opencode/gpt-5.5",
           "variant": "medium"
         }
-      ]
+      ],
+      "description": "修复已知错误"
     },
     "oracle": {
       "model": "openai/gpt-5.5",
       "variant": "high",
       "fallback_models": [
         {
-          "model": "opencode/gpt-5.4",
+          "model": "opencode/gpt-5.5",
           "variant": "high"
         },
         {
@@ -66,7 +58,7 @@
           "variant": "max"
         },
         {
-          "model": "opencode-go/glm-5"
+          "model": "opencode/glm-5"
         }
       ]
     },
@@ -74,7 +66,7 @@
       "model": "302ai/gemini-3-flash-preview",
       "fallback_models": [
         {
-          "model": "opencode/minimax-m2.7-highspeed"
+          "model": "opencode/minimax-m2.7"
         },
         {
           "model": "opencode/claude-haiku-4-5"
@@ -87,9 +79,6 @@
     "explore": {
       "model": "openrouter/x-ai/grok-code-fast-1",
       "fallback_models": [
-        {
-          "model": "opencode-go/minimax-m2.7-highspeed"
-        },
         {
           "model": "opencode/minimax-m2.7"
         },
@@ -107,10 +96,10 @@
           "variant": "medium"
         },
         {
-          "model": "opencode-go/kimi-k2.5"
+          "model": "opencode/kimi-k2.5"
         },
         {
-          "model": "zai-coding-plan/glm-4.6v"
+          "model": "302ai/glm-4.6v"
         },
         {
           "model": "openai/gpt-5-nano"
@@ -121,10 +110,13 @@
       ]
     },
     "prometheus": {
-      "description": "访谈并计划",
-      "model": "opencode/claude-opus-4-6",
+      "model": "xiaomi/mimo-v2.5-pro",
       "variant": "max",
       "fallback_models": [
+        {
+          "model": "opencode/claude-opus-4-6",
+          "variant": "max"
+        },
         {
           "model": "openai/gpt-5.4",
           "variant": "high"
@@ -134,7 +126,7 @@
           "variant": "high"
         },
         {
-          "model": "opencode-go/glm-5"
+          "model": "opencode/glm-5"
         },
         {
           "model": "google/gemini-3.1-pro-preview"
@@ -142,12 +134,15 @@
         {
           "model": "opencode/gemini-3.1-pro"
         }
-      ]
+      ],
+      "description": "访谈并计划"
     },
     "metis": {
-      "model": "opencode/claude-opus-4-6",
-      "variant": "max",
+      "model": "xiaomi/mimo-v2.5-pro",
       "fallback_models": [
+        {
+          "model": "opencode/claude-opus-4-6"
+        },
         {
           "model": "openai/gpt-5.4",
           "variant": "high"
@@ -157,12 +152,13 @@
           "variant": "high"
         },
         {
-          "model": "opencode-go/glm-5"
+          "model": "opencode/glm-5"
         },
         {
-          "model": "kimi-for-coding/k2p5"
+          "model": "opencode/kimi-k2.5"
         }
-      ]
+      ],
+      "variant": "max"
     },
     "momus": {
       "model": "openai/gpt-5.5",
@@ -185,17 +181,13 @@
           "variant": "high"
         },
         {
-          "model": "opencode-go/glm-5"
+          "model": "opencode/glm-5"
         }
       ]
     },
     "atlas": {
-      "description": "读取计划，分配、编排任务，积累经验",
-      "model": "moonshotai-cn/kimi-k2.5",
+      "model": "opencode/kimi-k2.5",
       "fallback_models": [
-        {
-          "model": "opencode-go/kimi-k2.5"
-        },
         {
           "model": "openai/gpt-5.4",
           "variant": "medium"
@@ -205,15 +197,19 @@
           "variant": "medium"
         },
         {
-          "model": "opencode-go/minimax-m2.7"
+          "model": "opencode/minimax-m2.7"
         }
-      ]
+      ],
+      "description": "读取计划，分配、编排任务，积累经验"
     },
     "sisyphus-junior": {
-      "model": "opencode/claude-sonnet-4-6",
+      "model": "xiaomi/mimo-v2.5-pro",
       "fallback_models": [
         {
-          "model": "opencode-go/kimi-k2.5"
+          "model": "opencode/claude-sonnet-4-6"
+        },
+        {
+          "model": "opencode/kimi-k2.5"
         },
         {
           "model": "openai/gpt-5.4",
@@ -224,10 +220,7 @@
           "variant": "medium"
         },
         {
-          "model": "opencode-go/minimax-m2.7"
-        },
-        {
-          "model": "opencode/big-pickle"
+          "model": "opencode/minimax-m2.7"
         }
       ]
     }
@@ -242,9 +235,6 @@
           "variant": "high"
         },
         {
-          "model": "zai-coding-plan/glm-5"
-        },
-        {
           "model": "opencode/glm-5"
         },
         {
@@ -252,10 +242,10 @@
           "variant": "max"
         },
         {
-          "model": "opencode-go/glm-5"
+          "model": "opencode/glm-5"
         },
         {
-          "model": "kimi-for-coding/k2p5"
+          "model": "opencode/kimi-k2.5"
         }
       ]
     },
@@ -280,7 +270,7 @@
           "variant": "max"
         },
         {
-          "model": "opencode-go/glm-5"
+          "model": "opencode/glm-5"
         }
       ]
     },
@@ -342,7 +332,7 @@
           "model": "opencode/gemini-3-flash"
         },
         {
-          "model": "opencode-go/minimax-m2.7"
+          "model": "opencode/minimax-m2.7"
         },
         {
           "model": "opencode/gpt-5-nano"
@@ -361,7 +351,7 @@
           "variant": "medium"
         },
         {
-          "model": "opencode-go/kimi-k2.5"
+          "model": "opencode/kimi-k2.5"
         },
         {
           "model": "google/gemini-3-flash-preview"
@@ -370,7 +360,7 @@
           "model": "opencode/gemini-3-flash"
         },
         {
-          "model": "opencode-go/minimax-m2.7"
+          "model": "opencode/minimax-m2.7"
         }
       ]
     },
@@ -386,7 +376,7 @@
           "variant": "medium"
         },
         {
-          "model": "opencode-go/kimi-k2.5"
+          "model": "opencode/kimi-k2.5"
         },
         {
           "model": "google/gemini-3-flash-preview"
@@ -395,7 +385,7 @@
           "model": "opencode/gemini-3-flash"
         },
         {
-          "model": "opencode-go/minimax-m2.7"
+          "model": "opencode/minimax-m2.7"
         }
       ],
       "variant": "max"
@@ -407,13 +397,13 @@
           "model": "opencode/gemini-3-flash"
         },
         {
-          "model": "opencode-go/kimi-k2.5"
+          "model": "opencode/kimi-k2.5"
         },
         {
           "model": "opencode/claude-sonnet-4-6"
         },
         {
-          "model": "opencode-go/minimax-m2.7"
+          "model": "opencode/minimax-m2.7"
         }
       ]
     }
