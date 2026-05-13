@@ -1,5 +1,6 @@
 [tools]
 bat = "latest"
+biome = "latest"
 btop = "latest"
 bun = "latest"
 delta = "latest"
@@ -12,13 +13,22 @@ jd = "latest"
 jq = "latest"
 lazygit = "latest"
 node = "lts"
+"npm:@fission-ai/openspec" = "latest"
+"npm:czg" = "latest"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:yaml-language-server" = "latest"
 opencode = "latest"
 pnpm = "latest"
 ripgrep = "latest"
+tree-sitter = "latest"
 usage = "latest"
 uv = "latest"
 yq = "latest"
 zoxide = "latest"
 
 [settings]
-idiomatic_version_file_enable_tools = ["node"]
+idiomatic_version_file_enable_tools = ["node", "bun", "python"]
+node.corepack = true
+npm.package_manager = "pnpm"
+python.uv_venv_auto = "create|source"

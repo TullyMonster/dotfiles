@@ -49,37 +49,59 @@ YSU_MESSAGE_POSITION="after"    # 消息显示位置（MichaelAquilina/zsh-you-s
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 4. 补全系统初始化  <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-disabled_command_completions=(  # 禁用指定命令的补全
+_cache_completion() {
+    # 用法：_cache_completion <命令名> <生成补全脚本的命令...>
+    emulate -L zsh  # 隔离函数内的 Zsh 选项
+
+    local name="$1" # 待补全的命令名
+    shift           # 以剩余参数作为补全脚本的生成命令
+
+    local target="${SITE_FUNCTIONS}/_${name}"   # 目标补全文件名（以下划线开头）
+    local tmp="${target}.tmp.$$"                # 临时文件名
+
+    (( ${+commands[$name]} )) || return 0       # 待补全的命令不存在，跳过
+    [[ -s "$target" ]] && return 0              # 已有非空的补全文件，跳过
+
+    if command "$@" >| "$tmp" 2>/dev/null && [[ -s "$tmp" ]]; then  # 成功生成补全文件
+        mv -f -- "$tmp" "$target"               # 替换为目标补全文件
+    fi
+
+    rm -f -- "$tmp" # 清理临时文件
+}
+
+mkdir -p -- "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存目录
+
+# mise 源
+_cache_completion   mise            mise completion zsh
+_cache_completion   bat             bat --completion zsh
+_cache_completion   bun             bun completions zsh
+_cache_completion   delta           delta --generate-completion zsh
+_cache_completion   fd              fd --gen-completions zsh
+_cache_completion   gh              gh completion -s zsh
+_cache_completion   lazygit         lazygit completion zsh
+_cache_completion   opencode        opencode completion
+_cache_completion   openspec        openspec completion generate zsh
+_cache_completion   pnpm            pnpm completion zsh
+_cache_completion   rg              rg --generate complete-zsh
+_cache_completion   tldr            curl -fsSL -m 5 --connect-timeout 2 https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh
+_cache_completion   tree-sitter     tree-sitter complete --shell zsh
+_cache_completion   uv              uv generate-shell-completion zsh
+_cache_completion   uvx             uvx --generate-shell-completion zsh
+_cache_completion   yq              yq shell-completion zsh
+# apt 源
+_cache_completion   caddy           caddy completion zsh
+_cache_completion   chezmoi         chezmoi completion zsh
+_cache_completion   podman          podman completion zsh
+_cache_completion   tailscale       tailscale completion zsh
+
+disabled_command_completions=(  # 禁用专属补全的命令列表
     tree
 )
 
-mkdir -p "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存目录
-# mise 源
-(( $+commands[mise] ))      && [[ ! -f $SITE_FUNCTIONS/_mise ]]         && mise completion zsh                  > $SITE_FUNCTIONS/_mise
-(( $+commands[bat] ))       && [[ ! -f $SITE_FUNCTIONS/_bat ]]          && bat --completion zsh                 > $SITE_FUNCTIONS/_bat
-(( $+commands[bun] ))       && [[ ! -f $SITE_FUNCTIONS/_bun ]]          && bun completions zsh                  > $SITE_FUNCTIONS/_bun
-(( $+commands[delta] ))     && [[ ! -f $SITE_FUNCTIONS/_delta ]]        && delta --generate-completion zsh      > $SITE_FUNCTIONS/_delta
-(( $+commands[fd] ))        && [[ ! -f $SITE_FUNCTIONS/_fd ]]           && fd --gen-completions zsh             > $SITE_FUNCTIONS/_fd
-(( $+commands[gh] ))        && [[ ! -f $SITE_FUNCTIONS/_gh ]]           && gh completion -s zsh                 > $SITE_FUNCTIONS/_gh
-(( $+commands[lazygit] ))   && [[ ! -f $SITE_FUNCTIONS/_lazygit ]]      && lazygit completion zsh               > $SITE_FUNCTIONS/_lazygit
-(( $+commands[opencode] ))  && [[ ! -f $SITE_FUNCTIONS/_opencode ]]     && opencode completion                  > $SITE_FUNCTIONS/_opencode
-(( $+commands[pnpm] ))      && [[ ! -f $SITE_FUNCTIONS/_pnpm ]]         && pnpm completion zsh                  > $SITE_FUNCTIONS/_pnpm
-(( $+commands[rg] ))        && [[ ! -f $SITE_FUNCTIONS/_rg ]]           && rg --generate complete-zsh           > $SITE_FUNCTIONS/_rg
-(( $+commands[tldr] ))      && [[ ! -f $SITE_FUNCTIONS/_tldr ]]         && curl -fsSL https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh > $SITE_FUNCTIONS/_tldr
-(( $+commands[uv] ))        && [[ ! -f $SITE_FUNCTIONS/_uv ]]           && uv generate-shell-completion zsh     > $SITE_FUNCTIONS/_uv
-(( $+commands[uvx] ))       && [[ ! -f $SITE_FUNCTIONS/_uvx ]]          && uvx --generate-shell-completion zsh  > $SITE_FUNCTIONS/_uvx
-(( $+commands[yq] ))        && [[ ! -f $SITE_FUNCTIONS/_yq ]]           && yq shell-completion zsh              > $SITE_FUNCTIONS/_yq
-# apt 源
-(( $+commands[caddy] ))     && [[ ! -f $SITE_FUNCTIONS/_caddy ]]        && caddy completion zsh                 > $SITE_FUNCTIONS/_caddy
-(( $+commands[chezmoi] ))   && [[ ! -f $SITE_FUNCTIONS/_chezmoi ]]      && chezmoi completion zsh               > $SITE_FUNCTIONS/_chezmoi
-(( $+commands[podman] ))    && [[ ! -f $SITE_FUNCTIONS/_podman ]]       && podman completion zsh                > $SITE_FUNCTIONS/_podman
-(( $+commands[tailscale] )) && [[ ! -f $SITE_FUNCTIONS/_tailscale ]]    && tailscale completion zsh             > $SITE_FUNCTIONS/_tailscale
-# pnpm 源
-(( $+commands[openspec] ))  && [[ ! -f $SITE_FUNCTIONS/_openspec ]]     && openspec completion generate zsh     > $SITE_FUNCTIONS/_openspec
-find "$SITE_FUNCTIONS" -maxdepth 1 -type f -empty -delete  # 删除生成失败时留下的空文件，以便再次启动 Zsh 时重试
 autoload -Uz compinit
 compinit -d "${ZSH_COMPDUMP}"
-compdef _default $disabled_command_completions
+compdef -d "${disabled_command_completions[@]}"
+unfunction _cache_completion
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 5. 按键绑定        <<<<<<<<<<
