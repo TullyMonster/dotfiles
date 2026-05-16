@@ -1,10 +1,9 @@
 {{- $ageRecipient := promptStringOnce . "age.recipient" "age: public key (recipient)" -}}
 {{- $subStoreBackendPath := promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" -}}
 {{- $opencodeMcpContext7ApiKey := promptStringOnce . "opencode.mcp_context7_api_key" "OpenCode: CONTEXT7_API_KEY" -}}
-{{- $opencodeMcpExaPoolBaseUrl := promptStringOnce . "opencode.mcp_exa_pool_base_url" "OpenCode: EXA_POOL_BASE_URL" -}}
-{{- $opencodeMcpExaPoolApiKey := promptStringOnce . "opencode.mcp_exa_pool_api_key" "OpenCode: EXA_POOL_API_KEY" -}}
-{{- $opencodeMcpAceToolBaseUrl := promptStringOnce . "opencode.mcp_ace_tool_base_url" "OpenCode: ace-tool MCP base-url" -}}
-{{- $opencodeMcpAceToolToken := promptStringOnce . "opencode.mcp_ace_tool_token" "OpenCode: ace-tool MCP token" -}}
+{{- $opencodeMcpExaApiKey := promptStringOnce . "opencode.mcp_exa_api_key" "OpenCode: EXA_API_KEY" -}}
+{{- $opencodeMcpAceBaseUrl := promptStringOnce . "opencode.mcp_ace_base_url" "OpenCode: ace-tool MCP base-url" -}}
+{{- $opencodeMcpAceToken := promptStringOnce . "opencode.mcp_ace_token" "OpenCode: ace-tool MCP token" -}}
 {{- $opencodeMcpTavilyApiKey := promptStringOnce . "opencode.mcp_tavily_api_key" "OpenCode: tavilyApiKey" -}}
 {{- $opencodeMcpChromeMcpUrl := promptStringOnce . "opencode.mcp_chrome_mcp_url" "OpenCode: chrome-mcp MCP url" -}}
 {{- $opencodeServerUsername := promptStringOnce . "opencode.server.username" "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
@@ -25,10 +24,9 @@ backend_path = {{ $subStoreBackendPath | quote }}
 
 [data.opencode]
 mcp_context7_api_key = {{ $opencodeMcpContext7ApiKey | quote }}
-mcp_exa_pool_base_url = {{ $opencodeMcpExaPoolBaseUrl | quote }}
-mcp_exa_pool_api_key = {{ $opencodeMcpExaPoolApiKey | quote }}
-mcp_ace_tool_base_url = {{ $opencodeMcpAceToolBaseUrl | quote }}
-mcp_ace_tool_token = {{ $opencodeMcpAceToolToken | quote }}
+mcp_exa_api_key = {{ $opencodeMcpExaApiKey | quote }}
+mcp_ace_base_url = {{ $opencodeMcpAceBaseUrl | quote }}
+mcp_ace_token = {{ $opencodeMcpAceToken | quote }}
 mcp_tavily_api_key = {{ $opencodeMcpTavilyApiKey | quote }}
 mcp_chrome_mcp_url = {{ $opencodeMcpChromeMcpUrl | quote }}
 

@@ -20,12 +20,3 @@ chmod 600 ~/.config/chezmoi/key.txt
 # 获取公钥
 chezmoi age-keygen -y ~/.config/chezmoi/key.txt
 ```
-
-## OpenCode 的 exa-pool MCP 配置
-
-`exa-pool` 是本机 OpenCode 使用的本地 MCP 服务。新机器恢复时，需要先仓库克隆到约定路径：
-
-```shell
-mkdir -p ~/mcp-servers
-git clone https://github.com/TullyMonster/exa-pool-mcp.git ~/mcp-servers/exa-pool-mcp
-```

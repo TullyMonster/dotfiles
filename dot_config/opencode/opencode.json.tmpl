@@ -1,16 +1,34 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["oh-my-openagent@latest", "cc-safety-net@latest", "@tarquinen/opencode-dcp@latest", "opencode-supermemory@latest"],
+  "plugin": [
+    "oh-my-openagent@latest",
+    "cc-safety-net@latest",
+    "@tarquinen/opencode-dcp@latest",
+    "opencode-supermemory@latest"
+  ],
   "autoupdate": false,
   "small_model": "deepseek/deepseek-chat",
   "formatter": {
     "ruff": {
-      "command": ["uvx", "ruff", "format", "$FILE"],
-      "extensions": [".py", ".pyi"],
+      "command": [
+        "uvx",
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py",
+        ".pyi"
+      ],
       "disabled": false
     },
     "prettier": {
-      "command": ["bunx", "prettier", "--write", "$FILE"],
+      "command": [
+        "bunx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
       "extensions": [
         ".js",
         ".jsx",
@@ -42,7 +60,10 @@
       "disabled": false
     }
   },
-  "disabled_providers": ["easy", "lanyi"],
+  "disabled_providers": [
+    "easy",
+    "lanyi"
+  ],
   "provider": {
     "ccwu": {
       "name": "ccwu API",
@@ -54,8 +75,14 @@
         "claude-opus-4-6": {
           "name": "Claude Opus 4.6",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -86,8 +113,14 @@
         "claude-sonnet-4-6": {
           "name": "Claude Sonnet 4.6",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -118,8 +151,14 @@
           "id": "claude-haiku-4-5-20251001",
           "name": "Claude Haiku 4.5",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -145,8 +184,14 @@
         "claude-opus-4-6": {
           "name": "Claude Opus 4.6",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -177,8 +222,14 @@
         "claude-sonnet-4-6": {
           "name": "Claude Sonnet 4.6",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -217,8 +268,14 @@
         "claude-opus-4-6": {
           "name": "Claude Opus 4.6",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -249,8 +306,14 @@
         "claude-sonnet-4-6": {
           "name": "Claude Sonnet 4.6",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -281,8 +344,14 @@
           "id": "claude-haiku-4-5-20251001",
           "name": "Claude Haiku 4.5",
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 200000,
@@ -308,26 +377,24 @@
         "CONTEXT7_API_KEY": {{ .opencode.mcp_context7_api_key | quote }}
       }
     },
-    "exa-pool": {
-      "enabled": false,
-      "type": "local",
-      "command": ["uv", "run", "--directory", "/home/tully/mcp-servers/exa-pool-mcp", "exa_pool_mcp.py"],
-      "environment": {
-        "EXA_POOL_BASE_URL": {{ .opencode.mcp_exa_pool_base_url | quote }},
-        "EXA_POOL_API_KEY": {{ .opencode.mcp_exa_pool_api_key | quote }}
+    "exa": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "headers": {
+        "x-api-key": {{ .opencode.mcp_exa_api_key | quote }}
       }
     },
-    "ace-tool": {
+    "ace": {
       "enabled": true,
       "type": "local",
       "command": [
-        "pnpm",
-        "dlx",
         "ace-tool",
         "--base-url",
-        {{ .opencode.mcp_ace_tool_base_url | quote }},
+        {{ .opencode.mcp_ace_base_url | quote }},
         "--token",
-        {{ .opencode.mcp_ace_tool_token | quote }}
+        {{ .opencode.mcp_ace_token | quote }},
+        "--no-webbrowser-enhance-prompt"
       ]
     },
     "tavily": {
