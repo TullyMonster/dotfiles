@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "xiaomi/mimo-v2.5-pro",
+      "model": "xiaomi-token-plan-cn/mimo-v2.5-pro",
       "variant": "max",
       "fallback_models": [
         {
@@ -77,7 +77,7 @@
       ]
     },
     "explore": {
-      "model": "openrouter/x-ai/grok-code-fast-1",
+      "model": "opencode/minimax-m2.7",
       "fallback_models": [
         {
           "model": "opencode/minimax-m2.7"
@@ -110,7 +110,7 @@
       ]
     },
     "prometheus": {
-      "model": "xiaomi/mimo-v2.5-pro",
+      "model": "xiaomi-token-plan-cn/mimo-v2.5-pro",
       "variant": "max",
       "fallback_models": [
         {
@@ -138,7 +138,7 @@
       "description": "访谈并计划"
     },
     "metis": {
-      "model": "xiaomi/mimo-v2.5-pro",
+      "model": "xiaomi-token-plan-cn/mimo-v2.5-pro",
       "fallback_models": [
         {
           "model": "opencode/claude-opus-4-6"
@@ -203,7 +203,7 @@
       "description": "读取计划，分配、编排任务，积累经验"
     },
     "sisyphus-junior": {
-      "model": "xiaomi/mimo-v2.5-pro",
+      "model": "xiaomi-token-plan-cn/mimo-v2.5-pro",
       "fallback_models": [
         {
           "model": "opencode/claude-sonnet-4-6"

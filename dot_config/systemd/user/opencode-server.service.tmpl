@@ -1,0 +1,32 @@
+[Unit]
+Description=OpenCode Headless Server
+Documentation=https://opencode.ai/docs/server/
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h
+
+Environment={{ printf "OPENCODE_SERVER_USERNAME=%s" (.opencode.server.username | replace "%" "%%") | quote }}
+Environment={{ printf "OPENCODE_SERVER_PASSWORD=%s" (.opencode.server.password | replace "%" "%%") | quote }}
+
+ExecStart=%h/.local/share/mise/shims/opencode serve --port 4097 --hostname 0.0.0.0
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+
+# 启动：
+# 1. systemctl --user daemon-reload
+# 2. systemctl --user start opencode-server.service
+# 3. loginctl enable-linger "$USER"
+
+# 访问地址：
+# - Web UI：    http://<hostname>:4097
+# - API 文档：  http://<hostname>:4097/doc
+# - 健康检查：  http://<hostname>:4097/global/health
+
+# 检查端口占用：
+# ss -tlnp | grep 4097
