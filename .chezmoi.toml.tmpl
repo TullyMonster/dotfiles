@@ -8,7 +8,7 @@
 {{- $opencodeMcpChromeMcpUrl := promptStringOnce . "opencode.mcp_chrome_mcp_url" "OpenCode: chrome-mcp MCP url" -}}
 {{- $opencodeServerUsername := promptStringOnce . "opencode.server.username" "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
 {{- $opencodeServerPassword := promptStringOnce . "opencode.server.password" "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" -}}
-
+{{- $npmUseMirror := promptBoolOnce . "npm.use_mirror" "NPM: Use a registry mirror on this device" false -}}
 
 encryption = "age"
 
@@ -33,3 +33,6 @@ mcp_chrome_mcp_url = {{ $opencodeMcpChromeMcpUrl | quote }}
 [data.opencode.server]
 username = {{ $opencodeServerUsername | quote }}
 password = {{ $opencodeServerPassword | quote }}
+
+[data.npm]
+use_mirror = {{ $npmUseMirror }}
