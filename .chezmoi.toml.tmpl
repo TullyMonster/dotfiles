@@ -1,4 +1,8 @@
-{{- $ageRecipient := promptStringOnce . "age.recipient" "age: public key (recipient)" -}}
+{{- $keyPath := joinPath .chezmoi.homeDir ".config" "chezmoi" "key.txt" -}}
+{{- if not (stat $keyPath) -}}
+    {{- fail "Age private key not found. Please restore it from Bitwarden to ~/.config/chezmoi/key.txt first." -}}
+{{- end -}}
+{{- $ageRecipient := trim (output "chezmoi" "age-keygen" "-y" $keyPath) -}}
 {{- $subStoreBackendPath := promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" -}}
 {{- $opencodeMcpContext7ApiKey := promptStringOnce . "opencode.mcp_context7_api_key" "OpenCode: CONTEXT7_API_KEY" -}}
 {{- $opencodeMcpExaApiKey := promptStringOnce . "opencode.mcp_exa_api_key" "OpenCode: EXA_API_KEY" -}}
@@ -14,7 +18,7 @@ encryption = "age"
 
 [age]
 recipient = {{ $ageRecipient | quote }}
-identity = "~/.config/chezmoi/key.txt"
+identity = {{ $keyPath | quote }}
 
 [diff]
 exclude = ["scripts"]

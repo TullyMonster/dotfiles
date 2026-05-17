@@ -1,22 +1,23 @@
-## age 加密
+# Tully's Dotfiles
 
-本仓库使用 age 作为 chezmoi 的加密后端。`chezmoi age-keygen` 生成的 age 密钥数据额外保存在 Bitwarden 中。
+使用 [chezmoi](https://www.chezmoi.io/) 跨设备地管理配置文件，使用 age 作为 chezmoi 的加密后端。
 
-### 私钥 (private key)
+## 新设备的初始化
 
-形如 `AGE-SECRET-KEY-...`，用于解密。永远不要不由 chezmoi 管理，需在 `chezmoi init` 前手动创建。
+1. **私钥 (private key) 恢复**：
 
-```shell
-mkdir -p ~/.config/chezmoi
-$EDITOR ~/.config/chezmoi/key.txt  # 将 Bitwarden 中的私钥文件内容写入
-chmod 600 ~/.config/chezmoi/key.txt
-```
+   > 最初的 age 私钥已由 `chezmoi age-keygen -o key.txt` 命令创建，已备份至 Bitwarden 中，形如 `AGE-SECRET-KEY-...`。
 
-### 公钥 (public key)
+   ```shell
+   mkdir -p ~/.config/chezmoi
+   $EDITOR ~/.config/chezmoi/key.txt  # 写入 Bitwarden 中的私钥
+   chmod 600 ~/.config/chezmoi/key.txt
+   ```
 
-形如 `age1...`，用于加密。在执行 `chezmoi init` 时交互式写入 `chezmoi.toml` 文件。
+2. **应用配置文件**：
 
-```shell
-# 获取公钥
-chezmoi age-keygen -y ~/.config/chezmoi/key.txt
-```
+   > 下载安装 chezmoi 并立即初始化源仓库、应用到用户目录。
+
+   ```shell
+   sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:TullyMonster/dotfiles.git
+   ```
