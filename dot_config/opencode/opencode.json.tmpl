@@ -11,7 +11,6 @@
   "formatter": {
     "ruff": {
       "command": [
-        "uvx",
         "ruff",
         "format",
         "$FILE"
@@ -24,7 +23,6 @@
     },
     "prettier": {
       "command": [
-        "bunx",
         "prettier",
         "--write",
         "$FILE"
@@ -58,6 +56,124 @@
         ".gql"
       ],
       "disabled": false
+    }
+  },
+  "lsp": {
+    "typescript": {
+      "command": [
+        "typescript-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".ts",
+        ".tsx",
+        ".mts",
+        ".cts",
+        ".js",
+        ".jsx",
+        ".mjs",
+        ".cjs"
+      ]
+    },
+    "python": {
+      "command": [
+        "pyright",
+        "--stdio"
+      ],
+      "extensions": [
+        ".py",
+        ".pyi"
+      ]
+    },
+    "yaml": {
+      "command": [
+        "yaml-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".yaml",
+        ".yml"
+      ]
+    },
+    "markdown": {
+      "command": [
+        "marksman",
+        "server"
+      ],
+      "extensions": [
+        ".md",
+        ".markdown",
+        ".mdx"
+      ]
+    },
+    "toml": {
+      "command": [
+        "taplo",
+        "lsp",
+        "stdio"
+      ],
+      "extensions": [
+        ".toml"
+      ]
+    },
+    "html": {
+      "command": [
+        "vscode-html-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".html",
+        ".htm",
+        ".xhtml",
+        ".shtml"
+      ]
+    },
+    "css": {
+      "command": [
+        "vscode-css-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".css",
+        ".scss",
+        ".less"
+      ]
+    },
+    "json": {
+      "command": [
+        "vscode-json-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".json",
+        ".jsonc"
+      ]
+    },
+    "systemd": {
+      "command": [
+        "systemd-lsp"
+      ],
+      "extensions": [
+        ".service",
+        ".socket",
+        ".timer",
+        ".mount",
+        ".automount",
+        ".swap",
+        ".target",
+        ".path",
+        ".slice",
+        ".scope",
+        ".device",
+        ".container",
+        ".volume",
+        ".network",
+        ".kube",
+        ".pod",
+        ".build",
+        ".image",
+        ".artifact"
+      ]
     }
   },
   "disabled_providers": [
@@ -395,7 +511,8 @@
         "--token",
         {{ .opencode.mcp_ace_token | quote }},
         "--no-webbrowser-enhance-prompt"
-      ]
+      ],
+      "timeout": 8000
     },
     "tavily": {
       "enabled": true,
