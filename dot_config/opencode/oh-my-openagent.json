@@ -77,10 +77,10 @@
       ]
     },
     "explore": {
-      "model": "opencode/minimax-m2.7",
+      "model": "openai/gpt-5.4-mini-fast",
       "fallback_models": [
         {
-          "model": "opencode/minimax-m2.7"
+          "model": "302ai/grok-4-1-fast-reasoning"
         },
         {
           "model": "opencode/gpt-5-nano"
@@ -340,15 +340,39 @@
       ]
     },
     "unspecified-low": {
-      "model": "opencode/claude-opus-4-6",
+      "model": "openai/gpt-5.4",
+      "variant": "medium",
       "fallback_models": [
-        {
-          "model": "openai/gpt-5.3-codex",
-          "variant": "medium"
-        },
         {
           "model": "opencode/gpt-5.3-codex",
           "variant": "medium"
+        },
+        {
+          "model": "opencode/kimi-k2.5"
+        },
+        {
+          "model": "opencode/claude-opus-4-6"
+        },
+        {
+          "model": "google/gemini-3-flash-preview"
+        },
+        {
+          "model": "opencode/gemini-3-flash"
+        },
+        {
+          "model": "opencode/minimax-m2.7"
+        }
+      ]
+    },
+    "unspecified-high": {
+      "model": "openai/gpt-5.5",
+      "variant": "high",
+      "fallback_models": [
+        {
+          "model": "302ai/glm-5"
+        },
+        {
+          "model": "opencode/claude-opus-4-6"
         },
         {
           "model": "opencode/kimi-k2.5"
@@ -363,32 +387,6 @@
           "model": "opencode/minimax-m2.7"
         }
       ]
-    },
-    "unspecified-high": {
-      "model": "opencode/claude-opus-4-6",
-      "fallback_models": [
-        {
-          "model": "openai/gpt-5.3-codex",
-          "variant": "medium"
-        },
-        {
-          "model": "opencode/gpt-5.3-codex",
-          "variant": "medium"
-        },
-        {
-          "model": "opencode/kimi-k2.5"
-        },
-        {
-          "model": "google/gemini-3-flash-preview"
-        },
-        {
-          "model": "opencode/gemini-3-flash"
-        },
-        {
-          "model": "opencode/minimax-m2.7"
-        }
-      ],
-      "variant": "max"
     },
     "writing": {
       "model": "opencode/gemini-3-flash",
