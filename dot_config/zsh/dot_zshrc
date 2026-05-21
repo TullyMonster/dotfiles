@@ -23,6 +23,7 @@ unsetopt beep                   # 关闭终端响铃
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 export MANPAGER='bat -plman --theme="Monokai Extended Light"'   # 将 bat 作为 man 的彩色分页器
 export MANROFFOPT="-c"                                          # 修正 man 渲染器 SGR 输出以配合 bat
+export YSU_MESSAGE_POSITION="after"                             # 消息显示位置（MichaelAquilina/zsh-you-should-use）
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 3. 历史命令配置    <<<<<<<<<<
@@ -45,12 +46,11 @@ function zshaddhistory() {
 }
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# >>>>>>>>>> 4. 插件加载        <<<<<<<<<<
+# >>>>>>>>>> 4. 补全前置准备    <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 eval "$(mise activate zsh)"     # 激活 mise（多种二进制工具的管理器）
-source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
-antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
-YSU_MESSAGE_POSITION="after"    # 消息显示位置（MichaelAquilina/zsh-you-should-use）
+source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh  # 引入 Antidote
+antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.pre-compinit.txt
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 5. 补全系统初始化  <<<<<<<<<<
@@ -90,6 +90,7 @@ _cache_completion   openspec        openspec completion generate zsh
 _cache_completion   pnpm            pnpm completion zsh
 _cache_completion   rg              rg --generate complete-zsh
 _cache_completion   ruff            ruff generate-shell-completion zsh
+_cache_completion   sesh            sesh completion zsh
 _cache_completion   taplo           taplo completions zsh
 _cache_completion   tldr            curl -fsSL -m 5 --connect-timeout 2 https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh
 _cache_completion   tree-sitter     tree-sitter complete --shell zsh
@@ -117,10 +118,11 @@ unfunction _cache_completion
 bindkey -e                      # 将 Zsh 的键位方案设置为 Emacs 模式
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# >>>>>>>>>> 7. 工具初始化      <<<<<<<<<<
+# >>>>>>>>>> 7. 交互增强        <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 eval "$(zoxide init zsh)"       # 初始化 zoxide
 source <(fzf --zsh)             # 初始化 fzf
+antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.post-compinit.txt
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 8. 提示符          <<<<<<<<<<

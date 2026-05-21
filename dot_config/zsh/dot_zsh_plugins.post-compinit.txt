@@ -1,0 +1,26 @@
+# ==================================================
+# Antidote 插件列表：compinit 后加载
+#
+# 用途：
+#   - 加载依赖补全系统已初始化的插件
+#   - 加载接管 Tab / 包装 ZLE widget 的插件
+#   - 加载 autosuggestion、提示符、语法高亮等交互增强插件
+#
+# 约束：
+#   - 在 compinit 之后加载
+#   - fzf 官方集成 source <(fzf --zsh) 应在本文件之前执行
+#   - fzf-tab 应早于 autosuggestions / syntax highlighting
+#   - syntax highlighting 类插件应尽量保持最后加载
+#
+# 卸载时：
+#   1. 执行 antidote purge <CLONED_BUNDLE_NAME>，当前文件对应的插件行将被注释
+#   2. 可继续移除对应的行
+#   3. 执行 antidote bundle 重新生成 bundle
+# ==================================================
+
+
+Aloxaf/fzf-tab
+zsh-users/zsh-autosuggestions
+MichaelAquilina/zsh-you-should-use
+romkatv/powerlevel10k
+zdharma-continuum/fast-syntax-highlighting

@@ -1,0 +1,33 @@
+# ==================================================
+# Antidote 插件列表：compinit 前加载
+#
+# 用途：
+#   - 提供补全函数目录并加入 fpath
+#   - 加载 Oh My Zsh 兼容层及基础插件
+#   - 加载不依赖 ZLE widget 包装顺序的工具插件
+#
+# 约束：
+#   - 在 compinit 之前加载
+#   - 适合放置 zsh-completions、OMZ lib/plugin、纯 fpath/path 插件
+#   - 不建议放置会接管 Tab、包装 ZLE widget、语法高亮或 autosuggestion 的插件
+#
+# 卸载时：
+#   1. 执行 antidote purge <CLONED_BUNDLE_NAME>，当前文件对应的插件行将被注释
+#   2. 可继续移除对应的行
+#   3. 执行 antidote bundle 重新生成 bundle
+# ==================================================
+
+
+getantidote/use-omz
+ohmyzsh/ohmyzsh path:lib
+ohmyzsh/ohmyzsh path:plugins/aliases
+ohmyzsh/ohmyzsh path:plugins/common-aliases
+ohmyzsh/ohmyzsh path:plugins/extract
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:plugins/magic-enter
+ohmyzsh/ohmyzsh path:plugins/sudo
+ohmyzsh/ohmyzsh path:plugins/tldr
+ohmyzsh/ohmyzsh path:plugins/tmux
+zsh-users/zsh-completions
+unixorn/fzf-zsh-plugin
+bigH/git-fuzzy path:bin kind:path

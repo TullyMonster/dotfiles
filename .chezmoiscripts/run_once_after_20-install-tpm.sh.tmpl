@@ -1,0 +1,17 @@
+{{- if and (eq .chezmoi.os "linux") (lookPath "git") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 安装 TPM（Tmux Plugin Manager）
+# ==================================================
+
+set -eu
+
+tpm_dir="{{ joinPath .chezmoi.homeDir ".config" "tmux" "plugins" "tpm" }}"
+
+if [ ! -d "${tpm_dir}/.git" ]; then
+  mkdir -p "$(dirname "${tpm_dir}")"
+  git clone --depth=1 https://github.com/tmux-plugins/tpm "${tpm_dir}"
+fi
+
+{{- end -}}
