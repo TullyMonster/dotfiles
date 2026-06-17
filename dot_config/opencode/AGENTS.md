@@ -33,6 +33,25 @@ These conventions apply to all new code and modifications unless they conflict w
 - For scripting languages, you SHOULD leverage advanced language features (e.g., comprehensions, pipelines, lambdas) to write concise, one-liner-style code, as long as readability is preserved.
 - Avoid overly clever or cryptic expressions that harm maintainability.
 
+## Resource Safety for Agent-Executed Shell Commands
+
+Most shell commands should run normally without extra wrappers.
+
+Apply safeguards only when a command may realistically exhaust host resources, such as when it installs or resolves dependencies, builds software, starts unknown third-party CLIs/MCP servers/language runtimes, scans large directory trees, spawns workers, or when multiple similar risky commands may run concurrently.
+
+For risky commands, prefer using a timeout, avoid unnecessary concurrency, keep scans scoped to the current project, and use temporary directories or caches when helpful. Temporary isolation is not a memory limit.
+
+On Linux with systemd, use a resource-limited user scope when a risky command combines dependency installation, runtime startup, broad scanning, or concurrency:
+
+```sh
+systemd-run --user --scope
+  -p MemoryMax=<reasonable-memory-limit> \
+  -p MemorySwapMax=<reasonable-swap-limit> \
+  timeout <reasonable-duration> zsh -lc '<command>'
+```
+
+Do not wrap commands that manage SSH, networking, disks, login sessions, system services, or system package transactions unless known safe.
+
 ## Tooling Preferences
 
 ### Shell

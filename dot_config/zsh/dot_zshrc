@@ -85,6 +85,7 @@ _cache_completion   delta           delta --generate-completion zsh
 _cache_completion   fd              fd --gen-completions zsh
 _cache_completion   gh              gh completion -s zsh
 _cache_completion   lazygit         lazygit completion zsh
+_cache_completion   miniserve       miniserve --print-completions zsh
 _cache_completion   opencode        opencode completion
 _cache_completion   openspec        openspec completion generate zsh
 _cache_completion   pnpm            pnpm completion zsh
