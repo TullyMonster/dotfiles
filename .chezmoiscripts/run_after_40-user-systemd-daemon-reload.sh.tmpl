@@ -1,0 +1,12 @@
+{{- if and (eq .chezmoi.os "linux") (lookPath "systemctl") $.systemd.user.reload_after_apply -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 重新加载用户级 systemd 单元配置
+# ==================================================
+
+set -eu
+
+systemctl --user daemon-reload
+
+{{- end -}}

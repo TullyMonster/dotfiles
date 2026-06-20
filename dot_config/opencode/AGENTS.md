@@ -74,8 +74,3 @@ Do not wrap commands that manage SSH, networking, disks, login sessions, system 
 
 - Prefer `jq` for querying and transforming JSON data over text-based tools like `grep`.
 - Prefer `yq` for querying, transforming, and editing YAML or mixed structured data formats.
-
-## Documentation & Communication
-
-- User-facing explanations and summaries MUST be in Simplified Chinese unless explicitly requested otherwise.
-- System-level instructions, tool call parameters, and search queries MUST be in English.

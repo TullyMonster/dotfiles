@@ -1,0 +1,7 @@
+{{- if not (regexMatch "^[A-Za-z0-9._/:@-]+$" $.headed_playwright_service.image_ref) -}}{{ fail "headed_playwright_service.image_ref contains unsupported characters" }}{{- end -}}
+#!/usr/bin/env sh
+set -eu
+
+exec podman build \
+  --tag {{ $.headed_playwright_service.image_ref | quote }} \
+  "$(CDPATH= cd "$(dirname "$0")" && pwd -P)"

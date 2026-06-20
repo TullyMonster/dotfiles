@@ -21,3 +21,48 @@
    ```shell
    sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:TullyMonster/dotfiles.git
    ```
+
+## Headed Playwright Service
+
+此服务暴露两类能力：一方面，用于 AI Agent 的 MCP 浏览器控制端点；另一方面，用于用户观察和手动接管的 noVNC 浏览器界面。该服务默认（推荐）监听 127.0.0.1。
+
+1. **构建镜像**：
+
+   > 首次使用，或更新 `Containerfile` / 启动脚本后，需要先构建本地服务镜像；Quadlet 会使用这个镜像启动容器。
+
+   ```shell
+   ~/.config/headed-playwright-service/build-service-image.sh
+   ```
+
+2. **启动服务**：
+
+   > 先确保已执行 `systemctl --user daemon-reload`。
+
+   ```shell
+   systemctl --user start headed-playwright-service.service
+   ```
+
+3. **配置 MCP**：
+
+   > 以 OpenCode 为例。
+
+   ```json
+   {
+     "mcp": {
+       "playwright": {
+         "enabled": true,
+         "type": "remote",
+         "url": "http://127.0.0.1:8931/mcp"
+       }
+     }
+   }
+   ```
+
+4. **从其他 tailnet 设备访问浏览器 GUI（可选）**：
+
+   > 通过 `https://<host>.<tailnet>.ts.net:6080/vnc.html` 访问。
+   > 亦可用 SSH 本地端口转发（`ssh -N -L 6080:127.0.0.1:6080 <user>@<host>`），并通过 `http://127.0.0.1:6080/vnc.html` 访问。
+
+   ```shell
+   tailscale serve --bg --https=6080 http://127.0.0.1:6080
+   ```

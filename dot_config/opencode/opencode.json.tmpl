@@ -494,7 +494,7 @@
       }
     },
     "exa": {
-      "enabled": true,
+      "enabled": false,
       "type": "remote",
       "url": "https://mcp.exa.ai/mcp",
       "headers": {
@@ -524,8 +524,13 @@
       "type": "remote",
       "url": "https://mcp.deepwiki.com/mcp"
     },
-    "chrome-mcp": {
+    "playwright": {
       "enabled": true,
+      "type": "remote",
+      "url": "http://127.0.0.1:8931/mcp"
+    },
+    "chrome-mcp": {
+      "enabled": false,
       "type": "remote",
       "url": {{ .opencode.mcp_chrome_mcp_url | quote }}
     }

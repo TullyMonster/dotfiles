@@ -1,24 +1,34 @@
 {{- $keyPath := joinPath .chezmoi.homeDir ".config" "chezmoi" "key.txt" -}}
 {{- if not (stat $keyPath) -}}
-    {{- fail "Age private key not found. Please restore it from Bitwarden to ~/.config/chezmoi/key.txt first." -}}
+    {{- fail "ERROR: Age private key not found. Please restore it from Bitwarden to ~/.config/chezmoi/key.txt first." -}}
 {{- end -}}
-{{- $ageRecipient := trim (output "chezmoi" "age-keygen" "-y" $keyPath) -}}
-{{- $subStoreBackendPath := promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" -}}
-{{- $opencodeMcpContext7ApiKey := promptStringOnce . "opencode.mcp_context7_api_key" "OpenCode: CONTEXT7_API_KEY" -}}
-{{- $opencodeMcpExaApiKey := promptStringOnce . "opencode.mcp_exa_api_key" "OpenCode: EXA_API_KEY" -}}
-{{- $opencodeMcpAceBaseUrl := promptStringOnce . "opencode.mcp_ace_base_url" "OpenCode: ace-tool MCP base-url" -}}
-{{- $opencodeMcpAceToken := promptStringOnce . "opencode.mcp_ace_token" "OpenCode: ace-tool MCP token" -}}
-{{- $opencodeMcpTavilyApiKey := promptStringOnce . "opencode.mcp_tavily_api_key" "OpenCode: tavilyApiKey" -}}
-{{- $opencodeMcpChromeMcpUrl := promptStringOnce . "opencode.mcp_chrome_mcp_url" "OpenCode: chrome-mcp MCP url" -}}
-{{- $opencodeServerUsername := promptStringOnce . "opencode.server.username" "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
-{{- $opencodeServerPassword := promptStringOnce . "opencode.server.password" "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" -}}
-{{- $npmUseMirror := promptBoolOnce . "npm.use_mirror" "NPM: Use a registry mirror on this device" false -}}
+{{- $ageRecipient                               := trim (output "chezmoi" "age-keygen" "-y" $keyPath) -}}
+{{- $subStoreBackendPath                        := promptStringOnce . "sub_store.backend_path"                          "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" -}}
+{{- $opencodeMcpContext7ApiKey                  := promptStringOnce . "opencode.mcp_context7_api_key"                   "OpenCode: CONTEXT7_API_KEY" -}}
+{{- $opencodeMcpExaApiKey                       := promptStringOnce . "opencode.mcp_exa_api_key"                        "OpenCode: EXA_API_KEY" -}}
+{{- $opencodeMcpAceBaseUrl                      := promptStringOnce . "opencode.mcp_ace_base_url"                       "OpenCode: ace-tool MCP base-url" -}}
+{{- $opencodeMcpAceToken                        := promptStringOnce . "opencode.mcp_ace_token"                          "OpenCode: ace-tool MCP token" -}}
+{{- $opencodeMcpTavilyApiKey                    := promptStringOnce . "opencode.mcp_tavily_api_key"                     "OpenCode: tavilyApiKey" -}}
+{{- $opencodeMcpChromeMcpUrl                    := promptStringOnce . "opencode.mcp_chrome_mcp_url"                     "OpenCode: chrome-mcp MCP url" -}}
+{{- $opencodeServerUsername                     := promptStringOnce . "opencode.server.username"                        "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
+{{- $opencodeServerPassword                     := promptStringOnce . "opencode.server.password"                        "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" -}}
+{{- $npmUseMirror                               := promptBoolOnce   . "npm.use_mirror"                                  "NPM: Use a registry mirror on this device"            false -}}
+{{- $headedPlaywrightServiceImageRef            := promptStringOnce . "headed_playwright_service.image_ref"             "Headed Playwright Service: image reference"            "localhost/headed-playwright-service:0.0.76" -}}
+{{- $headedPlaywrightServiceContainerName       := promptStringOnce . "headed_playwright_service.container_name"        "Headed Playwright Service: container name"             "headed-playwright-service" -}}
+{{- $headedPlaywrightServiceProfileVolumeName   := promptStringOnce . "headed_playwright_service.profile_volume_name"   "Headed Playwright Service: profile volume name"        "headed-playwright-browser-profile" -}}
+{{- $headedPlaywrightServiceProfileDir          := promptStringOnce . "headed_playwright_service.profile_dir"           "Headed Playwright Service: profile directory"          "/profile" -}}
+{{- $headedPlaywrightServiceX11Display          := promptStringOnce . "headed_playwright_service.x11_display"           "Headed Playwright Service: X11 display"                ":99" -}}
+{{- $headedPlaywrightServiceXvfbWhd             := promptStringOnce . "headed_playwright_service.xvfb_whd"              "Headed Playwright Service: Xvfb whd"                   "1280x720x24" -}}
+{{- $headedPlaywrightServiceMcpPort             := promptStringOnce . "headed_playwright_service.mcp_port"              "Headed Playwright Service: MCP port"                   "8931" -}}
+{{- $headedPlaywrightServiceVncPort             := promptStringOnce . "headed_playwright_service.vnc_port"              "Headed Playwright Service: VNC port"                   "5900" -}}
+{{- $headedPlaywrightServiceNovncPort           := promptStringOnce . "headed_playwright_service.novnc_port"            "Headed Playwright Service: noVNC port"                 "6080" -}}
+{{- $systemdUserReloadAfterApply                := promptBoolOnce   . "systemd.user.reload_after_apply"                 "systemd user: Reload the user manager after apply"    true -}}
 
 encryption = "age"
 
 [age]
-recipient = {{ $ageRecipient | quote }}
-identity = {{ $keyPath | quote }}
+recipient   = {{ $ageRecipient  | quote }}
+identity    = {{ $keyPath       | quote }}
 
 [diff]
 exclude = ["scripts"]
@@ -27,12 +37,12 @@ exclude = ["scripts"]
 backend_path = {{ $subStoreBackendPath | quote }}
 
 [data.opencode]
-mcp_context7_api_key = {{ $opencodeMcpContext7ApiKey | quote }}
-mcp_exa_api_key = {{ $opencodeMcpExaApiKey | quote }}
-mcp_ace_base_url = {{ $opencodeMcpAceBaseUrl | quote }}
-mcp_ace_token = {{ $opencodeMcpAceToken | quote }}
-mcp_tavily_api_key = {{ $opencodeMcpTavilyApiKey | quote }}
-mcp_chrome_mcp_url = {{ $opencodeMcpChromeMcpUrl | quote }}
+mcp_context7_api_key    = {{ $opencodeMcpContext7ApiKey | quote }}
+mcp_exa_api_key         = {{ $opencodeMcpExaApiKey      | quote }}
+mcp_ace_base_url        = {{ $opencodeMcpAceBaseUrl     | quote }}
+mcp_ace_token           = {{ $opencodeMcpAceToken       | quote }}
+mcp_tavily_api_key      = {{ $opencodeMcpTavilyApiKey   | quote }}
+mcp_chrome_mcp_url      = {{ $opencodeMcpChromeMcpUrl   | quote }}
 
 [data.opencode.server]
 username = {{ $opencodeServerUsername | quote }}
@@ -40,3 +50,17 @@ password = {{ $opencodeServerPassword | quote }}
 
 [data.npm]
 use_mirror = {{ $npmUseMirror }}
+
+[data.headed_playwright_service]
+image_ref               = {{ $headedPlaywrightServiceImageRef           | quote }}
+container_name          = {{ $headedPlaywrightServiceContainerName      | quote }}
+profile_volume_name     = {{ $headedPlaywrightServiceProfileVolumeName  | quote }}
+profile_dir             = {{ $headedPlaywrightServiceProfileDir         | quote }}
+x11_display             = {{ $headedPlaywrightServiceX11Display         | quote }}
+xvfb_whd                = {{ $headedPlaywrightServiceXvfbWhd            | quote }}
+mcp_port                = {{ $headedPlaywrightServiceMcpPort            | quote }}
+vnc_port                = {{ $headedPlaywrightServiceVncPort            | quote }}
+novnc_port              = {{ $headedPlaywrightServiceNovncPort          | quote }}
+
+[data.systemd.user]
+reload_after_apply = {{ $systemdUserReloadAfterApply }}

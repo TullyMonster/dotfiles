@@ -1,0 +1,23 @@
+[Unit]
+Description=Headed Playwright service
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image={{ $.headed_playwright_service.image_ref }}
+ContainerName={{ $.headed_playwright_service.container_name }}
+Network=host
+Volume=headed-playwright-browser-profile.volume:{{ $.headed_playwright_service.profile_dir }}:Z
+EnvironmentFile=%h/.config/headed-playwright-service/service.env
+
+[Service]
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
+
+# 启动：
+# 1. systemctl --user daemon-reload
+# 2. systemctl --user start headed-playwright-service.service
+# 3. loginctl enable-linger "$USER"
