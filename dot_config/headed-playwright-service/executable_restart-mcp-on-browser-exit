@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""Restart Playwright MCP when the bound browser endpoint is rotated."""
+
+from __future__ import annotations
+
+import os
+import sys
+import time
+import xmlrpc.client
+
+from supervisor import childutils
+
+
+BROWSER_PROCESS = "bound-browser"
+MCP_PROCESS = "playwright-mcp"
+STOPPED_STATES = {"STOPPED", "EXITED", "FATAL", "BACKOFF", "UNKNOWN"}
+
+
+def log(message: str) -> None:
+    """Write diagnostics to stderr so stdout remains supervisor protocol only."""
+
+    print(f"restart-mcp-on-browser-exit: {message}", file=sys.stderr, flush=True)
+
+
+def stop_mcp(rpc: xmlrpc.client.ServerProxy) -> None:
+    """Stop MCP if it is currently running."""
+
+    try:
+        rpc.supervisor.stopProcess(MCP_PROCESS, False)
+    except xmlrpc.client.Fault as error:
+        log(f"stop skipped: {error.faultString}")
+
+
+def wait_for_mcp_to_stop(rpc: xmlrpc.client.ServerProxy) -> None:
+    """Wait briefly for MCP to leave RUNNING/STARTING before starting it again."""
+
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        try:
+            info = rpc.supervisor.getProcessInfo(MCP_PROCESS)
+        except xmlrpc.client.Fault as error:
+            log(f"could not inspect MCP state: {error.faultString}")
+            return
+
+        if str(info.get("statename")) in STOPPED_STATES:
+            return
+        time.sleep(0.2)
+
+    log("timed out waiting for MCP to stop; attempting start anyway")
+
+
+def start_mcp(rpc: xmlrpc.client.ServerProxy) -> None:
+    """Start MCP; its wrapper waits for the next endpoint handoff file."""
+
+    try:
+        rpc.supervisor.startProcess(MCP_PROCESS, False)
+    except xmlrpc.client.Fault as error:
+        log(f"start skipped: {error.faultString}")
+
+
+def restart_mcp() -> None:
+    """Restart MCP through supervisor RPC."""
+
+    rpc = childutils.getRPCInterface(os.environ)
+    stop_mcp(rpc)
+    wait_for_mcp_to_stop(rpc)
+    start_mcp(rpc)
+
+
+def main() -> None:
+    """Run the supervisor event listener protocol loop."""
+
+    while True:
+        headers, payload = childutils.listener.wait(sys.stdin, sys.stdout)
+        try:
+            payload_headers = childutils.get_headers(payload)
+
+            if payload_headers.get("processname") == BROWSER_PROCESS:
+                log(
+                    f"{BROWSER_PROCESS} changed state via {headers.get('eventname')}; restarting MCP"
+                )
+                restart_mcp()
+        except Exception as error:
+            log(f"event handling failed: {error}")
+
+        childutils.listener.ok(sys.stdout)
+
+
+if __name__ == "__main__":
+    main()

@@ -12,17 +12,18 @@
 {{- $opencodeMcpChromeMcpUrl                    := promptStringOnce . "opencode.mcp_chrome_mcp_url"                     "OpenCode: chrome-mcp MCP url" -}}
 {{- $opencodeServerUsername                     := promptStringOnce . "opencode.server.username"                        "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
 {{- $opencodeServerPassword                     := promptStringOnce . "opencode.server.password"                        "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" -}}
-{{- $npmUseMirror                               := promptBoolOnce   . "npm.use_mirror"                                  "NPM: Use a registry mirror on this device"            false -}}
-{{- $headedPlaywrightServiceImageRef            := promptStringOnce . "headed_playwright_service.image_ref"             "Headed Playwright Service: image reference"            "localhost/headed-playwright-service:0.0.76" -}}
-{{- $headedPlaywrightServiceContainerName       := promptStringOnce . "headed_playwright_service.container_name"        "Headed Playwright Service: container name"             "headed-playwright-service" -}}
-{{- $headedPlaywrightServiceProfileVolumeName   := promptStringOnce . "headed_playwright_service.profile_volume_name"   "Headed Playwright Service: profile volume name"        "headed-playwright-browser-profile" -}}
-{{- $headedPlaywrightServiceProfileDir          := promptStringOnce . "headed_playwright_service.profile_dir"           "Headed Playwright Service: profile directory"          "/profile" -}}
-{{- $headedPlaywrightServiceX11Display          := promptStringOnce . "headed_playwright_service.x11_display"           "Headed Playwright Service: X11 display"                ":99" -}}
-{{- $headedPlaywrightServiceXvfbWhd             := promptStringOnce . "headed_playwright_service.xvfb_whd"              "Headed Playwright Service: Xvfb whd"                   "1280x720x24" -}}
-{{- $headedPlaywrightServiceMcpPort             := promptStringOnce . "headed_playwright_service.mcp_port"              "Headed Playwright Service: MCP port"                   "8931" -}}
-{{- $headedPlaywrightServiceVncPort             := promptStringOnce . "headed_playwright_service.vnc_port"              "Headed Playwright Service: VNC port"                   "5900" -}}
-{{- $headedPlaywrightServiceNovncPort           := promptStringOnce . "headed_playwright_service.novnc_port"            "Headed Playwright Service: noVNC port"                 "6080" -}}
-{{- $systemdUserReloadAfterApply                := promptBoolOnce   . "systemd.user.reload_after_apply"                 "systemd user: Reload the user manager after apply"    true -}}
+{{- $npmUseMirror                               := promptBoolOnce   . "npm.use_mirror"                                  "NPM: Use a registry mirror on this device"         false -}}
+{{- $headedPlaywrightServiceImageRef            := promptStringOnce . "headed_playwright_service.image_ref"             "Headed Playwright Service: image reference"        "localhost/headed-playwright-service:0.0.76" -}}
+{{- $headedPlaywrightServiceContainerName       := promptStringOnce . "headed_playwright_service.container_name"        "Headed Playwright Service: container name"         "headed-playwright-service" -}}
+{{- $headedPlaywrightServiceProfileVolumeName   := promptStringOnce . "headed_playwright_service.profile_volume_name"   "Headed Playwright Service: profile volume name"    "headed-playwright-browser-profile" -}}
+{{- $headedPlaywrightServiceProfileDir          := promptStringOnce . "headed_playwright_service.profile_dir"           "Headed Playwright Service: profile directory"      "/profile" -}}
+{{- $headedPlaywrightServiceX11Display          := promptStringOnce . "headed_playwright_service.x11_display"           "Headed Playwright Service: X11 display"            ":99" -}}
+{{- $headedPlaywrightServiceXvfbWhd             := promptStringOnce . "headed_playwright_service.xvfb_whd"              "Headed Playwright Service: Xvfb whd"               "1280x720x24" -}}
+{{- $headedPlaywrightServiceMcpPort             := promptStringOnce . "headed_playwright_service.mcp_port"              "Headed Playwright Service: MCP port"               "8931" -}}
+{{- $headedPlaywrightServiceEndpointPort        := promptStringOnce . "headed_playwright_service.endpoint_port"         "Headed Playwright Service: endpoint port"          "8932" -}}
+{{- $headedPlaywrightServiceVncPort             := promptStringOnce . "headed_playwright_service.vnc_port"              "Headed Playwright Service: VNC port"               "5900" -}}
+{{- $headedPlaywrightServiceNovncPort           := promptStringOnce . "headed_playwright_service.novnc_port"            "Headed Playwright Service: noVNC port"             "6080" -}}
+{{- $systemdUserReloadAfterApply                := promptBoolOnce   . "systemd.user.reload_after_apply"                 "systemd user: Reload the user manager after apply" true -}}
 
 encryption = "age"
 
@@ -52,15 +53,16 @@ password = {{ $opencodeServerPassword | quote }}
 use_mirror = {{ $npmUseMirror }}
 
 [data.headed_playwright_service]
-image_ref               = {{ $headedPlaywrightServiceImageRef           | quote }}
-container_name          = {{ $headedPlaywrightServiceContainerName      | quote }}
-profile_volume_name     = {{ $headedPlaywrightServiceProfileVolumeName  | quote }}
-profile_dir             = {{ $headedPlaywrightServiceProfileDir         | quote }}
-x11_display             = {{ $headedPlaywrightServiceX11Display         | quote }}
-xvfb_whd                = {{ $headedPlaywrightServiceXvfbWhd            | quote }}
-mcp_port                = {{ $headedPlaywrightServiceMcpPort            | quote }}
-vnc_port                = {{ $headedPlaywrightServiceVncPort            | quote }}
-novnc_port              = {{ $headedPlaywrightServiceNovncPort          | quote }}
+image_ref           = {{ $headedPlaywrightServiceImageRef           | quote }}
+container_name      = {{ $headedPlaywrightServiceContainerName      | quote }}
+profile_volume_name = {{ $headedPlaywrightServiceProfileVolumeName  | quote }}
+profile_dir         = {{ $headedPlaywrightServiceProfileDir         | quote }}
+x11_display         = {{ $headedPlaywrightServiceX11Display         | quote }}
+xvfb_whd            = {{ $headedPlaywrightServiceXvfbWhd            | quote }}
+mcp_port            = {{ $headedPlaywrightServiceMcpPort            | quote }}
+endpoint_port       = {{ $headedPlaywrightServiceEndpointPort       | quote }}
+vnc_port            = {{ $headedPlaywrightServiceVncPort            | quote }}
+novnc_port          = {{ $headedPlaywrightServiceNovncPort          | quote }}
 
 [data.systemd.user]
 reload_after_apply = {{ $systemdUserReloadAfterApply }}

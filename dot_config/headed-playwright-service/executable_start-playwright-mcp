@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+set -eu
+
+: "${DISPLAY:?DISPLAY is required}"
+: "${MCP_HOST:?MCP_HOST is required}"
+: "${MCP_PORT:?MCP_PORT is required}"
+: "${MCP_ALLOWED_HOSTS:?MCP_ALLOWED_HOSTS is required}"
+: "${ENDPOINT_FILE:?ENDPOINT_FILE is required}"
+: "${ENDPOINT_WAIT_SECONDS:?ENDPOINT_WAIT_SECONDS is required}"
+
+elapsed=0
+while [ ! -e "${ENDPOINT_FILE}" ]; do
+  if [ "${elapsed}" -ge "${ENDPOINT_WAIT_SECONDS}" ]; then
+    printf '%s\n' "Timed out waiting for Playwright endpoint file: ${ENDPOINT_FILE}" >&2
+    exit 1
+  fi
+  sleep 1
+  elapsed=$((elapsed + 1))
+done
+
+endpoint=$(sed -n '1p' "${ENDPOINT_FILE}")
+
+exec playwright-mcp \
+  --endpoint "${endpoint}" \
+  --host "${MCP_HOST}" \
+  --port "${MCP_PORT}" \
+  --allowed-hosts "${MCP_ALLOWED_HOSTS}" \
+  --shared-browser-context \
+  --output-mode stdout

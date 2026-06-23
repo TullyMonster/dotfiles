@@ -24,25 +24,20 @@
 
 ## Headed Playwright Service
 
-此服务暴露两类能力：一方面，用于 AI Agent 的 MCP 浏览器控制端点；另一方面，用于用户观察和手动接管的 noVNC 浏览器界面。该服务默认（推荐）监听 127.0.0.1。
+该服务提供三类能力：面向 AI Agent 的 MCP Streamable HTTP 端点；供 `playwright-cli attach` 使用的 wsEndpoint（MCP 与 CLI 连接同一个持久浏览器上下文）；以及面向用户观察和接管浏览器会话的 noVNC 入口。
+为减少暴露面，MCP、wsEndpoint 与 VNC 默认仅监听 `127.0.0.1`。
 
-1. **构建镜像**：
+1. **构建镜像、运行服务**：
 
-   > 首次使用，或更新 `Containerfile` / 启动脚本后，需要先构建本地服务镜像；Quadlet 会使用这个镜像启动容器。
+   > 仅在修改 Containerfile、容器内脚本或 supervisor 配置后，需重建本地服务镜像。若服务已在运行，使用 `restart` 生效。
 
    ```shell
    ~/.config/headed-playwright-service/build-service-image.sh
-   ```
-
-2. **启动服务**：
-
-   > 先确保已执行 `systemctl --user daemon-reload`。
-
-   ```shell
+   systemctl --user daemon-reload
    systemctl --user start headed-playwright-service.service
    ```
 
-3. **配置 MCP**：
+2. **配置 MCP**：
 
    > 以 OpenCode 为例。
 
@@ -57,6 +52,10 @@
      }
    }
    ```
+
+3. **playwright-cli**：
+
+   AI Agent （如 OpenCode）可通过 `headed-playwright-cli` skill 使用宿主机 `playwright-cli` 连接同一个持久浏览器上下文。
 
 4. **从其他 tailnet 设备访问浏览器 GUI（可选）**：
 

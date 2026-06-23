@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+"use strict";
+
+const fs = require("node:fs");
+const path = require("node:path");
+
+const BROWSER_BIND_NAME = "headed-playwright-service";
+const PLAYWRIGHT_PACKAGE_PATH =
+  "/usr/lib/node_modules/@playwright/mcp/node_modules/playwright";
+
+function fail(message) {
+  console.error(`start-bound-browser: ${message}`);
+  process.exit(1);
+}
+
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) fail(`${name} is required`);
+  return value;
+}
+
+function requiredEnvAbsPath(name) {
+  const value = requiredEnv(name);
+  if (!path.isAbsolute(value)) fail(`${name} must be an absolute path`);
+  return value;
+}
+
+function parsePort(value) {
+  if (!/^[0-9]+$/.test(value)) fail("ENDPOINT_PORT must be numeric");
+  const port = Number(value);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    fail("ENDPOINT_PORT must be between 1 and 65535");
+  }
+  return port;
+}
+
+function readConfig() {
+  const endpointFile = requiredEnvAbsPath("ENDPOINT_FILE");
+
+  requiredEnv("DISPLAY");
+
+  return {
+    profileDir: requiredEnvAbsPath("BROWSER_PROFILE_DIR"),
+    endpointHost: requiredEnv("ENDPOINT_HOST"),
+    endpointPort: parsePort(requiredEnv("ENDPOINT_PORT")),
+    endpointFile,
+    endpointDir: path.dirname(endpointFile),
+    endpointTempFile: `${endpointFile}.${process.pid}.tmp`,
+  };
+}
+
+function removeEndpointFiles(config) {
+  fs.rmSync(config.endpointFile, { force: true });
+  fs.rmSync(config.endpointTempFile, { force: true });
+}
+
+function prepareRuntimePaths(config) {
+  fs.mkdirSync(config.profileDir, { recursive: true, mode: 0o775 });
+  fs.mkdirSync(config.endpointDir, { recursive: true, mode: 0o700 });
+  fs.chmodSync(config.endpointDir, 0o700);
+  removeEndpointFiles(config);
+}
+
+function publishEndpoint(config, endpoint) {
+  fs.writeFileSync(config.endpointTempFile, `${endpoint}\n`, { mode: 0o600 });
+  fs.chmodSync(config.endpointTempFile, 0o600);
+  fs.renameSync(config.endpointTempFile, config.endpointFile);
+}
+
+async function closeBrowserResources(browser, browserBinding, context) {
+  if (browserBinding && browser) {
+    try {
+      await browser.unbind();
+    } catch (error) {
+      console.error(
+        `start-bound-browser: binding cleanup failed: ${error.message}`,
+      );
+    }
+  }
+
+  if (context) {
+    try {
+      await context.close();
+    } catch (error) {
+      console.error(
+        `start-bound-browser: context cleanup failed: ${error.message}`,
+      );
+    }
+  }
+}
+
+async function main() {
+  let config;
+  let context;
+  let browser;
+  let browserBinding;
+  let shuttingDown = false;
+
+  async function cleanup() {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    if (config) removeEndpointFiles(config);
+    await closeBrowserResources(browser, browserBinding, context);
+  }
+
+  async function stop(signal) {
+    console.error(`start-bound-browser: received ${signal}, shutting down`);
+    await cleanup();
+    process.exit(0);
+  }
+
+  for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
+    process.on(signal, () => {
+      void stop(signal);
+    });
+  }
+
+  try {
+    config = readConfig();
+    prepareRuntimePaths(config);
+
+    const { chromium } = require(PLAYWRIGHT_PACKAGE_PATH);
+
+    context = await chromium.launchPersistentContext(config.profileDir, {
+      headless: false,
+      args: ["--no-sandbox"],
+    });
+
+    browser = context.browser();
+    if (typeof browser.bind !== "function")
+      fail("Playwright browser.bind API is unavailable");
+
+    browserBinding = await browser.bind(BROWSER_BIND_NAME, {
+      host: config.endpointHost,
+      port: config.endpointPort,
+    });
+    if (!browserBinding || typeof browserBinding.endpoint !== "string")
+      fail("browser.bind did not return an endpoint");
+
+    publishEndpoint(config, browserBinding.endpoint);
+    console.error(
+      `start-bound-browser: endpoint ready on ${config.endpointHost}:${config.endpointPort}`,
+    );
+
+    await new Promise((resolve) => {
+      context.once("close", resolve);
+    });
+    await cleanup();
+  } catch (error) {
+    if (config) removeEndpointFiles(config);
+    fail(error.stack || error.message);
+  }
+}
+
+void main();

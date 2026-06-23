@@ -1,6 +1,7 @@
-{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.mcp_port) -}}       {{ fail "headed_playwright_service.mcp_port must be numeric" }}                         {{- end -}}
-{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.novnc_port) -}}     {{ fail "headed_playwright_service.novnc_port must be numeric" }}                       {{- end -}}
-{{- if not (regexMatch "^/[A-Za-z0-9._/-]+$"    $.headed_playwright_service.profile_dir) -}}    {{ fail "headed_playwright_service.profile_dir must be an absolute safe path" }}        {{- end -}}
+{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.mcp_port) -}}       {{ fail "headed_playwright_service.mcp_port must be numeric" }}                     {{- end -}}
+{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.endpoint_port) -}}  {{ fail "headed_playwright_service.endpoint_port must be numeric" }}                {{- end -}}
+{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.novnc_port) -}}     {{ fail "headed_playwright_service.novnc_port must be numeric" }}                   {{- end -}}
+{{- if not (regexMatch "^/[A-Za-z0-9._/-]+$"    $.headed_playwright_service.profile_dir) -}}    {{ fail "headed_playwright_service.profile_dir must be an absolute safe path" }}    {{- end -}}
 FROM mcr.microsoft.com/playwright:v1.61.0-noble
 
 RUN apt-get update \
@@ -17,13 +18,22 @@ RUN apt-get update \
 RUN npm install --global "@playwright/mcp@0.0.76" \
     && node "$(npm root --global)/@playwright/mcp/node_modules/playwright/cli.js" install chromium
 
-COPY supervisord.conf /etc/supervisor/conf.d/headed-playwright-service.conf
-COPY start-headed-playwright-service /usr/local/bin/start-headed-playwright-service
+COPY supervisord.conf               /etc/supervisor/conf.d/headed-playwright-service.conf
+COPY start-bound-browser            /usr/local/bin/start-bound-browser
+COPY start-playwright-mcp           /usr/local/bin/start-playwright-mcp
+COPY restart-mcp-on-browser-exit    /usr/local/bin/restart-mcp-on-browser-exit
 
-RUN chmod 0755 /usr/local/bin/start-headed-playwright-service \
-    && mkdir -p "{{ $.headed_playwright_service.profile_dir }}" /var/log/supervisor \
-    && chmod 0775 "{{ $.headed_playwright_service.profile_dir }}"
+RUN \
+    mkdir -p \
+        /var/log/supervisor \
+        "{{ $.headed_playwright_service.profile_dir }}" \
+    && chmod 0775 \
+        "{{ $.headed_playwright_service.profile_dir }}" \
+    && chmod 0755 \
+        /usr/local/bin/start-bound-browser \
+        /usr/local/bin/start-playwright-mcp \
+        /usr/local/bin/restart-mcp-on-browser-exit
 
-EXPOSE {{ $.headed_playwright_service.mcp_port }} {{ $.headed_playwright_service.novnc_port }}
+EXPOSE {{ $.headed_playwright_service.mcp_port }} {{ $.headed_playwright_service.endpoint_port }} {{ $.headed_playwright_service.novnc_port }}
 VOLUME ["{{ $.headed_playwright_service.profile_dir }}"]
 ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/headed-playwright-service.conf"]
