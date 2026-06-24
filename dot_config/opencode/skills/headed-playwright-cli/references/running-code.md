@@ -11,17 +11,15 @@ playwright-cli --session <workflow-label> run-code 'async page => {
 }'
 ```
 
-You can also load the function from a file. Put temporary scripts under `/tmp/opencode/playwright-cli` unless the user asked for a project artifact.
+You can also load the function from a file. Put temporary scripts under `/tmp/playwright-cli` unless the user asked for a project artifact.
 
 ```bash
-playwright-cli --session <workflow-label> run-code --filename=/tmp/opencode/playwright-cli/my-script.js
+playwright-cli --session <workflow-label> run-code --filename=/tmp/playwright-cli/my-script.js
 ```
 
 The code must be a single function expression. It is wrapped in `(...)` and evaluated. `import`, `export`, and `require` syntax is not supported.
 
 ## Geolocation
-
-These examples mutate browser context state. Use only when the user asks for location testing.
 
 ```bash
 # Grant geolocation permission and set location
@@ -114,7 +112,7 @@ playwright-cli --session <workflow-label> run-code 'async page => {
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("link", { name: "Download" }).click();
   const download = await downloadPromise;
-  await download.saveAs("/tmp/opencode/playwright-cli/downloaded-file.pdf");
+  await download.saveAs("/tmp/playwright-cli/downloaded-file.pdf");
   return download.suggestedFilename();
 }'
 ```
@@ -184,8 +182,6 @@ playwright-cli --session <workflow-label> run-code 'async page => {
 ```
 
 ## Complex Workflows
-
-Use complex workflows only when explicitly requested. Avoid storing credentials or persistent auth state unless the user asks.
 
 ```bash
 # Scrape data from multiple pages

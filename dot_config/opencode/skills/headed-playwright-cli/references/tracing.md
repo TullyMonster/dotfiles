@@ -18,7 +18,7 @@ playwright-cli --session <workflow-label> tracing-stop
 
 ## Trace Output Files
 
-Trace files are written under the current directory, commonly below `.playwright-cli/traces/`. Use `/tmp/opencode/playwright-cli` unless the user wants artifacts in the current project.
+Trace files are written under the current directory, commonly below `.playwright-cli/traces/`. Use `/tmp/playwright-cli` unless the user wants artifacts in the current project.
 
 ### `trace-{timestamp}.trace`
 
@@ -34,14 +34,14 @@ Cached resources needed to reconstruct trace state.
 
 ## What Traces Capture
 
-| Category | Details |
-|----------|---------|
-| Actions | Clicks, fills, hovers, keyboard input, navigations |
-| DOM | Full DOM snapshot before/after actions |
-| Screenshots | Visual state at each step |
-| Network | Requests, responses, headers, bodies, timing |
-| Console | Console messages |
-| Timing | Timing for each operation |
+| Category    | Details                                            |
+| ----------- | -------------------------------------------------- |
+| Actions     | Clicks, fills, hovers, keyboard input, navigations |
+| DOM         | Full DOM snapshot before/after actions             |
+| Screenshots | Visual state at each step                          |
+| Network     | Requests, responses, headers, bodies, timing       |
+| Console     | Console messages                                   |
+| Timing      | Timing for each operation                          |
 
 ## Use Cases
 
@@ -71,14 +71,14 @@ playwright-cli --session <workflow-label> tracing-stop
 
 ## Trace vs Video vs Screenshot
 
-| Feature | Trace | Video | Screenshot |
-|---------|-------|-------|------------|
-| Format | .trace file | .webm video | .png/.jpeg image |
-| DOM inspection | Yes | No | No |
-| Network details | Yes | No | No |
-| Step-by-step replay | Yes | Continuous | Single frame |
-| File size | Medium | Large | Small |
-| Best for | Debugging | Demos | Quick capture |
+| Feature             | Trace       | Video       | Screenshot       |
+| ------------------- | ----------- | ----------- | ---------------- |
+| Format              | .trace file | .webm video | .png/.jpeg image |
+| DOM inspection      | Yes         | No          | No               |
+| Network details     | Yes         | No          | No               |
+| Step-by-step replay | Yes         | Continuous  | Single frame     |
+| File size           | Medium      | Large       | Small            |
+| Best for            | Debugging   | Demos       | Quick capture    |
 
 ## Best Practices
 
@@ -90,7 +90,7 @@ Start tracing before reproducing the issue and stop as soon as evidence is captu
 
 ```bash
 # Remove temporary traces only from the temp workspace you control.
-find /tmp/opencode/playwright-cli/.playwright-cli/traces -mtime +7 -delete
+find /tmp/playwright-cli/.playwright-cli/traces -mtime +7 -delete
 ```
 
 ## Limitations

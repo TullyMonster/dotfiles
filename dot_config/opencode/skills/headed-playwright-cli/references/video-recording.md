@@ -6,7 +6,7 @@ Capture browser automation sessions as video for debugging, documentation, or ve
 
 ```bash
 # Start recording after attaching
-playwright-cli --session <workflow-label> video-start /tmp/opencode/playwright-cli/demo.webm
+playwright-cli --session <workflow-label> video-start /tmp/playwright-cli/demo.webm
 
 # Add a chapter marker for section transitions
 playwright-cli --session <workflow-label> video-chapter "Getting Started" --description="Opening the homepage" --duration=2000
@@ -25,7 +25,7 @@ playwright-cli --session <workflow-label> video-stop
 
 ```bash
 # Include context in filename
-playwright-cli --session <workflow-label> video-start /tmp/opencode/playwright-cli/login-flow.webm
+playwright-cli --session <workflow-label> video-start /tmp/playwright-cli/login-flow.webm
 ```
 
 ### 2. Record entire hero scripts.
@@ -33,28 +33,28 @@ playwright-cli --session <workflow-label> video-start /tmp/opencode/playwright-c
 When recording a polished proof-of-work video, first rehearse the flow with normal CLI commands. For scripted pauses or overlays, use `run-code --filename` from a temp path.
 
 ```bash
-playwright-cli --session <workflow-label> run-code --filename=/tmp/opencode/playwright-cli/video-script.js
+playwright-cli --session <workflow-label> run-code --filename=/tmp/playwright-cli/video-script.js
 ```
 
 Only use video recording when the user requests video evidence or visual review.
 
 ### Overlay API Summary
 
-| Method | Use Case |
-|--------|----------|
-| `page.screencast.showChapter(title, { description?, duration?, styleSheet? })` | Full-screen chapter card |
-| `page.screencast.showOverlay(html, { duration? })` | Custom HTML overlay |
-| `disposable.dispose()` | Remove a sticky overlay |
-| `page.screencast.hideOverlays()` / `page.screencast.showOverlays()` | Temporarily hide/show overlays |
+| Method                                                                         | Use Case                       |
+| ------------------------------------------------------------------------------ | ------------------------------ |
+| `page.screencast.showChapter(title, { description?, duration?, styleSheet? })` | Full-screen chapter card       |
+| `page.screencast.showOverlay(html, { duration? })`                             | Custom HTML overlay            |
+| `disposable.dispose()`                                                         | Remove a sticky overlay        |
+| `page.screencast.hideOverlays()` / `page.screencast.showOverlays()`            | Temporarily hide/show overlays |
 
 ## Tracing vs Video
 
-| Feature | Video | Tracing |
-|---------|-------|---------|
-| Output | WebM file | Trace file |
-| Shows | Visual recording | DOM snapshots, network, console, actions |
-| Use case | Demos, documentation | Debugging, analysis |
-| Size | Larger | Smaller |
+| Feature  | Video                | Tracing                                  |
+| -------- | -------------------- | ---------------------------------------- |
+| Output   | WebM file            | Trace file                               |
+| Shows    | Visual recording     | DOM snapshots, network, console, actions |
+| Use case | Demos, documentation | Debugging, analysis                      |
+| Size     | Larger               | Smaller                                  |
 
 ## Limitations
 

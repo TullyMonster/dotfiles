@@ -35,14 +35,9 @@ Do not print the endpoint value. Treat it like a bearer token.
 
 ## Working directory and artifacts
 
-`playwright-cli` writes `.playwright-cli/` snapshots and some evidence files in the current directory. Use a temporary directory when artifacts are incidental or should not appear in the current project:
+`playwright-cli` writes `.playwright-cli/` snapshots and some evidence files in the current working directory. The current directory is fine when the user wants those artifacts saved with the task or project.
 
-```bash
-mkdir -p /tmp/opencode/playwright-cli
-cd /tmp/opencode/playwright-cli
-```
-
-Using the current directory is acceptable when the user wants generated snapshots, screenshots, traces, videos, or state files saved there. Otherwise prefer `/tmp/opencode/playwright-cli` for hygiene.
+Use `/tmp/playwright-cli` only as an optional artifact-isolation directory when generated files are incidental:
 
 ## Commands
 
@@ -106,8 +101,8 @@ playwright-cli --session <workflow-label> mousewheel 0 100
 ```bash
 playwright-cli --session <workflow-label> screenshot
 playwright-cli --session <workflow-label> screenshot e5
-playwright-cli --session <workflow-label> screenshot --filename=/tmp/opencode/playwright-cli/page.png
-playwright-cli --session <workflow-label> pdf --filename=/tmp/opencode/playwright-cli/page.pdf
+playwright-cli --session <workflow-label> screenshot --filename=/tmp/playwright-cli/page.png
+playwright-cli --session <workflow-label> pdf --filename=/tmp/playwright-cli/page.pdf
 ```
 
 ### Tabs
@@ -127,7 +122,7 @@ Only close tabs that the current workflow created or that the user explicitly as
 Storage commands operate on persistent browser state. Prefer read-only inspection unless mutation is requested.
 
 ```bash
-playwright-cli --session <workflow-label> state-save /tmp/opencode/playwright-cli/state.json
+playwright-cli --session <workflow-label> state-save /tmp/playwright-cli/state.json
 playwright-cli --session <workflow-label> cookie-list
 playwright-cli --session <workflow-label> cookie-get session_id
 playwright-cli --session <workflow-label> localstorage-list
@@ -166,7 +161,7 @@ playwright-cli --session <workflow-label> console warning
 playwright-cli --session <workflow-label> run-code 'async page => ({ title: await page.title(), url: page.url() })'
 playwright-cli --session <workflow-label> tracing-start
 playwright-cli --session <workflow-label> tracing-stop
-playwright-cli --session <workflow-label> video-start /tmp/opencode/playwright-cli/video.webm
+playwright-cli --session <workflow-label> video-start /tmp/playwright-cli/video.webm
 playwright-cli --session <workflow-label> video-stop
 playwright-cli --session <workflow-label> show --annotate
 playwright-cli --session <workflow-label> generate-locator e5 --raw
@@ -180,11 +175,16 @@ The global `--raw` option strips page status, generated code, and snapshot secti
 
 ```bash
 playwright-cli --session <workflow-label> --raw eval '() => JSON.stringify(performance.timing)' | jq '.loadEventEnd - .navigationStart'
-playwright-cli --session <workflow-label> --raw snapshot > /tmp/opencode/playwright-cli/snapshot.yml
+playwright-cli --session <workflow-label> --raw snapshot > /tmp/playwright-cli/snapshot.yml
 playwright-cli --session <workflow-label> --raw cookie-get session_id
 ```
 
-Avoid printing secrets from cookies, storage, or endpoint values.
+For structured output wrapping each reply as JSON, pass `--json`.
+
+```bash
+playwright-cli --json list
+playwright-cli --session <workflow-label> --json eval '() => ({ title: document.title, url: location.href })'
+```
 
 ## Open parameters
 
@@ -201,15 +201,34 @@ Do not use CDP for this workflow. The configured browser exposes a Playwright pr
 
 ## URLs with `&` on Windows
 
-On Windows shells, escape `&` in URLs. This is usually not needed on the current Linux host, but it matters if commands are adapted elsewhere.
+On Windows, `cmd.exe` and PowerShell treat `&` as a command separator, so URLs with multiple query parameters get truncated before `playwright-cli` runs. Escape `&` with `^&` in `cmd.exe`, or use `--%` in PowerShell:
+
+```batch
+playwright-cli --session <workflow-label> goto "https://example.com/?a=1^&b=2"
+```
+
+```powershell
+playwright-cli --% --session <workflow-label> goto "https://example.com/?a=1&b=2"
+```
 
 ## Snapshots
 
-After many commands, `playwright-cli` writes a snapshot under `.playwright-cli/` in the current directory and may print a snapshot file path.
+After each command, `playwright-cli` provides a snapshot of the current browser state, written to the `.playwright-cli/` directory under the current working directory.
+
+```bash
+> playwright-cli --session ttt goto https://example.com
+### Page
+- Page URL: https://example.com/
+- Page Title: Example Domain
+### Snapshot
+- [Snapshot](.playwright-cli/page-2026-06-24T02-27-01-122Z.yml)
+```
+
+All the options below can be combined as needed.
 
 ```bash
 playwright-cli --session <workflow-label> snapshot
-playwright-cli --session <workflow-label> snapshot --filename=/tmp/opencode/playwright-cli/after-click.yaml
+playwright-cli --session <workflow-label> snapshot --filename=/tmp/playwright-cli/after-click.yaml
 playwright-cli --session <workflow-label> snapshot e34
 playwright-cli --session <workflow-label> snapshot --depth=4
 playwright-cli --session <workflow-label> snapshot --boxes
@@ -241,7 +260,7 @@ playwright-cli --session page-check snapshot
 playwright-cli --session page-check detach
 ```
 
-Avoid by default:
+**IMPORTANT**: Avoid by default:
 
 ```bash
 playwright-cli close

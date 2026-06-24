@@ -25,8 +25,6 @@ playwright-cli --session <workflow-label> unroute "**/*.jpg"
 playwright-cli --session <workflow-label> unroute
 ```
 
-Avoid broad routes like `**/*` unless needed. Always remove routes that could surprise later users of the same persistent browser.
-
 ## URL Patterns
 
 ```text
@@ -38,7 +36,7 @@ Avoid broad routes like `**/*` unless needed. Always remove routes that could su
 
 ## Advanced Mocking with run-code
 
-For conditional responses, request body inspection, response modification, or delays, use `run-code`. This is an advanced mutating operation.
+For conditional responses, request body inspection, response modification, or delays, use `run-code`.
 
 ### Conditional Response Based on Request
 

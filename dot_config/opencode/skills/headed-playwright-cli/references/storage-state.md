@@ -10,14 +10,14 @@ Save and restore complete browser state including cookies and storage. This can 
 
 ```bash
 # Save to a specific temp filename
-playwright-cli --session <workflow-label> state-save /tmp/opencode/playwright-cli/storage-state.json
+playwright-cli --session <workflow-label> state-save /tmp/playwright-cli/storage-state.json
 ```
 
 ### Restore Storage State
 
 ```bash
 # Load storage state from file only when requested
-playwright-cli --session <workflow-label> state-load /tmp/opencode/playwright-cli/storage-state.json
+playwright-cli --session <workflow-label> state-load /tmp/playwright-cli/storage-state.json
 
 # Reload page to apply cookies if needed
 playwright-cli --session <workflow-label> reload
@@ -190,7 +190,7 @@ playwright-cli --session <workflow-label> run-code 'async page => {
 
 ### Authentication State Reuse
 
-Only save or restore authenticated state when the user explicitly requests it. Store files under `/tmp/opencode/playwright-cli` by default.
+Only save or restore authenticated state when the user explicitly requests it. Store files under `/tmp/playwright-cli` by default.
 
 ### Save and Restore Roundtrip
 

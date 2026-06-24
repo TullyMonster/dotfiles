@@ -36,10 +36,10 @@ Minimum viable seed:
 
 ```ts
 // tests/seed.spec.ts
-import { test } from '@playwright/test';
+import { test } from "@playwright/test";
 
-test('seed', async ({ page }) => {
-  await page.goto('https://example.com/');
+test("seed", async ({ page }) => {
+  await page.goto("https://example.com/");
 });
 ```
 
@@ -95,6 +95,7 @@ Save under `specs/<feature>.plan.md`. Use this structure:
 **File:** `tests/<group>/<kebab-case-scenario-name>.spec.ts`
 
 **Steps:**
+
 1. <Concrete user step>
    - expect: <observable outcome>
    - expect: <another observable outcome>
@@ -102,9 +103,11 @@ Save under `specs/<feature>.plan.md`. Use this structure:
    - expect: <outcome>
 
 #### 1.2. <next-scenario>
+
 ...
 
 ### 2. <Next Group>
+
 ...
 ```
 
@@ -220,9 +223,9 @@ Open the spec referenced by the test and update it only if user-visible behavior
 
 ## Cross-references
 
-| For... | See |
-|---|---|
-| Debug attach mechanics | [playwright-tests.md](playwright-tests.md) |
-| How CLI actions become TypeScript | [test-generation.md](test-generation.md) |
-| Mocking requests during exploration/generation | [request-mocking.md](request-mocking.md) |
-| Managing CLI browser sessions | [session-management.md](session-management.md) |
+| For...                                         | See                                            |
+| ---------------------------------------------- | ---------------------------------------------- |
+| Debug attach mechanics                         | [playwright-tests.md](playwright-tests.md)     |
+| How CLI actions become TypeScript              | [test-generation.md](test-generation.md)       |
+| Mocking requests during exploration/generation | [request-mocking.md](request-mocking.md)       |
+| Managing CLI browser sessions                  | [session-management.md](session-management.md) |

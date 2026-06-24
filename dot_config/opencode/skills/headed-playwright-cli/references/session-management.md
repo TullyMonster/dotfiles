@@ -76,8 +76,8 @@ playwright-cli --session site2 detach
 ```bash
 playwright-cli --session variant-a goto "https://app.example.com?variant=a"
 playwright-cli --session variant-b goto "https://app.example.com?variant=b"
-playwright-cli --session variant-a screenshot --filename=/tmp/opencode/playwright-cli/variant-a.png
-playwright-cli --session variant-b screenshot --filename=/tmp/opencode/playwright-cli/variant-b.png
+playwright-cli --session variant-a screenshot --filename=/tmp/playwright-cli/variant-a.png
+playwright-cli --session variant-b screenshot --filename=/tmp/playwright-cli/variant-b.png
 ```
 
 ### Persistent Profile

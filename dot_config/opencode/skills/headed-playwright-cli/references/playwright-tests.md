@@ -1,32 +1,43 @@
 # Running Playwright Tests
 
-Use this reference only in a project that already has Playwright tests. Do not bootstrap Playwright, install browsers, or download dependencies unless the user explicitly asks.
+To run Playwright tests, use the `playwright test` command, or a project-specific test script. To avoid opening the interactive html report, use `PLAYWRIGHT_HTML_OPEN=never` environment variable.
 
-To run existing Playwright tests, use the project's command or `npx --no-install playwright test`. To avoid opening the interactive HTML report, set `PLAYWRIGHT_HTML_OPEN=never`.
+Use this reference only when the project already has Playwright tests, or when the user explicitly asks for Playwright test work. If the project cannot resolve `@playwright/test`, stop and ask before changing dependencies.
 
 ```bash
 # Run all tests
-PLAYWRIGHT_HTML_OPEN=never npx --no-install playwright test
+PLAYWRIGHT_HTML_OPEN=never playwright test
 
-# Run all tests through a custom npm script when that script already exists
+# Run all tests through a project-specific script when one exists
 PLAYWRIGHT_HTML_OPEN=never npm run special-test-command
 ```
 
+Playwright Test uses its own browser/session by default. It does not use the configured headed browser service unless the test code explicitly connects to that service endpoint.
+
 # Debugging Playwright Tests
 
-To debug a failing Playwright test, run it with `--debug=cli`. This creates a temporary CLI debug session printed in the test output.
+To debug a failing Playwright test, run it with `--debug=cli` option. This command will pause the test at the start and print the debugging instructions.
 
-**IMPORTANT**: run the test command in the background and check the output until "Debugging Instructions" is printed. Stop the command after you have finished debugging.
+**IMPORTANT**: run the command in the background and check the output until "Debugging Instructions" is printed. Make sure to stop the command after you have finished.
+
+Once instructions containing a session name are printed, use `playwright-cli` to attach the session and explore the page.
 
 ```bash
 # Run the test
-PLAYWRIGHT_HTML_OPEN=never npx --no-install playwright test --debug=cli
+PLAYWRIGHT_HTML_OPEN=never playwright test --debug=cli
 # ...
 # ... debugging instructions for "tw-abcdef" session ...
 # ...
 
-# Attach to the test debug session
+# Attach to the test debug session, not the headed service endpoint
 playwright-cli attach tw-abcdef
 ```
 
-This debug attach flow is separate from the configured headed browser endpoint. Keep the test running while you inspect the page. After fixing the test, stop the background test run and rerun the relevant test normally.
+Keep the test running in the background while you explore and look for a fix.
+The test is paused at the start, so you should step over or pause at a particular location
+where the problem is most likely to be.
+
+Every action you perform with `playwright-cli` generates corresponding Playwright TypeScript code.
+This code appears in the output and can be copied directly into the test. Most of the time, a specific locator or an expectation should be updated, but it could also be a bug in the app. Use your judgement.
+
+After fixing the test, stop the background test run. Rerun to check that test passes.
