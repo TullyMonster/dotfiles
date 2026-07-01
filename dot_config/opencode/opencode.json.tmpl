@@ -533,6 +533,14 @@
       "enabled": false,
       "type": "remote",
       "url": {{ .opencode.mcp_chrome_mcp_url | quote }}
+    },
+    "ghidra-headless": {
+      "enabled": false,
+      "type": "local",
+      "command": [
+        "{{ .chezmoi.homeDir }}/.local/bin/ghidra-manager",
+        "run-mcp"
+      ]
     }
   }
 }

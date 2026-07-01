@@ -13,6 +13,7 @@ github-cli = "latest"
 "github:svenstaro/miniserve" = "latest"
 "github:tealdeer-rs/tealdeer" = { version = "latest", bin = "tldr" }
 "github:us/crw" = "latest"
+java = "temurin-21"
 jd = "latest"
 jq = "latest"
 lazygit = "latest"

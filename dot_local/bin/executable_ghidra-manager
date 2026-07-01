@@ -1,0 +1,672 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# ///
+"""Ghidra version manager and MCP launcher"""
+
+import argparse
+import fcntl
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import urllib.error
+import urllib.request
+import zipfile
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
+from dataclasses import dataclass
+from pathlib import Path
+
+HOME = Path.home()
+LOCAL_OPT = HOME / '.local/opt'
+CACHE_DIR = Path(os.environ.get('XDG_CACHE_HOME', HOME / '.cache'))
+STATE_DIR = Path(os.environ.get('XDG_STATE_HOME', HOME / '.local/state'))
+
+GHIDRA_ROOT = LOCAL_OPT / 'ghidra'
+GHIDRA_CURRENT_LINK = GHIDRA_ROOT / 'current'
+GHIDRA_ZIP_CACHE = CACHE_DIR / 'ghidra-zips'
+
+MCP_ROOT = LOCAL_OPT / 'ghidra-headless-mcp'
+MCP_SOURCE = MCP_ROOT / 'src'
+MCP_VENV = MCP_ROOT / '.venv'
+MCP_BINARY = MCP_VENV / 'bin/ghidra-headless-mcp'
+
+LOCK_FILE = STATE_DIR / 'ghidra-manager.lock'
+
+
+class ManagerError(Exception):
+    """Recoverable error reported to the user"""
+
+
+@dataclass(frozen=True)
+class GhidraRelease:
+    """Represents a Ghidra release from GitHub"""
+
+    version: str
+    zip_filename: str
+    download_url: str
+    sha256: str
+
+
+@dataclass(frozen=True)
+class Installation:
+    """Represents a local Ghidra installation"""
+
+    path: Path
+    version: str
+
+    @property
+    def is_valid(self) -> bool:
+        headless = self.path / 'support/analyzeHeadless'
+        return headless.is_file() and os.access(headless, os.X_OK)
+
+
+class Network:
+    """HTTP request handling"""
+
+    USER_AGENT = 'ghidra-manager'
+
+    @staticmethod
+    def fetch_json(url: str) -> dict:
+        """Fetch and parse JSON from URL"""
+        request = urllib.request.Request(url, headers={'User-Agent': Network.USER_AGENT})
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                data = json.loads(response.read().decode('utf-8'))
+                if not isinstance(data, dict):
+                    raise ManagerError(f'Expected JSON object from {url}')
+                return data
+        except urllib.error.HTTPError as e:
+            raise ManagerError(f'HTTP {e.code} from {url}') from e
+        except urllib.error.URLError as e:
+            raise ManagerError(f'Network error: {e.reason}') from e
+        except json.JSONDecodeError as e:
+            raise ManagerError(f'Invalid JSON from {url}') from e
+
+    @staticmethod
+    def download_file(url: str, destination: Path) -> None:
+        """Download file to destination with atomic rename"""
+        part_file = destination.with_suffix(destination.suffix + '.part')
+        part_file.unlink(missing_ok=True)
+
+        request = urllib.request.Request(url, headers={'User-Agent': Network.USER_AGENT})
+        with urllib.request.urlopen(request, timeout=120) as response, part_file.open('wb') as f:
+            shutil.copyfileobj(response, f)
+
+        part_file.rename(destination)
+
+
+class FileSystem:
+    """File system operations"""
+
+    @staticmethod
+    def compute_sha256(path: Path) -> str:
+        """Compute SHA-256 checksum of file"""
+        hasher = hashlib.sha256()
+        with path.open('rb') as f:
+            for chunk in iter(lambda: f.read(1024 * 1024), b''):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+
+    @staticmethod
+    def verify_zip(path: Path) -> None:
+        """Verify zip file integrity"""
+        try:
+            with zipfile.ZipFile(path) as zf:
+                if not zf.infolist():
+                    raise ManagerError(f'Empty zip file: {path}')
+                if bad := zf.testzip():
+                    raise ManagerError(f'Corrupted zip member: {bad}')
+        except zipfile.BadZipFile as e:
+            raise ManagerError(f'Invalid zip file: {path}') from e
+
+    @staticmethod
+    def extract_zip(zip_path: Path, dest_dir: Path) -> None:
+        """Extract zip with path validation and permission preservation"""
+        dest_resolved = dest_dir.resolve()
+
+        with zipfile.ZipFile(zip_path) as zf:
+            # Validate all members before extraction
+            for member in zf.infolist():
+                target = (dest_dir / member.filename).resolve()
+                if dest_resolved not in (target, *target.parents):
+                    raise ManagerError(f'Zip path traversal detected: {member.filename}')
+
+            # Extract all files
+            zf.extractall(dest_dir)
+
+            # Restore Unix permissions
+            for member in zf.infolist():
+                if mode := member.external_attr >> 16:
+                    target = dest_dir / member.filename
+                    if target.exists():
+                        target.chmod(mode & 0o777)
+
+    @staticmethod
+    def atomic_symlink(target: Path, link_path: Path) -> None:
+        """Create or replace symlink atomically"""
+        if link_path.exists() and not link_path.is_symlink():
+            raise ManagerError(f'Cannot replace non-symlink: {link_path}')
+
+        temp_link = link_path.with_name(f'.{link_path.name}.tmp.{os.getpid()}')
+        temp_link.unlink(missing_ok=True)
+        temp_link.symlink_to(target)
+        temp_link.replace(link_path)
+
+    @staticmethod
+    @contextmanager
+    def exclusive_lock(lock_path: Path) -> Iterator[None]:
+        """Acquire exclusive file lock"""
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        with lock_path.open('a') as f:
+            try:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as e:
+                raise ManagerError(f'Another instance is running (lock: {lock_path})') from e
+            try:
+                yield
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+
+
+class Shell:
+    """Shell command execution"""
+
+    @staticmethod
+    def run(cmd: Sequence[str], check: bool = True) -> subprocess.CompletedProcess:
+        """Execute command"""
+        return subprocess.run(cmd, check=check, text=True)
+
+    @staticmethod
+    def run_capture(cmd: Sequence[str]) -> str:
+        """Execute command and capture stdout, return empty on failure"""
+        try:
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+            return result.stdout.strip()
+        except (OSError, subprocess.CalledProcessError):
+            return ''
+
+    @staticmethod
+    def which(command: str) -> Path | None:
+        """Find command in PATH"""
+        if path := shutil.which(command):
+            return Path(path)
+        return None
+
+
+class GhidraReleaseService:
+    """Discovers and parses Ghidra releases from GitHub"""
+
+    GHIDRA_LATEST_API = 'https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/latest'
+    GHIDRA_TAG_API_TEMPLATE = 'https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/tags/Ghidra_{version}_build'
+    VERSION_PATTERN = re.compile(r'^\d+(?:\.\d+){1,2}$')
+    ASSET_PATTERN = re.compile(r'^ghidra_([^_]+)_PUBLIC(?:_.*)?\.zip$')
+
+    @classmethod
+    def fetch_release(cls, version: str | None = None) -> GhidraRelease:
+        """Fetch release metadata for latest or specific version"""
+        if version and version != 'latest':
+            cls._validate_version(version)
+            url = cls.GHIDRA_TAG_API_TEMPLATE.format(version=version)
+        else:
+            url = cls.GHIDRA_LATEST_API
+
+        data = Network.fetch_json(url)
+        return cls._parse_release(data, version)
+
+    @classmethod
+    def _validate_version(cls, version: str) -> None:
+        if not cls.VERSION_PATTERN.fullmatch(version):
+            raise ManagerError(f'Invalid version format: {version} (expected: X.Y or X.Y.Z)')
+
+    @classmethod
+    def _parse_release(cls, data: dict, requested_version: str | None) -> GhidraRelease:
+        """Extract Ghidra zip asset from release JSON"""
+        for asset in data.get('assets', []):
+            name = asset.get('name', '')
+            match = cls.ASSET_PATTERN.fullmatch(name)
+            if not match:
+                continue
+
+            version = requested_version or match.group(1)
+            url = asset.get('browser_download_url', '')
+            sha256 = asset.get('digest').lower().removeprefix('sha256:')
+
+            return GhidraRelease(version=version, zip_filename=name, download_url=url, sha256=sha256)
+
+        raise ManagerError('No Ghidra zip found in release')
+
+
+class GhidraService:
+    """Manages Ghidra installations"""
+
+    INSTALL_DIR_PATTERN = re.compile(r'^ghidra_([^_]+)_PUBLIC$')
+
+    def __init__(self):
+        self.root = GHIDRA_ROOT
+        self.current_link = GHIDRA_CURRENT_LINK
+        self.zip_cache = GHIDRA_ZIP_CACHE
+
+    def install(self, version: str | None = None) -> Installation:
+        """Install or activate Ghidra version"""
+        release = GhidraReleaseService.fetch_release(version)
+
+        print(f'Ghidra {release.version}')
+        print(f'Asset: {release.zip_filename}')
+        print(f'SHA-256: {release.sha256}')
+
+        install_dir = self.root / f'ghidra_{release.version}_PUBLIC'
+
+        # Check if already installed
+        if install_dir.exists():
+            installation = Installation(install_dir, release.version)
+            if not installation.is_valid:
+                raise ManagerError(f'Invalid installation: {install_dir}')
+            print(f'Already installed: {install_dir}')
+        else:
+            zip_path = self._download_cached(release)
+            installation = self._extract_and_validate(zip_path, install_dir, release)
+
+        self._activate(installation)
+        print(f'Active: {install_dir}')
+        return installation
+
+    def upgrade(self, prune: bool = False) -> Installation:
+        """Upgrade to latest version"""
+        release = GhidraReleaseService.fetch_release()
+        current = self.get_current()
+
+        print(f'Latest: {release.version}')
+        if current and current.version == release.version:
+            print(f'Already at latest: {current.path}')
+            return current
+
+        installation = self.install()
+
+        if prune and current:
+            for installation in self.list_installed():
+                if installation.path != current.path:
+                    print(f'Removing: {installation.path}')
+                    shutil.rmtree(installation.path)
+
+        return installation
+
+    def get_current(self) -> Installation | None:
+        """Get current installation"""
+        if not self.current_link.exists() and not self.current_link.is_symlink():
+            return None
+
+        path = self.current_link.resolve()
+        if not path.exists():
+            return None
+
+        if match := self.INSTALL_DIR_PATTERN.match(path.name):
+            return Installation(path, match.group(1))
+
+        return None
+
+    def list_installed(self) -> list[Installation]:
+        """List all installed versions"""
+        if not self.root.exists():
+            return []
+
+        installations = []
+        for path in self.root.iterdir():
+            if path.is_dir() and not path.is_symlink() and (match := self.INSTALL_DIR_PATTERN.match(path.name)):
+                installations.append(Installation(path, match.group(1)))
+
+        return sorted(installations, key=lambda i: i.version)
+
+    def prune_interactive(self) -> None:
+        """Interactively remove old versions and cached zips"""
+        for f in list(self.zip_cache.glob('*.zip.part')):
+            f.unlink()
+
+        # Prune zip cache
+        if zip_files := list(self.zip_cache.glob('*.zip')):
+            print('\nCached zip files:')
+            for f in zip_files:
+                print(f'  {f}')
+            if self._confirm_delete():
+                for f in zip_files:
+                    f.unlink()
+                print('Deleted.')
+            else:
+                print('Kept.')
+
+        # Prune old installations
+        current = self.get_current()
+        if not current:
+            print('\nNo current installation, skipping prune.')
+            return
+
+        if old := [inst for inst in self.list_installed() if inst.path != current.path]:
+            print(f'\nCurrent: {current.path}')
+            print('Old installations:')
+            for inst in old:
+                print(f'  {inst.path}')
+            if self._confirm_delete():
+                for inst in old:
+                    shutil.rmtree(inst.path)
+                print('Deleted.')
+            else:
+                print('Kept.')
+
+    def _download_cached(self, release: GhidraRelease) -> Path:
+        """Download zip to cache or use cached copy"""
+        self.zip_cache.mkdir(parents=True, exist_ok=True)
+        zip_path = self.zip_cache / release.zip_filename
+
+        if zip_path.exists():
+            self._verify_zip(zip_path, release.sha256)
+            print(f'Using cached: {zip_path}')
+            return zip_path
+
+        print(f'Downloading: {release.download_url}')
+        Network.download_file(release.download_url, zip_path)
+        self._verify_zip(zip_path, release.sha256)
+        print(f'Cached: {zip_path}')
+        return zip_path
+
+    def _verify_zip(self, zip_path: Path, expected_sha256: str | None) -> None:
+        """Verify zip integrity and checksum"""
+        if expected_sha256:
+            actual = FileSystem.compute_sha256(zip_path)
+            if actual != expected_sha256:
+                raise ManagerError(f'SHA-256 mismatch: {zip_path}')
+
+        FileSystem.verify_zip(zip_path)
+
+    def _extract_and_validate(self, zip_path: Path, install_dir: Path, release: GhidraRelease) -> Installation:
+        """Extract zip to staging area then move to final location"""
+        staging_root = self.root / f'.staging-{os.getpid()}'
+        staging_root.mkdir(parents=True, exist_ok=True)
+
+        try:
+            FileSystem.extract_zip(zip_path, staging_root)
+            extracted_dir = staging_root / f'ghidra_{release.version}_PUBLIC'
+
+            installation = Installation(extracted_dir, release.version)
+            if not installation.is_valid:
+                raise ManagerError('Extracted installation invalid')
+
+            extracted_dir.rename(install_dir)
+            return Installation(install_dir, release.version)
+        finally:
+            shutil.rmtree(staging_root, ignore_errors=True)
+
+    def _activate(self, installation: Installation) -> None:
+        """Make installation current"""
+        self.root.mkdir(parents=True, exist_ok=True)
+        FileSystem.atomic_symlink(installation.path, self.current_link)
+
+    @staticmethod
+    def _confirm_delete() -> bool:
+        answer = input('Delete? [Y/n] ').strip().lower()
+        return answer in ('', 'y', 'yes')
+
+
+class McpService:
+    """Manages ghidra-headless-mcp installation"""
+
+    MCP_REPO_URL = 'https://github.com/mrphrazer/ghidra-headless-mcp.git'
+
+    def __init__(self):
+        self.root = MCP_ROOT
+        self.source = MCP_SOURCE
+        self.venv = MCP_VENV
+
+    def install(self) -> None:
+        """Clone repository and create venv"""
+        self._require_tools()
+        self.root.mkdir(parents=True, exist_ok=True)
+
+        if (self.source / '.git').is_dir():
+            print(f'Source exists: {self.source}')
+        elif self.source.exists():
+            raise ManagerError(f'Path exists but not a git repo: {self.source}')
+        else:
+            print(f'Cloning: {self.MCP_REPO_URL}')
+            Shell.run(['git', 'clone', self.MCP_REPO_URL, str(self.source)])
+
+        print('Create/update virtual environment...')
+        self._setup_venv()
+
+    def upgrade(self) -> None:
+        """Update repository and reinstall"""
+        self._require_tools()
+
+        if not (self.source / '.git').is_dir():
+            raise ManagerError(f'Not a git repository: {self.source}')
+
+        print('Updating repository...')
+        Shell.run(['git', '-C', str(self.source), 'pull', '--ff-only'])
+        self._setup_venv()
+
+    def _setup_venv(self) -> None:
+        """Create/update virtual environment"""
+        Shell.run(['uv', 'venv', str(self.venv)])
+        Shell.run(['uv', 'pip', 'install', '--python', str(self.venv / 'bin/python'), '-e', str(self.source)])
+        print('Virtual environment ready.')
+
+    def _require_tools(self) -> None:
+        """Verify required commands are available"""
+        for cmd in ('git', 'uv'):
+            if not Shell.which(cmd):
+                raise ManagerError(f'Required command not found: {cmd}')
+
+    def get_status(self) -> dict[str, str]:
+        """Get installation status"""
+        status = {}
+
+        if (self.source / '.git').is_dir():
+            commit = Shell.run_capture(['git', '-C', str(self.source), 'rev-parse', '--short', 'HEAD'])
+            status['source'] = f'present at {self.source} (commit: {commit})'
+        elif self.source.exists():
+            status['source'] = f'exists but not a git repo: {self.source}'
+        else:
+            status['source'] = f'not installed at {self.source}'
+
+        if os.access(MCP_BINARY, os.X_OK):
+            status['venv'] = f'ready at {MCP_BINARY}'
+        else:
+            status['venv'] = f'not found at {MCP_BINARY}'
+
+        return status
+
+
+def cmd_status(component: str | None) -> None:
+    """Show status of Ghidra and/or MCP"""
+    ghidra_svc = GhidraService()
+    mcp_svc = McpService()
+
+    if component == 'ghidra':
+        print('Ghidra:')
+        if current := ghidra_svc.get_current():
+            print(f'  Current: {current.path}')
+            print(f'  Valid: {current.is_valid}')
+        else:
+            print('  Current: not set')
+        return
+
+    if component == 'mcp':
+        print('MCP:')
+        for key, value in mcp_svc.get_status().items():
+            print(f'  {key}: {value}')
+        return
+
+    # Full status
+    print('Paths:')
+    for name, path in [
+        ('Ghidra root', GHIDRA_ROOT),
+        ('Ghidra current link', GHIDRA_CURRENT_LINK),
+        ('MCP root', MCP_ROOT),
+        ('MCP source directory', MCP_SOURCE),
+        ('MCP venv', MCP_VENV),
+        ('Lock file', LOCK_FILE),
+        ('Ghidra zip cache', GHIDRA_ZIP_CACHE),
+    ]:
+        print(f'  {name}: {path}')
+
+    print('\nTools:')
+    for tool in ('java', 'mise', 'uv', 'git'):
+        if path := Shell.which(tool):
+            print(f'  {tool}: {path}')
+            if tool == 'java' and (version := Shell.run_capture(['java', '-version'])):
+                print(f'    version: {version}')
+        else:
+            print(f'  {tool}: not found')
+
+    if Shell.which('mise'):
+        print('\nMise Java:')
+        if current := Shell.run_capture(['mise', 'current', 'java']):
+            print(f'  current: {current}')
+        if where := Shell.run_capture(['mise', 'where', 'java@temurin-21']):
+            print(f'  temurin-21: {where}')
+
+    print('\nGhidra:')
+    if current := ghidra_svc.get_current():
+        print(f'  Current: {current.path}')
+        print(f'  Valid: {current.is_valid}')
+    else:
+        print('  Current: not set')
+
+    print('\nMCP:')
+    for key, value in mcp_svc.get_status().items():
+        print(f'  {key}: {value}')
+
+
+def cmd_use(component: str) -> None:
+    """Install or activate a component"""
+    # Parse component[@version]
+    if '@' in component:
+        name, version = component.split('@', 1)
+    else:
+        name, version = component, None
+
+    if name == 'ghidra':
+        ghidra_svc = GhidraService()
+        with FileSystem.exclusive_lock(LOCK_FILE):
+            ghidra_svc.install(version)
+    elif name == 'mcp':
+        if version:
+            raise ManagerError('mcp does not support version selection')
+        mcp_svc = McpService()
+        with FileSystem.exclusive_lock(LOCK_FILE):
+            mcp_svc.install()
+    else:
+        raise ManagerError(f'Unknown component: {name}')
+
+
+def cmd_upgrade(component: str, prune: bool = False) -> None:
+    """Upgrade a component"""
+    if component == 'ghidra':
+        ghidra_svc = GhidraService()
+        with FileSystem.exclusive_lock(LOCK_FILE):
+            ghidra_svc.upgrade(prune=prune)
+    elif component == 'mcp':
+        if prune:
+            raise ManagerError('--prune only applies to ghidra')
+        mcp_svc = McpService()
+        with FileSystem.exclusive_lock(LOCK_FILE):
+            mcp_svc.upgrade()
+    else:
+        raise ManagerError(f'Unknown component: {component}')
+
+
+def cmd_prune() -> None:
+    """Interactively prune old installations and cached files"""
+    ghidra_svc = GhidraService()
+    with FileSystem.exclusive_lock(LOCK_FILE):
+        ghidra_svc.prune_interactive()
+
+
+def cmd_run_mcp() -> None:
+    """Start the ghidra-headless-mcp MCP server."""
+    # Validate that prerequisites are satisfied before launching
+    if not (java_home := Shell.run_capture(['mise', 'where', 'java@temurin-21'])):
+        raise ManagerError('Failed to resolve Java from mise. Run "mise install java@temurin-21" first.')
+    if not GHIDRA_CURRENT_LINK.is_symlink():
+        raise ManagerError('No Ghidra installation found. Run "ghidra-manager use ghidra" first.')
+    if not os.access(MCP_BINARY, os.X_OK):
+        raise ManagerError(f'ghidra-headless-mcp executable is missing: {MCP_BINARY}. Run "ghidra-manager use mcp" first.')
+
+    # Set env vars needed by Ghidra's LaunchSupport
+    os.environ['JAVA_HOME'] = java_home
+
+    # Replace process with MCP server
+    os.execv(str(MCP_BINARY), [MCP_BINARY.name, '--ghidra-install-dir', str(GHIDRA_CURRENT_LINK.resolve())])
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Build CLI argument parser"""
+    parser = argparse.ArgumentParser(
+        description='Manage user-local Ghidra and ghidra-headless-mcp installations',
+        epilog='Examples:\n  %(prog)s status\n  %(prog)s use ghidra@11.2\n  %(prog)s use mcp\n  %(prog)s upgrade ghidra --prune\n  %(prog)s prune\n  %(prog)s run-mcp',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    subparsers = parser.add_subparsers(dest='command', required=True)
+
+    # status [component]
+    status_parser = subparsers.add_parser('status', help='Show installation status')
+    status_parser.add_argument('component', nargs='?', choices=['ghidra', 'mcp'])
+
+    # use <component[@version]>
+    use_parser = subparsers.add_parser('use', help='Install or activate component')
+    use_parser.add_argument('component', help='ghidra[@version] or mcp')
+
+    # upgrade <component>
+    upgrade_parser = subparsers.add_parser('upgrade', help='Upgrade to latest version')
+    upgrade_parser.add_argument('component', choices=['ghidra', 'mcp'])
+    upgrade_parser.add_argument('--prune', action='store_true', help='Remove old versions (ghidra only)')
+
+    # prune
+    subparsers.add_parser('prune', help='Interactively remove old installations')
+
+    # run-mcp
+    subparsers.add_parser('run-mcp', help='Start ghidra-headless-mcp MCP server')
+
+    return parser
+
+
+def main(argv: Sequence[str]) -> int:
+    """Main entry point"""
+    parser = build_parser()
+
+    # Show help if no arguments
+    if not argv:
+        parser.print_help()
+        return 0
+
+    args = parser.parse_args(argv)
+
+    # Dispatch commands
+    match args.command:
+        case 'status':
+            cmd_status(args.component)
+        case 'use':
+            cmd_use(args.component)
+        case 'upgrade':
+            cmd_upgrade(args.component, prune=args.prune)
+        case 'prune':
+            cmd_prune()
+        case 'run-mcp':
+            cmd_run_mcp()
+
+    return 0
+
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except ManagerError as e:
+        print(f'error: {e}', file=sys.stderr)
+        sys.exit(1)
+    except (OSError, subprocess.CalledProcessError) as e:
+        print(f'error: {e}', file=sys.stderr)
+        sys.exit(1)
