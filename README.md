@@ -32,7 +32,7 @@
    > 仅在修改 Containerfile、容器内脚本或 supervisor 配置后，需重建本地服务镜像。若服务已在运行，使用 `restart` 生效。
 
    ```shell
-   ~/.config/headed-playwright-service/build-service-image.sh
+   build-headed-playwright-service-image
    systemctl --user daemon-reload
    systemctl --user start headed-playwright-service.service
    ```

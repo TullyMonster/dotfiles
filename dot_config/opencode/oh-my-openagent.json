@@ -10,7 +10,7 @@
           "variant": "max"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         },
         {
           "model": "openai/gpt-5.4",
@@ -96,7 +96,7 @@
           "variant": "medium"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         },
         {
           "model": "302ai/glm-4.6v"
@@ -155,7 +155,7 @@
           "model": "opencode/glm-5"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         }
       ],
       "variant": "max"
@@ -186,7 +186,7 @@
       ]
     },
     "atlas": {
-      "model": "opencode/kimi-k2.5",
+      "model": "opencode/kimi-k2.7-code",
       "fallback_models": [
         {
           "model": "openai/gpt-5.4",
@@ -209,7 +209,7 @@
           "model": "opencode/claude-sonnet-4-6"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         },
         {
           "model": "openai/gpt-5.4",
@@ -245,7 +245,7 @@
           "model": "opencode/glm-5"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         }
       ]
     },
@@ -317,7 +317,7 @@
       ]
     },
     "quick": {
-      "model": "moonshotai-cn/kimi-k2.6",
+      "model": "moonshotai-cn/kimi-k2.7-code",
       "fallback_models": [
         {
           "model": "opencode/gpt-5.4-mini"
@@ -348,7 +348,7 @@
           "variant": "medium"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         },
         {
           "model": "opencode/claude-opus-4-6"
@@ -375,7 +375,7 @@
           "model": "opencode/claude-opus-4-6"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         },
         {
           "model": "google/gemini-3-flash-preview"
@@ -395,7 +395,7 @@
           "model": "opencode/gemini-3-flash"
         },
         {
-          "model": "opencode/kimi-k2.5"
+          "model": "opencode/kimi-k2.7-code"
         },
         {
           "model": "opencode/claude-sonnet-4-6"

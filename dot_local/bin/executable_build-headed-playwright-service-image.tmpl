@@ -4,4 +4,4 @@ set -eu
 
 exec podman build \
   --tag {{ $.headed_playwright_service.image_ref | quote }} \
-  "$(CDPATH= cd "$(dirname "$0")" && pwd -P)"
+  "${XDG_DATA_HOME:-$HOME/.local/share}/headed-playwright-service"

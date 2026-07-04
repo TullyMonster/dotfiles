@@ -490,7 +490,7 @@
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "CONTEXT7_API_KEY": {{ .opencode.mcp_context7_api_key | quote }}
+        "CONTEXT7_API_KEY": {{ .mcp.context7_api_key | quote }}
       }
     },
     "exa": {
@@ -498,7 +498,7 @@
       "type": "remote",
       "url": "https://mcp.exa.ai/mcp",
       "headers": {
-        "x-api-key": {{ .opencode.mcp_exa_api_key | quote }}
+        "x-api-key": {{ .mcp.exa_api_key | quote }}
       }
     },
     "ace": {
@@ -507,17 +507,27 @@
       "command": [
         "ace-tool",
         "--base-url",
-        {{ .opencode.mcp_ace_base_url | quote }},
+        {{ .mcp.ace_base_url | quote }},
         "--token",
-        {{ .opencode.mcp_ace_token | quote }},
+        {{ .mcp.ace_token | quote }},
         "--no-webbrowser-enhance-prompt"
       ],
       "timeout": 8000
     },
+    "fast-context": {
+      "enabled": true,
+      "type": "local",
+      "command": [
+        "fast-context-mcp"
+        ],
+      "environment": {
+        "WINDSURF_API_KEY": {{ .mcp.windsurf_api_key | quote }}
+      }
+    },
     "tavily": {
       "enabled": true,
       "type": "remote",
-      "url": {{ printf "https://mcp.tavily.com/mcp/?tavilyApiKey=%s" .opencode.mcp_tavily_api_key | quote }}
+      "url": {{ printf "https://mcp.tavily.com/mcp/?tavilyApiKey=%s" .mcp.tavily_api_key | quote }}
     },
     "deepwiki": {
       "enabled": true,
@@ -532,7 +542,7 @@
     "chrome-mcp": {
       "enabled": false,
       "type": "remote",
-      "url": {{ .opencode.mcp_chrome_mcp_url | quote }}
+      "url": {{ .mcp.chrome_mcp_url | quote }}
     },
     "ghidra-headless": {
       "enabled": false,
