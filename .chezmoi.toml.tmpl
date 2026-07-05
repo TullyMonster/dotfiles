@@ -11,6 +11,7 @@
 {{- $mcpWindsurfApiKey                          := promptStringOnce . "mcp.windsurf_api_key"                            "MCP: WINDSURF_API_KEY" -}}
 {{- $mcpTavilyApiKey                            := promptStringOnce . "mcp.tavily_api_key"                              "MCP: tavilyApiKey" -}}
 {{- $mcpChromeMcpUrl                            := promptStringOnce . "mcp.chrome_mcp_url"                              "MCP: chrome-mcp MCP url" -}}
+{{- $mcpIdaProDir                               := promptStringOnce . "mcp.ida_pro_dir"                                 "MCP: IDA Pro directory"                            (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") -}}
 {{- $opencodeServerUsername                     := promptStringOnce . "opencode.server.username"                        "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
 {{- $opencodeServerPassword                     := promptStringOnce . "opencode.server.password"                        "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" -}}
 {{- $npmUseMirror                               := promptBoolOnce   . "npm.use_mirror"                                  "NPM: Use a registry mirror on this device"         false -}}
@@ -46,6 +47,7 @@ ace_token           = {{ $mcpAceToken       | quote }}
 windsurf_api_key    = {{ $mcpWindsurfApiKey | quote }}
 tavily_api_key      = {{ $mcpTavilyApiKey   | quote }}
 chrome_mcp_url      = {{ $mcpChromeMcpUrl   | quote }}
+ida_pro_dir         = {{ $mcpIdaProDir      | quote }}
 
 [data.opencode.server]
 username = {{ $opencodeServerUsername | quote }}

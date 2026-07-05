@@ -519,7 +519,7 @@
       "type": "local",
       "command": [
         "fast-context-mcp"
-        ],
+      ],
       "environment": {
         "WINDSURF_API_KEY": {{ .mcp.windsurf_api_key | quote }},
         "FC_HIDE_EXTRACT_WINDSURF_KEY_TOOL": "true"
@@ -552,6 +552,20 @@
         "{{ .chezmoi.homeDir }}/.local/bin/ghidra-manager",
         "run-mcp"
       ]
+    },
+    "ida-pro-mcp": {
+      "enabled": false,
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/mrexodia/ida-pro-mcp",
+        "idalib-mcp",
+        "--stdio"
+      ],
+      "environment": {
+        "IDADIR": {{ .mcp.ida_pro_dir  | quote }}
+      }
     }
   }
 }

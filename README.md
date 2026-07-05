@@ -70,3 +70,8 @@
 
 提供了用于 Ghidra 管理（安装、切换、升级、清理）和 ghidra-headless-mcp 启动的 `ghidra-manager` 命令。
 OpenCode 中的 `ghidra-headless` MCP 默认关闭，需要时手动启用。
+
+## IDA Pro Headless MCP
+
+`ida-pro-mcp` 静默通过 `uvx --from git+https://github.com/mrexodia/ida-pro-mcp idalib-mcp --stdio` 连接 IDA Pro。
+但需自行安装 IDA Pro。
