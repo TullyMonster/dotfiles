@@ -1,0 +1,147 @@
+#!/usr/bin/env sh
+set -eu
+
+ghidra_home="${HOME}/.local/opt/ghidra/current"
+repo_dir="${HOME}/.local/opt/ghidra-mcp"
+log_file="${XDG_CACHE_HOME:-${HOME}/.cache}/ghidra-mcp/headless.log"
+bind_address="127.0.0.1"
+port="8089"
+ghidra_url="http://${bind_address}:${port}"
+java_opts=${JAVA_OPTS:-"-Xmx4g -XX:+UseG1GC"}
+server_pid=
+
+usage() {
+  printf '%s\n' 'Usage: ghidra-mcp-headless' >&2
+  printf '%s\n' '' >&2
+  printf '%s\n' 'Start the GhidraMCP analysis server, then bridge it to MCP over stdio.' >&2
+}
+
+require_no_args() {
+  if [ "$#" -eq 0 ]; then
+    return 0
+  fi
+
+  case "$1" in
+  --help | -h)
+    usage
+    exit 0
+    ;;
+  *)
+    usage
+    printf 'Error: unknown argument: %s\n' "$1" >&2
+    exit 2
+    ;;
+  esac
+}
+
+find_headless_jar() {
+  set -- "${repo_dir}"/target/GhidraMCP-*.jar
+  if [ ! -f "$1" ]; then
+    printf 'Error: no GhidraMCP JAR found under %s/target\n' "${repo_dir}" >&2
+    printf '%s\n' 'Run `ghidra-mcp-build` first.' >&2
+    exit 1
+  fi
+  jar_path=$1
+}
+
+build_classpath() {
+  classpath=${jar_path}
+
+  for jar in \
+    "${repo_dir}"/target/lib/*.jar \
+    "${ghidra_home}"/Ghidra/Framework/*/lib/*.jar \
+    "${ghidra_home}"/Ghidra/Features/*/lib/*.jar \
+    "${ghidra_home}"/Ghidra/Processors/*/lib/*.jar \
+    "${ghidra_home}"/Ghidra/Debug/*/lib/*.jar; do
+    if [ -f "${jar}" ]; then
+      classpath="${classpath}:${jar}"
+    fi
+  done
+}
+
+start_server() {
+  mkdir -p "${log_file%/*}"
+  : >"${log_file}"
+
+  export GHIDRA_MCP_FILE_ROOT=${GHIDRA_MCP_FILE_ROOT:-${HOME}}
+
+  java ${java_opts} \
+    -Dghidra.home="${ghidra_home}" \
+    -Dapplication.name=GhidraMCP \
+    -classpath "${classpath}" \
+    com.xebyte.headless.GhidraMCPHeadlessServer \
+    --bind "${bind_address}" \
+    --port "${port}" \
+    >"${log_file}" 2>&1 &
+  server_pid=$!
+}
+
+server_ready() {
+  curl --fail --silent --max-time 2 "${ghidra_url}/check_connection" >/dev/null 2>&1
+}
+
+wait_for_server() {
+  attempts=0
+  while [ "${attempts}" -lt 60 ]; do
+    if server_ready; then
+      return 0
+    fi
+
+    if [ -n "${server_pid}" ] && ! kill -0 "${server_pid}" 2>/dev/null; then
+      return 1
+    fi
+
+    attempts=$((attempts + 1))
+    sleep 1
+  done
+
+  return 1
+}
+
+cleanup() {
+  status=$?
+  trap - EXIT HUP INT TERM
+
+  if [ -n "${server_pid}" ]; then
+    kill "${server_pid}" 2>/dev/null || true
+    wait "${server_pid}" 2>/dev/null || true
+  fi
+
+  exit "${status}"
+}
+
+require_no_args "$@"
+
+if ! command -v curl >/dev/null 2>&1; then
+  printf 'Error: curl is required but not installed.\n' >&2
+  exit 1
+fi
+
+if [ ! -d "${repo_dir}/.git" ]; then
+  printf 'Error: %s is not a ghidra-mcp Git repository.\n' "${repo_dir}" >&2
+  printf '%s\n' 'Run `ghidra-mcp-build` first.' >&2
+  exit 1
+fi
+
+if [ ! -x "${ghidra_home}/support/analyzeHeadless" ]; then
+  printf 'Error: Ghidra is not installed at %s.\n' "${ghidra_home}" >&2
+  printf '%s\n' 'Run `ghidra-manager use <version>` or `ghidra-manager upgrade` first.' >&2
+  exit 1
+fi
+
+find_headless_jar
+build_classpath
+
+trap cleanup EXIT HUP INT TERM
+
+if ! server_ready; then
+  start_server
+  if ! wait_for_server; then
+    printf 'Error: GhidraMCP headless server did not become ready at %s.\n' "${ghidra_url}" >&2
+    printf 'See log: %s\n' "${log_file}" >&2
+    exit 1
+  fi
+fi
+
+export GHIDRA_MCP_URL=${ghidra_url}
+uv run --directory "${repo_dir}" bridge-mcp-ghidra --transport stdio

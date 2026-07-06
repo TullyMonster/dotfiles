@@ -1,0 +1,61 @@
+#!/usr/bin/env sh
+set -eu
+
+ghidra_home="${HOME}/.local/opt/ghidra/current"
+repo_dir="${HOME}/.local/opt/ghidra-mcp"
+repo_url="https://github.com/bethington/ghidra-mcp.git"
+update=false
+
+usage() {
+  printf '%s\n' 'Usage: ghidra-mcp-build [--update]' >&2
+  printf '%s\n' '' >&2
+  printf '%s\n' 'Set up and build `bethington/ghidra-mcp` for the current local Ghidra install.' >&2
+  printf '%s\n' '' >&2
+  printf '%s\n' 'Options:' >&2
+  printf '%s\n' '  --update  run `git pull --ff-only` before rebuilding' >&2
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+  --update)
+    update=true
+    ;;
+  --help | -h)
+    usage
+    exit 0
+    ;;
+  *)
+    usage
+    printf 'Error: unknown argument: %s\n' "$1" >&2
+    exit 2
+    ;;
+  esac
+  shift
+done
+
+if [ ! -x "${ghidra_home}/support/analyzeHeadless" ]; then
+  printf 'Error: Ghidra is not installed at %s\n' "${ghidra_home}" >&2
+  printf '%s\n' 'Run `ghidra-manager use <version>` or `ghidra-manager upgrade` first.' >&2
+  exit 1
+fi
+
+mkdir -p "${repo_dir%/*}"
+
+if [ ! -d "${repo_dir}" ]; then
+  git clone "${repo_url}" "${repo_dir}"
+elif [ ! -d "${repo_dir}/.git" ]; then
+  printf 'Error: %s exists but is not a Git repository.\n' "${repo_dir}" >&2
+  exit 1
+fi
+
+if [ "${update}" = true ]; then
+  git -C "${repo_dir}" pull --ff-only
+fi
+
+uv run --directory "${repo_dir}" -m tools.setup preflight --ghidra-path "${ghidra_home}"      # 检查 Ghidra 安装、环境兼容性
+uv run --directory "${repo_dir}" -m tools.setup ensure-prereqs --ghidra-path "${ghidra_home}" # 安装构建依赖
+
+rm -f "${repo_dir}"/target/GhidraMCP-*.jar           # 构建前清理旧版本 JAR，避免版本残留
+mvn -f "${repo_dir}" package -P headless -DskipTests # 构建无 GUI 版本的 GhidraMCP JAR
+
+printf 'Built %s\n' "${repo_dir}"/target/GhidraMCP-*.jar

@@ -4,6 +4,7 @@
     "oh-my-openagent@latest",
     "cc-safety-net@latest",
     "@tarquinen/opencode-dcp@latest",
+    "@dietrichgebert/ponytail@latest",
     "opencode-supermemory@latest"
   ],
   "autoupdate": false,
@@ -511,8 +512,7 @@
         "--token",
         {{ .mcp.ace_token | quote }},
         "--no-webbrowser-enhance-prompt"
-      ],
-      "timeout": 8000
+      ]
     },
     "fast-context": {
       "enabled": true,
@@ -545,15 +545,14 @@
       "type": "remote",
       "url": {{ .mcp.chrome_mcp_url | quote }}
     },
-    "ghidra-headless": {
+    "ghidra": {
       "enabled": false,
       "type": "local",
       "command": [
-        "{{ .chezmoi.homeDir }}/.local/bin/ghidra-manager",
-        "run-mcp"
+        "ghidra-mcp-headless"
       ]
     },
-    "ida-pro-mcp": {
+    "ida-pro": {
       "enabled": false,
       "type": "local",
       "command": [

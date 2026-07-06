@@ -11,6 +11,12 @@ Unless explicitly stated otherwise, system-level communication (including tools,
 
 These conventions apply to all new code and modifications unless they conflict with established project standards (in which case the existing codebase takes precedence).
 
+## File Editing Policy
+
+- Use `apply_patch` for all file content changes, including creating, updating, renaming, and deleting files.
+- Do not modify file contents with Python, Node.js, Ruby, Perl, shell heredocs, `sed -i`, `awk`, `tee`, `cat > file`, `printf > file`, or similar write-based commands.
+- Before editing, read the target file or relevant section first to avoid editing based on stale context.
+
 ## Python Coding Rules
 
 - Python code MUST use Google-style docstrings.
@@ -44,7 +50,7 @@ For risky commands, prefer using a timeout, avoid unnecessary concurrency, keep 
 On Linux with systemd, use a resource-limited user scope when a risky command combines dependency installation, runtime startup, broad scanning, or concurrency:
 
 ```sh
-systemd-run --user --scope
+systemd-run --user --scope \
   -p MemoryMax=<reasonable-memory-limit> \
   -p MemorySwapMax=<reasonable-swap-limit> \
   timeout <reasonable-duration> zsh -lc '<command>'
@@ -73,4 +79,4 @@ Do not wrap commands that manage SSH, networking, disks, login sessions, system 
 ### Data Processing
 
 - Prefer `jq` for querying and transforming JSON data over text-based tools like `grep`.
-- Prefer `yq` for querying, transforming, and editing YAML or mixed structured data formats.
+- Prefer `yq` for querying and transforming YAML or mixed structured data formats.

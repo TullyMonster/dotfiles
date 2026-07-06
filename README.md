@@ -66,10 +66,10 @@
    tailscale serve --bg --https=6080 http://127.0.0.1:6080
    ```
 
-## Ghidra Headless MCP
+## Ghidra MCP
 
-提供了用于 Ghidra 管理（安装、切换、升级、清理）和 ghidra-headless-mcp 启动的 `ghidra-manager` 命令。
-OpenCode 中的 `ghidra-headless` MCP 默认关闭，需要时手动启用。
+提供了 `ghidra-manager`、`ghidra-mcp-build` 和 `ghidra-mcp-headless` 命令分别用于管理 Ghidra 本体、准备 GhidraMCP 组件，以及在 OpenCode 中提供 headless Ghidra MCP 分析能力。
+OpenCode 中的 `ghidra` MCP 默认关闭，需要时手动启用。
 
 ## IDA Pro Headless MCP
 
