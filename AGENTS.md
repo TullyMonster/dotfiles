@@ -43,6 +43,11 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 
 脚本中用到的配置变量，以 `.chezmoi.toml.tmpl` 的 `[data]` 段为单一来源，避免在多个脚本中重复定义或二次包装。
 
+### 克隆外部仓库
+
+脚本如果只是直接克隆外部仓库用于本地使用、构建或运行，默认使用 `git clone --depth 1`。
+只有后续流程明确依赖完整 Git 历史、tags、release/tag 操作或历史查询时，才使用完整 clone。
+
 ## 工具管理
 
 全局工具优先由 mise 管理（`dot_config/mise/config.toml`）。

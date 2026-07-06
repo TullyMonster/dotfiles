@@ -42,7 +42,7 @@ fi
 mkdir -p "${repo_dir%/*}"
 
 if [ ! -d "${repo_dir}" ]; then
-  git clone "${repo_url}" "${repo_dir}"
+  git clone --depth 1 "${repo_url}" "${repo_dir}"
 elif [ ! -d "${repo_dir}/.git" ]; then
   printf 'Error: %s exists but is not a Git repository.\n' "${repo_dir}" >&2
   exit 1
