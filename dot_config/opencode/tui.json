@@ -42,5 +42,19 @@
     "input_delete_word_forward": "none",
     "input_delete_word_backward": "none",
     "input_delete_line": "none"
-  }
+  },
+  "plugin": [
+    [
+      "opencode-visual-cache@latest",
+      {
+        "enabled": true
+      }
+    ],
+    [
+      "opencode-subagent-magazine@latest",
+      {
+        "enabled": true
+      }
+    ]
+  ]
 }
