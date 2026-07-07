@@ -1,3 +1,4 @@
+{{- if get .mcp "provide_ghidra" -}}
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
@@ -490,3 +491,4 @@ if __name__ == '__main__':
     except OSError as e:
         print(f'error: {e}', file=sys.stderr)
         sys.exit(1)
+{{- end -}}

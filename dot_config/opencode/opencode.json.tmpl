@@ -545,6 +545,7 @@
       "type": "remote",
       "url": {{ .mcp.chrome_mcp_url | quote }}
     },
+{{- if get .mcp "provide_ghidra" }}
     "ghidra": {
       "enabled": false,
       "type": "local",
@@ -552,6 +553,7 @@
         "ghidra-mcp-headless"
       ]
     },
+{{- end }}
     "ida-pro": {
       "enabled": false,
       "type": "local",
