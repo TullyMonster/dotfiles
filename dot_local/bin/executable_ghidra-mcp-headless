@@ -48,7 +48,6 @@ build_classpath() {
   classpath=${jar_path}
 
   for jar in \
-    "${repo_dir}"/target/lib/*.jar \
     "${ghidra_home}"/Ghidra/Framework/*/lib/*.jar \
     "${ghidra_home}"/Ghidra/Features/*/lib/*.jar \
     "${ghidra_home}"/Ghidra/Processors/*/lib/*.jar \
@@ -63,11 +62,10 @@ start_server() {
   mkdir -p "${log_file%/*}"
   : >"${log_file}"
 
-  export GHIDRA_MCP_FILE_ROOT=${GHIDRA_MCP_FILE_ROOT:-${HOME}}
-
   java ${java_opts} \
     -Dghidra.home="${ghidra_home}" \
     -Dapplication.name=GhidraMCP \
+    -Djava.awt.headless=true \
     -classpath "${classpath}" \
     com.xebyte.headless.GhidraMCPHeadlessServer \
     --bind "${bind_address}" \
