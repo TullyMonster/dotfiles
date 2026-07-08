@@ -44,6 +44,7 @@
     "input_delete_line": "none"
   },
   "plugin": [
+    "oh-my-openagent@latest",
     [
       "opencode-visual-cache@latest",
       {
