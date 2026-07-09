@@ -134,6 +134,7 @@ antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.post-compinit.txt
 # >>>>>>>>>> 9. 别名            <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 alias -g -- --help='--help |& bat -plhelp --theme="Monokai Extended Light"'  # 使用 bat 高亮显示 --help 信息
+alias ls="command ls --color=auto --group-directories-first -h --time-style=$'+%m-%d  %Y\n%m-%d %H:%M'"  # 在终端输出颜色，目录优先，显示易读大小，并简化长列表时间格式
 alias lg='lazygit'              # 打开 lazygit TUI
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

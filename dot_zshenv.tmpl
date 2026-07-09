@@ -34,6 +34,8 @@ export ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION
 export OPENCODE_DISABLE_CLAUDE_CODE=1   # 禁用对 Claude Code 的回退性兼容
 export OPENSPEC_TELEMETRY=0             # 禁用 OpenSpec 遥测
 export OMO_SEND_ANONYMOUS_TELEMETRY=0   # 禁用 oh-my-openagent 遥测
+export OPENCODE_GO_WORKSPACE_ID={{ .opencode.go.workspace_id | quote }}  # OpenCode Go 工作区 ID，用于 @slkiser/opencode-quota 读取额度
+export OPENCODE_GO_AUTH_COOKIE={{ .opencode.go.auth_cookie | quote }}  # OpenCode Go 认证 cookie，用于 @slkiser/opencode-quota 读取额度
 
 # 命令与函数搜索路径
 typeset -U path fpath

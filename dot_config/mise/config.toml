@@ -22,6 +22,7 @@ node = "lts"
 "npm:@playwright/cli" = "latest"
 "npm:@playwright/test" = "latest"
 "npm:@sammysnake/fast-context-mcp" = { version = "latest", pnpm_args = "--registry=https://registry.npmjs.org/" }
+"npm:@slkiser/opencode-quota" = "latest"
 "npm:aistupidmeter" = "latest"
 "npm:czg" = "latest"
 "npm:pyright" = "latest"

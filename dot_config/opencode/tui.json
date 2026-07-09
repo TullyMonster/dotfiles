@@ -43,8 +43,12 @@
     "input_delete_word_backward": "none",
     "input_delete_line": "none"
   },
+  "plugin_enabled": {
+    "internal:sidebar-context": false
+  },
   "plugin": [
     "oh-my-openagent@latest",
+    "@slkiser/opencode-quota@latest",
     [
       "opencode-visual-cache@latest",
       {

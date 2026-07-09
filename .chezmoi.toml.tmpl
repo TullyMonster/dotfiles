@@ -15,6 +15,8 @@
 {{- $mcpIdaProDir                               := promptStringOnce . "mcp.ida_pro_dir"                                 "MCP: IDA Pro directory"                            (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") -}}
 {{- $opencodeServerUsername                     := promptStringOnce . "opencode.server.username"                        "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
 {{- $opencodeServerPassword                     := promptStringOnce . "opencode.server.password"                        "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" -}}
+{{- $opencodeGoWorkspaceId                      := promptStringOnce . "opencode.go.workspace_id"                        "OpenCode Go: OPENCODE_GO_WORKSPACE_ID" -}}
+{{- $opencodeGoAuthCookie                       := promptStringOnce . "opencode.go.auth_cookie"                         "OpenCode Go: OPENCODE_GO_AUTH_COOKIE" -}}
 {{- $npmUseMirror                               := promptBoolOnce   . "npm.use_mirror"                                  "NPM: Use a registry mirror on this device"         false -}}
 {{- $headedPlaywrightServiceImageRef            := promptStringOnce . "headed_playwright_service.image_ref"             "Headed Playwright Service: image reference"        "localhost/headed-playwright-service:0.0.76" -}}
 {{- $headedPlaywrightServiceContainerName       := promptStringOnce . "headed_playwright_service.container_name"        "Headed Playwright Service: container name"         "headed-playwright-service" -}}
@@ -54,6 +56,10 @@ ida_pro_dir         = {{ $mcpIdaProDir      | quote }}
 [data.opencode.server]
 username = {{ $opencodeServerUsername | quote }}
 password = {{ $opencodeServerPassword | quote }}
+
+[data.opencode.go]
+workspace_id    = {{ $opencodeGoWorkspaceId | quote }}
+auth_cookie     = {{ $opencodeGoAuthCookie  | quote }}
 
 [data.npm]
 use_mirror = {{ $npmUseMirror }}
