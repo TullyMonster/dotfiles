@@ -66,11 +66,10 @@
    tailscale serve --bg --https=6080 http://127.0.0.1:6080
    ```
 
-## Ghidra MCP（可选）
+## Ghidra Headless MCP（可选）
 
 可选地提供了 `ghidra-manager`、`ghidra-mcp-build` 和 `ghidra-mcp-headless` 命令分别用于管理 Ghidra 本体、准备 GhidraMCP 组件，以及在 OpenCode 中提供 headless Ghidra MCP 分析能力。
 
 ## IDA Pro Headless MCP
 
-OpenCode 中，`ida-pro-mcp` 静默通过 `uvx --from git+https://github.com/mrexodia/ida-pro-mcp idalib-mcp --stdio` 连接 IDA Pro。
-但需自行安装 IDA Pro。
+由 IDA Pro（需自行安装）和 `ida-pro-mcp.service`（需手动启停） 通过 Streamable HTTP 为 OpenCode 提供静态分析与动态调试能力。

@@ -559,17 +559,8 @@
 {{- end }}
     "ida-pro": {
       "enabled": false,
-      "type": "local",
-      "command": [
-        "uvx",
-        "--from",
-        "git+https://github.com/mrexodia/ida-pro-mcp",
-        "idalib-mcp",
-        "--stdio"
-      ],
-      "environment": {
-        "IDADIR": {{ .mcp.ida_pro_dir  | quote }}
-      }
+      "type": "remote",
+      "url": "http://127.0.0.1:8745/mcp?ext=dbg"
     }
   }
 }

@@ -1,0 +1,23 @@
+[Unit]
+Description=IDA Pro Headless MCP Server
+Documentation=https://github.com/mrexodia/ida-pro-mcp
+After=network.target
+
+[Service]
+Type=simple
+
+Environment={{ printf "IDADIR=%s" (.mcp.ida_pro_dir | replace "%" "%%") | quote }}
+
+ExecStart=%h/.local/share/mise/shims/uvx \
+          --from git+https://github.com/mrexodia/ida-pro-mcp \
+          idalib-mcp --host 127.0.0.1 --port 8745 --max-workers 0 --unsafe
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+
+# 启动或停止：
+# systemctl --user start ida-pro-mcp.service
+# systemctl --user stop  ida-pro-mcp.service
