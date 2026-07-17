@@ -5,13 +5,9 @@ After=network.target
 
 [Service]
 Type=simple
-
 Environment={{ printf "IDADIR=%s" (.mcp.ida_pro_dir | replace "%" "%%") | quote }}
-
-ExecStart=%h/.local/share/mise/shims/uvx \
-          --from git+https://github.com/mrexodia/ida-pro-mcp \
-          idalib-mcp --host 127.0.0.1 --port 8745 --max-workers 0 --unsafe
-
+ExecStart=%h/.local/share/mise/shims/uvx --from git+https://github.com/mrexodia/ida-pro-mcp idalib-mcp --host 127.0.0.1 --port 8745 --max-workers 0 --unsafe
+ExecStopPost=-/usr/bin/pkill --signal KILL --euid %U --full '(^|/)(python|python[0-9.]+)[[:space:]]+-m[[:space:]]+ida_pro_mcp[.]idalib_server([[:space:]]|$)'
 Restart=on-failure
 RestartSec=5
 

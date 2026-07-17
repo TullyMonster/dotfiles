@@ -5,6 +5,9 @@
 # 重新加载用户级 systemd 单元配置
 # ==================================================
 
+# ida-pro-mcp.service: {{ includeTemplate "dot_config/systemd/user/ida-pro-mcp.service.tmpl" . | sha256sum }}
+# opencode-server.service: {{ includeTemplate "dot_config/systemd/user/opencode-server.service.tmpl" . | sha256sum }}
+
 set -eu
 
 systemctl --user daemon-reload
