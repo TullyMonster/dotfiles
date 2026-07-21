@@ -50,6 +50,14 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 脚本如果只是直接克隆外部仓库用于本地使用、构建或运行，默认使用 `git clone --depth 1`。
 只有后续流程明确依赖完整 Git 历史、tags、release/tag 操作或历史查询时，才使用完整 clone。
 
+### Python 脚本
+
+仓库内维护的 Python 脚本以 Python 3.12 为最低支持版本。
+包含 PEP 723 内联脚本元数据的文件必须声明 `requires-python = ">=3.12"`。
+新增或修改代码时，推荐直接使用 Python 3.12 的语法特性。
+
+外部项目或上游脚本则遵循其自身的 Python 版本约束。
+
 ## 工具管理
 
 全局工具优先由 mise 管理（`dot_config/mise/config.toml`）。
