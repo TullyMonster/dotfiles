@@ -81,6 +81,7 @@ mkdir -p -- "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓�
 _cache_completion   mise            mise completion zsh
 _cache_completion   bat             bat --completion zsh
 _cache_completion   bun             bun completions zsh
+_cache_completion   cargo           rustup completions zsh cargo
 _cache_completion   delta           delta --generate-completion zsh
 _cache_completion   fd              fd --gen-completions zsh
 _cache_completion   gh              gh completion -s zsh
@@ -91,10 +92,12 @@ _cache_completion   openspec        openspec completion generate zsh
 _cache_completion   pnpm            pnpm completion zsh
 _cache_completion   rg              rg --generate complete-zsh
 _cache_completion   ruff            ruff generate-shell-completion zsh
+_cache_completion   rustup          rustup completions zsh
 _cache_completion   sesh            sesh completion zsh
 _cache_completion   taplo           taplo completions zsh
 _cache_completion   tldr            curl -fsSL -m 5 --connect-timeout 2 https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh
 _cache_completion   tree-sitter     tree-sitter complete --shell zsh
+_cache_completion   usage           usage generate completion --usage-cmd 'usage --usage-spec' zsh usage
 _cache_completion   uv              uv generate-shell-completion zsh
 _cache_completion   uvx             uvx --generate-shell-completion zsh
 _cache_completion   yq              yq shell-completion zsh
