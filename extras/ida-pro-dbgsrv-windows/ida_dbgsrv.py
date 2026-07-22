@@ -60,7 +60,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         start.add_argument(option)
     start.add_argument('--port', type=int)
     subcommands.add_parser('stop', help='stop exact-path debugger servers', allow_abbrev=False)
-    subcommands.add_parser('log', help=f'follow {LOG_PATH.name} from the beginning', allow_abbrev=False)
+    subcommands.add_parser('log', help=f'show {LOG_PATH.name} from the beginning and follow while an exact-path server runs', allow_abbrev=False)
     return parser.parse_args(argv)
 
 
@@ -125,14 +125,19 @@ def _cmd_log() -> int:
     if not LOG_PATH.is_file():
         print(f'No log yet: {LOG_PATH}')
         return 0
-    print(f'Following log: {LOG_PATH}')
+    is_running = bool(_find_servers())
+    print(f'{"Following log" if is_running else "No exact-path IDA debug server is running; showing existing log"}: {LOG_PATH}')
     with LOG_PATH.open('r', encoding='utf-8', errors='replace') as fh:
         while True:
             if chunk := fh.read():
                 sys.stdout.write(chunk)
                 sys.stdout.flush()
-            else:
+            elif is_running and _find_servers():
                 time.sleep(0.5)
+            elif is_running:
+                is_running = False
+            else:
+                return 0
 
 
 def _load_settings(path: Path) -> Settings:
