@@ -106,8 +106,9 @@ def _cmd_start(args: argparse.Namespace) -> int:
     if proc.poll() is not None:
         raise ValueError(f'{args.arch} server exited immediately (code {proc.returncode}). See log: {LOG_PATH}')
     _write_settings(CONFIG_PATH, settings)
-    print(f'Started {args.arch} server PID {proc.pid}. Log: {LOG_PATH}')
+    print(f'Started {args.arch} server PID {proc.pid}.')
     print(f'Settings saved: {_settings_status(settings)}')
+    print(f'Log: {LOG_PATH}')
     return 0
 
 
