@@ -1,0 +1,22 @@
+{{- if .ntfy.is_hosting_server -}}
+[Unit]
+Description=ntfy Server
+Documentation=https://docs.ntfy.sh/
+After=network.target
+
+[Service]
+Type=simple
+StateDirectory=ntfy
+StateDirectoryMode=0700
+ExecStart=%h/.local/share/mise/shims/ntfy serve --config %h/.config/ntfy/server.yml
+UMask=0077
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+
+# 启动或停止：
+# systemctl --user start ntfy.service
+# systemctl --user stop  ntfy.service
+{{ end -}}
