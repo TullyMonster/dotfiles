@@ -1,4 +1,4 @@
-{{- if get .mcp "provide_ghidra" -}}
+{{- if get .mcp "is_providing_ghidra" -}}
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"

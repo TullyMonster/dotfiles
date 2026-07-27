@@ -1,4 +1,4 @@
-{{- if and (eq .chezmoi.os "linux") (lookPath "systemctl") $.systemd.user.reload_after_apply -}}
+{{- if and (eq .chezmoi.os "linux") (lookPath "systemctl") $.systemd.user.is_reload_after_apply -}}
 #!/usr/bin/env sh
 
 # ==================================================

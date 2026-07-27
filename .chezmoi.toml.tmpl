@@ -2,79 +2,53 @@
 {{- if not (stat $keyPath) -}}
     {{- fail "ERROR: Age private key not found. Please restore it from Bitwarden to ~/.config/chezmoi/key.txt first." -}}
 {{- end -}}
-{{- $ageRecipient                               := trim (output "chezmoi" "age-keygen" "-y" $keyPath) -}}
-{{- $subStoreBackendPath                        := promptStringOnce . "sub_store.backend_path"                          "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" -}}
-{{- $mcpContext7ApiKey                          := promptStringOnce . "mcp.context7_api_key"                            "MCP: CONTEXT7_API_KEY" -}}
-{{- $mcpExaApiKey                               := promptStringOnce . "mcp.exa_api_key"                                 "MCP: EXA_API_KEY" -}}
-{{- $mcpAceBaseUrl                              := promptStringOnce . "mcp.ace_base_url"                                "MCP: ace-tool MCP base-url" -}}
-{{- $mcpAceToken                                := promptStringOnce . "mcp.ace_token"                                   "MCP: ace-tool MCP token" -}}
-{{- $mcpWindsurfApiKey                          := promptStringOnce . "mcp.windsurf_api_key"                            "MCP: WINDSURF_API_KEY" -}}
-{{- $mcpTavilyApiKey                            := promptStringOnce . "mcp.tavily_api_key"                              "MCP: tavilyApiKey" -}}
-{{- $mcpChromeMcpUrl                            := promptStringOnce . "mcp.chrome_mcp_url"                              "MCP: chrome-mcp MCP url" -}}
-{{- $mcpProvideGhidra                           := promptBoolOnce   . "mcp.provide_ghidra"                              "MCP: provide Ghidra support on this device"        false -}}
-{{- $mcpIdaProDir                               := promptStringOnce . "mcp.ida_pro_dir"                                 "MCP: IDA Pro directory"                            (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") -}}
-{{- $opencodeServerUsername                     := promptStringOnce . "opencode.server.username"                        "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" -}}
-{{- $opencodeServerPassword                     := promptStringOnce . "opencode.server.password"                        "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" -}}
-{{- $opencodeGoWorkspaceId                      := promptStringOnce . "opencode.go.workspace_id"                        "OpenCode Go: OPENCODE_GO_WORKSPACE_ID" -}}
-{{- $opencodeGoAuthCookie                       := promptStringOnce . "opencode.go.auth_cookie"                         "OpenCode Go: OPENCODE_GO_AUTH_COOKIE" -}}
-{{- $npmUseMirror                               := promptBoolOnce   . "npm.use_mirror"                                  "NPM: Use a registry mirror on this device"         false -}}
-{{- $headedPlaywrightServiceImageRef            := promptStringOnce . "headed_playwright_service.image_ref"             "Headed Playwright Service: image reference"        "localhost/headed-playwright-service:0.0.76" -}}
-{{- $headedPlaywrightServiceContainerName       := promptStringOnce . "headed_playwright_service.container_name"        "Headed Playwright Service: container name"         "headed-playwright-service" -}}
-{{- $headedPlaywrightServiceProfileVolumeName   := promptStringOnce . "headed_playwright_service.profile_volume_name"   "Headed Playwright Service: profile volume name"    "headed-playwright-browser-profile" -}}
-{{- $headedPlaywrightServiceProfileDir          := promptStringOnce . "headed_playwright_service.profile_dir"           "Headed Playwright Service: profile directory"      "/profile" -}}
-{{- $headedPlaywrightServiceX11Display          := promptStringOnce . "headed_playwright_service.x11_display"           "Headed Playwright Service: X11 display"            ":99" -}}
-{{- $headedPlaywrightServiceXvfbWhd             := promptStringOnce . "headed_playwright_service.xvfb_whd"              "Headed Playwright Service: Xvfb whd"               "1280x720x24" -}}
-{{- $headedPlaywrightServiceMcpPort             := promptStringOnce . "headed_playwright_service.mcp_port"              "Headed Playwright Service: MCP port"               "8931" -}}
-{{- $headedPlaywrightServiceEndpointPort        := promptStringOnce . "headed_playwright_service.endpoint_port"         "Headed Playwright Service: endpoint port"          "8932" -}}
-{{- $headedPlaywrightServiceVncPort             := promptStringOnce . "headed_playwright_service.vnc_port"              "Headed Playwright Service: VNC port"               "5900" -}}
-{{- $headedPlaywrightServiceNovncPort           := promptStringOnce . "headed_playwright_service.novnc_port"            "Headed Playwright Service: noVNC port"             "6080" -}}
-{{- $systemdUserReloadAfterApply                := promptBoolOnce   . "systemd.user.reload_after_apply"                 "systemd user: Reload the user manager after apply" true -}}
 
 encryption = "age"
 
 [age]
-recipient   = {{ $ageRecipient  | quote }}
-identity    = {{ $keyPath       | quote }}
+recipient = {{ trim (output "chezmoi" "age-keygen" "-y" $keyPath) | quote }}
+identity  = {{ $keyPath                                           | quote }}
 
 [diff]
 exclude = ["scripts"]
 
 [data.sub_store]
-backend_path = {{ $subStoreBackendPath | quote }}
+backend_path = {{ promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" | quote }}
 
 [data.mcp]
-context7_api_key    = {{ $mcpContext7ApiKey | quote }}
-exa_api_key         = {{ $mcpExaApiKey      | quote }}
-ace_base_url        = {{ $mcpAceBaseUrl     | quote }}
-ace_token           = {{ $mcpAceToken       | quote }}
-windsurf_api_key    = {{ $mcpWindsurfApiKey | quote }}
-tavily_api_key      = {{ $mcpTavilyApiKey   | quote }}
-chrome_mcp_url      = {{ $mcpChromeMcpUrl   | quote }}
-provide_ghidra      = {{ $mcpProvideGhidra          }}
-ida_pro_dir         = {{ $mcpIdaProDir      | quote }}
+context7_api_key    = {{ promptStringOnce . "mcp.context7_api_key"    "MCP: CONTEXT7_API_KEY"                                                                               | quote }}
+exa_api_key         = {{ promptStringOnce . "mcp.exa_api_key"         "MCP: EXA_API_KEY"                                                                                    | quote }}
+ace_base_url        = {{ promptStringOnce . "mcp.ace_base_url"        "MCP: ace-tool MCP base-url"                                                                          | quote }}
+ace_token           = {{ promptStringOnce . "mcp.ace_token"           "MCP: ace-tool MCP token"                                                                             | quote }}
+windsurf_api_key    = {{ promptStringOnce . "mcp.windsurf_api_key"    "MCP: WINDSURF_API_KEY"                                                                               | quote }}
+tavily_api_key      = {{ promptStringOnce . "mcp.tavily_api_key"      "MCP: tavilyApiKey"                                                                                   | quote }}
+chrome_mcp_url      = {{ promptStringOnce . "mcp.chrome_mcp_url"      "MCP: chrome-mcp MCP url"                                                                             | quote }}
+is_providing_ghidra = {{ promptBoolOnce   . "mcp.is_providing_ghidra" "MCP: provide Ghidra support on this device" false }}
+ida_pro_dir         = {{ promptStringOnce . "mcp.ida_pro_dir"         "MCP: IDA Pro directory"                     (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") | quote }}
 
 [data.opencode.server]
-username = {{ $opencodeServerUsername | quote }}
-password = {{ $opencodeServerPassword | quote }}
+username = {{ promptStringOnce . "opencode.server.username" "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" | quote }}
+password = {{ promptStringOnce . "opencode.server.password" "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" | quote }}
 
 [data.opencode.go]
-workspace_id    = {{ $opencodeGoWorkspaceId | quote }}
-auth_cookie     = {{ $opencodeGoAuthCookie  | quote }}
+workspace_id = {{ promptStringOnce . "opencode.go.workspace_id" "OpenCode Go: OPENCODE_GO_WORKSPACE_ID" | quote }}
+auth_cookie  = {{ promptStringOnce . "opencode.go.auth_cookie"  "OpenCode Go: OPENCODE_GO_AUTH_COOKIE"  | quote }}
 
 [data.npm]
-use_mirror = {{ $npmUseMirror }}
+is_using_mirror = {{ promptBoolOnce . "npm.is_using_mirror" "NPM: Use a registry mirror on this device" false }}
 
 [data.headed_playwright_service]
-image_ref           = {{ $headedPlaywrightServiceImageRef           | quote }}
-container_name      = {{ $headedPlaywrightServiceContainerName      | quote }}
-profile_volume_name = {{ $headedPlaywrightServiceProfileVolumeName  | quote }}
-profile_dir         = {{ $headedPlaywrightServiceProfileDir         | quote }}
-x11_display         = {{ $headedPlaywrightServiceX11Display         | quote }}
-xvfb_whd            = {{ $headedPlaywrightServiceXvfbWhd            | quote }}
-mcp_port            = {{ $headedPlaywrightServiceMcpPort            | quote }}
-endpoint_port       = {{ $headedPlaywrightServiceEndpointPort       | quote }}
-vnc_port            = {{ $headedPlaywrightServiceVncPort            | quote }}
-novnc_port          = {{ $headedPlaywrightServiceNovncPort          | quote }}
+image_ref           = {{ promptStringOnce . "headed_playwright_service.image_ref"           "Headed Playwright Service: image reference"     "localhost/headed-playwright-service:0.0.76" | quote }}
+container_name      = {{ promptStringOnce . "headed_playwright_service.container_name"      "Headed Playwright Service: container name"      "headed-playwright-service"                  | quote }}
+profile_volume_name = {{ promptStringOnce . "headed_playwright_service.profile_volume_name" "Headed Playwright Service: profile volume name" "headed-playwright-browser-profile"          | quote }}
+profile_dir         = {{ promptStringOnce . "headed_playwright_service.profile_dir"         "Headed Playwright Service: profile directory"   "/profile"                                   | quote }}
+x11_display         = {{ promptStringOnce . "headed_playwright_service.x11_display"         "Headed Playwright Service: X11 display"         ":99"                                        | quote }}
+xvfb_whd            = {{ promptStringOnce . "headed_playwright_service.xvfb_whd"            "Headed Playwright Service: Xvfb whd"            "1280x720x24"                                | quote }}
+mcp_port            = {{ promptIntOnce    . "headed_playwright_service.mcp_port"            "Headed Playwright Service: MCP port"            8931 }}
+endpoint_port       = {{ promptIntOnce    . "headed_playwright_service.endpoint_port"       "Headed Playwright Service: endpoint port"       8932 }}
+vnc_port            = {{ promptIntOnce    . "headed_playwright_service.vnc_port"            "Headed Playwright Service: VNC port"            5900 }}
+novnc_port          = {{ promptIntOnce    . "headed_playwright_service.novnc_port"          "Headed Playwright Service: noVNC port"          6080 }}
 
 [data.systemd.user]
-reload_after_apply = {{ $systemdUserReloadAfterApply }}
+is_reload_after_apply = {{ promptBoolOnce . "systemd.user.is_reload_after_apply" "systemd user: Reload the user manager after apply" true }}
+

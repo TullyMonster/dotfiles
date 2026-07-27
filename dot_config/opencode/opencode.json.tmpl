@@ -548,7 +548,7 @@
       "type": "remote",
       "url": {{ .mcp.chrome_mcp_url | quote }}
     },
-{{- if get .mcp "provide_ghidra" }}
+{{- if get .mcp "is_providing_ghidra" }}
     "ghidra": {
       "enabled": false,
       "type": "local",

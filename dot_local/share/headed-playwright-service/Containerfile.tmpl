@@ -1,7 +1,4 @@
-{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.mcp_port) -}}       {{ fail "headed_playwright_service.mcp_port must be numeric" }}                     {{- end -}}
-{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.endpoint_port) -}}  {{ fail "headed_playwright_service.endpoint_port must be numeric" }}                {{- end -}}
-{{- if not (regexMatch "^[0-9]+$"               $.headed_playwright_service.novnc_port) -}}     {{ fail "headed_playwright_service.novnc_port must be numeric" }}                   {{- end -}}
-{{- if not (regexMatch "^/[A-Za-z0-9._/-]+$"    $.headed_playwright_service.profile_dir) -}}    {{ fail "headed_playwright_service.profile_dir must be an absolute safe path" }}    {{- end -}}
+{{- if not (regexMatch "^/[A-Za-z0-9._/-]+$"    $.headed_playwright_service.profile_dir) -}}    {{ fail "headed_playwright_service.profile_dir must be an absolute safe path" }}{{- end -}}
 FROM mcr.microsoft.com/playwright:v1.61.0-noble
 
 RUN apt-get update \
