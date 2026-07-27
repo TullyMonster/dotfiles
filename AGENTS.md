@@ -43,7 +43,7 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 
 当 `dot_config/systemd/user/` 下的 Unit 模板文件发生新增、删除或重命名时，必须同步更新 `.chezmoiscripts/run_onchange_after_40-user-systemd-daemon-reload.sh.tmpl` 中由 `includeTemplate ... | sha256sum` 构成的显式依赖列表。此举旨在确保 Unit 集合的结构性变更能正确触发 `systemctl --user daemon-reload`；仅修改现有 Unit 模板的内容无需手动调整该列表。
 
-脚本中用到的配置变量，以 `.chezmoi.toml.tmpl` 的 `[data]` 段为单一来源，避免在多个脚本中重复定义或二次包装。
+所有会因设备或部署而变化的数据，都应以 `.chezmoi.toml.tmpl` 的 `[data]` 段为单一来源，避免在多个脚本中重复定义或二次包装。
 
 ### 克隆外部仓库
 
@@ -71,7 +71,8 @@ chezmoi 管理的文件应具备跨设备可复用性。
 
 ## Git 提交
 
-遵循约定式提交（Conventional Commits），描述使用中文，清晰声明做了哪些修改。
+遵循约定式提交（Conventional Commits），围绕同一个主题，用中文给出提交消息的标题和内容。
+永不替用户执行提交。
 
 标题 (header)：`<type>: <描述>`
 
