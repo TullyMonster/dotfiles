@@ -52,6 +52,8 @@ novnc_port          = {{ promptIntOnce    . "headed_playwright_service.novnc_por
 [data.systemd.user]
 is_reload_after_apply = {{ promptBoolOnce . "systemd.user.is_reload_after_apply" "systemd user: Reload the user manager after apply" true }}
 
+[data.cloudflared]
+tunnel_name = {{ promptStringOnce . "cloudflared.tunnel_name" "Cloudflare Tunnel: tunnel name" | quote }}
 
 [data.ntfy]
 public_hostname   = {{ promptStringOnce                       . "ntfy.public_hostname"   "ntfy: public hostname" | quote }}
