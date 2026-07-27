@@ -13,5 +13,4 @@ if [ ! -d "${tpm_dir}/.git" ]; then
   mkdir -p "$(dirname "${tpm_dir}")"
   git clone --depth=1 https://github.com/tmux-plugins/tpm "${tpm_dir}"
 fi
-
-{{- end -}}
+{{- end }}

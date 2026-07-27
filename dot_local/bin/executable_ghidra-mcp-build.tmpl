@@ -65,4 +65,4 @@ rm -f "${repo_dir}"/target/GhidraMCP-*.jar           # 构建前清理旧版本 
 mvn -f "${repo_dir}" package -P headless -DskipTests # 构建无 GUI 版本的 GhidraMCP JAR
 
 printf 'Built %s\n' "${repo_dir}"/target/GhidraMCP-*.jar
-{{- end -}}
+{{ end -}}
