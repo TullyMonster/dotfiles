@@ -1,0 +1,16 @@
+{{- if and (eq .chezmoi.os "linux") (lookPath "loginctl") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 启用 systemd 用户逗留
+# ==================================================
+
+set -eu
+
+user="$(id -un)"
+linger="$(loginctl show-user "${user}" --property=Linger --value)"
+
+if [ "${linger}" != "yes" ]; then
+  loginctl enable-linger "${user}"
+fi
+{{- end }}
