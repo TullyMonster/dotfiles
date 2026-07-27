@@ -37,6 +37,11 @@ export OMO_SEND_ANONYMOUS_TELEMETRY=0   # 禁用 oh-my-openagent 遥测
 export OPENCODE_GO_WORKSPACE_ID={{ .opencode.go.workspace_id | quote }}  # OpenCode Go 工作区 ID，用于 @slkiser/opencode-quota 读取额度
 export OPENCODE_GO_AUTH_COOKIE={{ .opencode.go.auth_cookie | quote }}  # OpenCode Go 认证 cookie，用于 @slkiser/opencode-quota 读取额度
 
+{{ if .ntfy.is_hosting_server -}}
+# ntfy 服务端本地管理
+export NTFY_CONFIG_FILE="$XDG_CONFIG_HOME/ntfy/server.yml"
+{{- end }}
+
 # 命令与函数搜索路径
 typeset -U path fpath
 path=(

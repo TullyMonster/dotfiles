@@ -1,0 +1,4 @@
+default-host: {{ ternary (printf "http://127.0.0.1:%d" .ntfy.listen_port) (printf "https://%s" .ntfy.public_hostname) .ntfy.is_hosting_server | quote }}
+{{ if .ntfy.default_token -}}
+default-token: {{ .ntfy.default_token | quote }}
+{{- end }}

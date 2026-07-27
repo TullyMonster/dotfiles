@@ -52,3 +52,18 @@ novnc_port          = {{ promptIntOnce    . "headed_playwright_service.novnc_por
 [data.systemd.user]
 is_reload_after_apply = {{ promptBoolOnce . "systemd.user.is_reload_after_apply" "systemd user: Reload the user manager after apply" true }}
 
+
+[data.ntfy]
+public_hostname   = {{ promptStringOnce                       . "ntfy.public_hostname"   "ntfy: public hostname" | quote }}
+listen_port       = {{ promptIntOnce                          . "ntfy.listen_port"       "ntfy: listen port"                    2586 }}
+is_hosting_server = {{ $isHostingNtfyServer := promptBoolOnce . "ntfy.is_hosting_server" "ntfy: host the server on this device" false }}{{ $isHostingNtfyServer }}
+{{ if $isHostingNtfyServer -}}
+web_push_public_key  = {{ promptStringOnce . "ntfy.web_push_public_key"  "ntfy: Web Push public key (run `ntfy webpush keys` once)" | quote }}
+web_push_private_key = {{ promptStringOnce . "ntfy.web_push_private_key" "ntfy: Web Push private key"                               | quote }}
+web_push_email       = {{ promptStringOnce . "ntfy.web_push_email"       "ntfy: Web Push contact email"                             | quote }}
+{{- end }}
+{{ $defaultNtfyToken := dig "ntfy" "default_token" "" . -}}
+{{- if eq $defaultNtfyToken "" -}}
+    {{- $defaultNtfyToken = promptString "ntfy: default auth token (after server setup, run `ntfy token add --label '<device> default client' <username>`; leave empty if unavailable)" "" -}}
+{{- end -}}
+default_token = {{ $defaultNtfyToken | quote }}
