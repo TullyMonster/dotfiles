@@ -14,7 +14,7 @@ export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"     # 用户级应�
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"   # 用户级状态数据目录
 
 # Zsh 目录
-export ZDOTDIR="$HOME/.config/zsh"                  # .zprofile、.zshrc、.zlogin、.zlogout 路径
+export ZDOTDIR="{{ .zsh.zdotdir }}"                 # .zprofile、.zshrc、.zlogin、.zlogout 路径
 export SITE_FUNCTIONS="$ZDOTDIR/site-functions"     # 第三方补全脚本路径
 
 # 语言与本地化
