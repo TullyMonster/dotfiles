@@ -411,8 +411,9 @@
   ],
   "codegraph": {
     "enabled": true,
+    "daemon": true,
     "auto_init": true,
-    "auto_provision": true
+    "auto_provision": false
   },
   "git_master": {
     "commit_footer": false,
