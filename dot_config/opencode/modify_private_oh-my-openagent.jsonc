@@ -2,7 +2,7 @@
 
 import { applyEdits, modify, parse } from "jsonc-parser@^3.0.0";
 
-const source = await Bun.stdin.text();
+const source = (await Bun.stdin.text()) || "{}\n";
 const errors = [];
 const current = parse(source, errors, { allowTrailingComma: true });
 
