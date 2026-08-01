@@ -1,4 +1,4 @@
 {
-    "CtrlUp": "MoveLinesUp",
-    "CtrlDown": "MoveLinesDown",
+  "CtrlUp": "MoveLinesUp",
+  "CtrlDown": "MoveLinesDown"
 }

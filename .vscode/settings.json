@@ -1,14 +1,82 @@
 {
-  "json.format.enable": true,
-  "json.format.keepLines": true,
+  "files.associations": {
+    "*.tmpl": "plaintext",
+    "start-bound-browser": "javascript",
+    "restart-mcp-on-browser-exit": "python",
+    "start-playwright-mcp": "shellscript",
+    "executable_opencode-ida-pro-mcp-skill": "shellscript",
+    "modify_private_oh-my-openagent.jsonc": "javascript"
+  },
   "customLocalFormatters.formatters": [
     {
-      "command": "jq .",
-      "languages": ["json"]
+      "languages": [
+        "json"
+      ],
+      "command": "jq ."
+    },
+    {
+      "languages": [
+        "jsonc"
+      ],
+      "command": "biome format --stdin-file-path=input.jsonc --json-formatter-expand=always --json-formatter-trailing-commas=none --json-formatter-indent-style=space --json-formatter-indent-width=2"
+    },
+    {
+      "languages": [
+        "javascript"
+      ],
+      "command": "prettier --parser babel --no-config"
+    },
+    {
+      "languages": [
+        "markdown"
+      ],
+      "command": "prettier --parser markdown --prose-wrap preserve --no-config"
+    },
+    {
+      "languages": [
+        "yaml"
+      ],
+      "command": "yq -M -P -p=yaml -o=yaml '.'"
+    },
+    {
+      "languages": [
+        "toml"
+      ],
+      "command": "taplo format --no-auto-config --stdin-filepath=input.toml -"
+    },
+    {
+      "languages": [
+        "python"
+      ],
+      "command": "ruff format --config=dot_config/ruff/pyproject.toml --stdin-filename=input.py -"
     }
   ],
   "[json]": {
-    "editor.defaultFormatter": "jkillian.custom-local-formatters",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+  },
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+  },
+  "[yaml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+  },
+  "[toml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+  },
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
   }
 }
