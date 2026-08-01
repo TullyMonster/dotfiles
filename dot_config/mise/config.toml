@@ -10,11 +10,13 @@ fzf = "latest"
 github-cli = "latest"
 "github:binwiederhier/ntfy" = "latest"
 "github:joshmedeski/sesh" = "latest"
+"github:micro-editor/micro" = "latest"
 "github:missdeer/ace-tool-rs" = { version = "latest", rename_exe = "ace-tool" }
 "github:peteretelej/tree" = "latest"
 "github:svenstaro/miniserve" = "latest"
 "github:tealdeer-rs/tealdeer" = { version = "latest", bin = "tldr" }
 "github:us/crw" = "latest"
+"github:zhoufanscut/oModel" = "latest"
 jd = "latest"
 jq = "latest"
 lazygit = "latest"
