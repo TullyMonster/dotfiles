@@ -1,0 +1,27 @@
+{
+  "oh_my_openagent": {
+    "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
+    "claude_code": {
+      "mcp": false,
+      "commands": false,
+      "skills": false,
+      "agents": false,
+      "hooks": false,
+      "plugins": false
+    },
+    "disabled_skills": [
+      "playwright"
+    ],
+    "codegraph": {
+      "enabled": true,
+      "daemon": true,
+      "auto_init": true,
+      "auto_provision": false
+    },
+    "git_master": {
+      "commit_footer": false,
+      "include_co_authored_by": false,
+      "git_env_prefix": "GIT_MASTER=1"
+    }
+  }
+}
