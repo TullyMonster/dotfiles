@@ -2,35 +2,41 @@
 
 import { applyEdits, modify, parse } from "jsonc-parser@^3.0.0";
 
-const source = (await Bun.stdin.text()) || "{}\n";
-const errors = [];
-const current = parse(source, errors, { allowTrailingComma: true });
+let targetConfigText = (await Bun.stdin.text()) || "{}\n";
+const parseErrors = [];
+const existingConfig = parse(targetConfigText, parseErrors);
 
-if (errors.length > 0) {
-  console.error(`Invalid JSONC: ${errors.length} parse error(s)`);
+if (parseErrors.length > 0) {
+  console.error(`Invalid JSONC: ${parseErrors.length} parse error(s)`);
   process.exit(1);
 }
 
-let output = source;
+const templateResult = Bun.spawnSync([
+  "chezmoi",
+  "execute-template",
+  "{{ .oh_my_openagent_static | toJson }}",
+]);
+
+if (!templateResult.success) {
+  throw new Error(
+    templateResult.stderr.toString().trim() ||
+      "chezmoi execute-template failed",
+  );
+}
+
 for (const [key, value] of Object.entries(
-  Bun.JSONC.parse(
-    await Bun.file(
-      `${Bun.env.CHEZMOI_SOURCE_DIR}/.chezmoidata/oh-my-openagent-static.jsonc`,
-    ).text(),
-  ).oh_my_openagent,
+  JSON.parse(templateResult.stdout.toString()),
 )) {
-  if (JSON.stringify(current[key]) !== JSON.stringify(value)) {
-    output = applyEdits(
-      output,
-      modify(output, [key], value, {
+  if (JSON.stringify(existingConfig[key]) !== JSON.stringify(value)) {
+    targetConfigText = applyEdits(
+      targetConfigText,
+      modify(targetConfigText, [key], value, {
         formattingOptions: { insertSpaces: true, tabSize: 2, eol: "\n" },
       }),
     );
   }
 }
 
-if (!output.endsWith("\n")) {
-  output += "\n";
-}
-
-process.stdout.write(output);
+process.stdout.write(
+  targetConfigText.endsWith("\n") ? targetConfigText : `${targetConfigText}\n`,
+);
