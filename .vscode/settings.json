@@ -78,5 +78,24 @@
   "[python]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "jkillian.custom-local-formatters"
-  }
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/.chezmoidata/oh-my-openagent-static.jsonc"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "oh_my_openagent_static": {
+            "$ref": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json"
+          }
+        },
+        "required": [
+          "oh_my_openagent_static"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
 }

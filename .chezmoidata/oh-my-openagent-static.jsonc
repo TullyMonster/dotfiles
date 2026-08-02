@@ -12,6 +12,9 @@
     "disabled_skills": [
       "playwright"
     ],
+    "websearch": {
+      "provider": "exa"
+    },
     "codegraph": {
       "enabled": true,
       "daemon": true,
