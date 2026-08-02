@@ -20,12 +20,10 @@ backend_path = {{ promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_ST
 
 [data.mcp]
 context7_api_key    = {{ promptStringOnce . "mcp.context7_api_key"    "MCP: CONTEXT7_API_KEY"                                                                               | quote }}
-exa_api_key         = {{ promptStringOnce . "mcp.exa_api_key"         "MCP: EXA_API_KEY"                                                                                    | quote }}
 ace_base_url        = {{ promptStringOnce . "mcp.ace_base_url"        "MCP: ace-tool MCP base-url"                                                                          | quote }}
 ace_token           = {{ promptStringOnce . "mcp.ace_token"           "MCP: ace-tool MCP token"                                                                             | quote }}
 windsurf_api_key    = {{ promptStringOnce . "mcp.windsurf_api_key"    "MCP: WINDSURF_API_KEY"                                                                               | quote }}
 tavily_api_key      = {{ promptStringOnce . "mcp.tavily_api_key"      "MCP: tavilyApiKey"                                                                                   | quote }}
-chrome_mcp_url      = {{ promptStringOnce . "mcp.chrome_mcp_url"      "MCP: chrome-mcp MCP url"                                                                             | quote }}
 is_providing_ghidra = {{ promptBoolOnce   . "mcp.is_providing_ghidra" "MCP: provide Ghidra support on this device" false }}
 ida_pro_dir         = {{ promptStringOnce . "mcp.ida_pro_dir"         "MCP: IDA Pro directory"                     (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") | quote }}
 
