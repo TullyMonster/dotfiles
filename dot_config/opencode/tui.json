@@ -60,6 +60,7 @@
       {
         "enabled": true
       }
-    ]
+    ],
+    "@cortexkit/opencode-magic-context@latest"
   ]
 }
