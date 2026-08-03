@@ -1,5 +1,11 @@
 {
-  "enabledProviders": "auto",
+  "enabledProviders": [
+    "openai",
+    "opencode-go",
+    "deepseek",
+    "openrouter",
+    "xai"
+  ],
   "enableToast": false,
   "tuiSidebarPanel": {
     "enabled": true
