@@ -14,26 +14,42 @@ if (parseErrors.length > 0) {
 const templateResult = Bun.spawnSync([
   "chezmoi",
   "execute-template",
-  "{{ .oh_my_openagent_static | toJson }}",
+  "{{ .omo | toJson }}",
 ]);
 
 if (!templateResult.success) {
-  throw new Error(
+  console.error(
     templateResult.stderr.toString().trim() ||
       "chezmoi execute-template failed",
   );
+  process.exit(1);
 }
+
+const updateConfigValue = (path, value) => {
+  const existingValue = path.reduce(
+    (config, key) => config?.[key],
+    existingConfig,
+  );
+
+  if (JSON.stringify(existingValue) === JSON.stringify(value)) return;
+
+  targetConfigText = applyEdits(
+    targetConfigText,
+    modify(targetConfigText, path, value, {
+      formattingOptions: { insertSpaces: true, tabSize: 2, eol: "\n" },
+    }),
+  );
+};
 
 for (const [key, value] of Object.entries(
   JSON.parse(templateResult.stdout.toString()),
 )) {
-  if (JSON.stringify(existingConfig[key]) !== JSON.stringify(value)) {
-    targetConfigText = applyEdits(
-      targetConfigText,
-      modify(targetConfigText, [key], value, {
-        formattingOptions: { insertSpaces: true, tabSize: 2, eol: "\n" },
-      }),
-    );
+  if (key === "[opencode]") {
+    for (const [opencodeKey, opencodeValue] of Object.entries(value)) {
+      updateConfigValue([key, opencodeKey], opencodeValue);
+    }
+  } else {
+    updateConfigValue([key], value);
   }
 }
 

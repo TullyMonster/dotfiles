@@ -5,7 +5,7 @@
     "restart-mcp-on-browser-exit": "python",
     "start-playwright-mcp": "shellscript",
     "executable_opencode-ida-pro-mcp-skill": "shellscript",
-    "modify_private_oh-my-openagent.jsonc": "javascript"
+    "modify_omo.jsonc": "javascript"
   },
   "customLocalFormatters.formatters": [
     {
@@ -82,17 +82,17 @@
   "json.schemas": [
     {
       "fileMatch": [
-        "/.chezmoidata/oh-my-openagent-static.jsonc"
+        "/.chezmoidata/omo.jsonc"
       ],
       "schema": {
         "type": "object",
         "properties": {
-          "oh_my_openagent_static": {
-            "$ref": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json"
+          "omo": {
+            "$ref": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json"
           }
         },
         "required": [
-          "oh_my_openagent_static"
+          "omo"
         ],
         "additionalProperties": false
       }
