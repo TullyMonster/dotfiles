@@ -11,6 +11,11 @@
         "hooks": false,
         "plugins": false
       },
+      "disabled_hooks": [
+        "context-window-monitor",
+        "preemptive-compaction",
+        "anthropic-context-window-limit-recovery"
+      ],
       "disabled_skills": [
         "playwright"
       ],
