@@ -104,6 +104,7 @@ _cache_completion   yq              yq shell-completion zsh
 # apt 源
 _cache_completion   caddy           caddy completion zsh
 _cache_completion   chezmoi         chezmoi completion zsh
+_cache_completion   nala            nala --show-completion zsh
 _cache_completion   podman          podman completion zsh
 _cache_completion   tailscale       tailscale completion zsh
 
