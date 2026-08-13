@@ -9,14 +9,15 @@
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 1. Shell 基础选项  <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-setopt autocd                   # 目录名自动 cd
-setopt extendedglob             # 启用扩展通配符
-setopt hist_ignore_dups         # [历史命令行为] 不连续重复地记录命令
-setopt hist_ignore_space        # [历史命令行为] 不记录有前导空格的命令
-setopt share_history            # [历史命令行为] 历史命令多终端窗口共享
-setopt hist_expire_dups_first   # [历史命令行为] 历史重复条目优先过期 <<< add
-setopt hist_reduce_blanks       # [历史命令行为] 存储前去除多余空格 <<< add
-unsetopt beep                   # 关闭终端响铃
+setopt AUTO_CD                  # 目录名自动 cd
+setopt EXTENDED_GLOB            # 启用扩展通配符
+setopt HIST_IGNORE_DUPS         # [历史命令行为] 不连续重复地记录命令
+setopt HIST_IGNORE_SPACE        # [历史命令行为] 不记录有前导空格的命令
+setopt SHARE_HISTORY            # [历史命令行为] 历史命令多终端窗口共享
+setopt HIST_EXPIRE_DUPS_FIRST   # [历史命令行为] 历史重复条目优先过期
+setopt HIST_REDUCE_BLANKS       # [历史命令行为] 存储前去除多余空格
+setopt IGNORE_EOF               # 禁止 shell 收到 EOF（通常由 Ctrl+D 发送）后直接退出
+unsetopt BEEP                   # 关闭终端响铃
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 2. 环境变量        <<<<<<<<<<
