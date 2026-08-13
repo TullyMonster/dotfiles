@@ -65,8 +65,8 @@ _cache_completion() {
     local target="${SITE_FUNCTIONS}/_${name}"   # 目标补全文件名（以下划线开头）
     local tmp="${target}.tmp.$$"                # 临时文件名
 
-    (( ${+commands[$name]} )) || return 0       # 待补全的命令不存在，跳过
-    [[ -s "$target" ]] && return 0              # 已有非空的补全文件，跳过
+    (( ${+commands[$name]} )) || return 0                                 # 待补全的命令不存在，跳过
+    [[ -s "$target" && "$target" -nt "${commands[$name]}" ]] && return 0  # 补全文件非空且比目标可执行文件新，跳过
 
     if command "$@" >| "$tmp" 2>/dev/null && [[ -s "$tmp" ]]; then  # 成功生成补全文件
         mv -f -- "$tmp" "$target"               # 替换为目标补全文件
