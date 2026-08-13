@@ -63,11 +63,13 @@ xh = "latest"
 yq = "latest"
 zoxide = "latest"
 
-[bootstrap.packages]
-"apt:unzip" = "latest"
-
 [settings]
 idiomatic_version_file_enable_tools = ["node", "bun", "python"]
 node.corepack = true
 npm.package_manager = "pnpm"
 python.uv_venv_auto = "create|source"
+
+[bootstrap.packages]
+"apt:unzip" = "latest"
+"apt:curl" = "latest"
+"apt:wget" = "latest"

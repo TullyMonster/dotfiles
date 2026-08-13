@@ -1,0 +1,14 @@
+{{- if eq .chezmoi.os "linux" -}}
+{{- $home := .chezmoi.homeDir -}}
+{{- $miseBin := or (findExecutable "mise" (list ".local/bin" "bin")) (lookPath "mise") (joinPath $home ".local" "bin" "mise") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 安装 ~/.config/mise/config.toml 中声明的系统包和工具
+# ==================================================
+# mise config hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
+
+set -eu
+
+"{{ $miseBin }}" bootstrap --only packages,tools --yes
+{{- end }}

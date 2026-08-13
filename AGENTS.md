@@ -65,6 +65,8 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 被 mise 管理的工具，仓库内脚本可直接调用，无需检查是否安装。
 将工具纳入 mise 时需评估必要性——仅在确实多设备共用且跨项目依赖时才纳入。
 
+修改 `dot_config/mise/config.toml` 中需要自动应用的 bootstrap 节时，同步维护 `.chezmoiscripts/run_onchange_after_10-apply-mise-config.sh.tmpl` 的 `mise bootstrap --only` 范围。
+
 ## 编辑器格式化
 
 - 新增文件类型、格式化工具或扩展名与实际语法不一致的文件时，同步维护 `.vscode/settings.json`。
