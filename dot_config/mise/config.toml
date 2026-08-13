@@ -8,6 +8,7 @@ delta = "latest"
 fastfetch = "latest"
 fd = "latest"
 fzf = "latest"
+gdu = "latest"
 github-cli = "latest"
 "github:BtbN/FFmpeg-Builds" = { version = "latest", asset_pattern = "ffmpeg-*-linux64-gpl.tar.xz" }
 "github:achristmascarl/rainfrog" = "latest"
@@ -25,6 +26,7 @@ jd = "latest"
 jq = "latest"
 lazygit = "latest"
 marksman = "latest"
+neovim = "latest"
 node = "lts"
 "npm:@colbymchenry/codegraph" = "latest"
 "npm:@cortexkit/magic-context" = "latest"
@@ -57,8 +59,12 @@ tree-sitter = "latest"
 usage = "latest"
 uv = "latest"
 viddy = "latest"
+xh = "latest"
 yq = "latest"
 zoxide = "latest"
+
+[bootstrap.packages]
+"apt:unzip" = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node", "bun", "python"]
