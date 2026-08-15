@@ -5,10 +5,10 @@
 # 重新加载用户级 systemd 单元配置
 # ==================================================
 
-# cloudflared.service: {{ includeTemplate "dot_config/systemd/user/cloudflared.service.tmpl" . | sha256sum }}
-# ida-pro-mcp.service: {{ includeTemplate "dot_config/systemd/user/ida-pro-mcp.service.tmpl" . | sha256sum }}
-# ntfy.service: {{ includeTemplate "dot_config/systemd/user/ntfy.service.tmpl" . | sha256sum }}
-# opencode-server.service: {{ includeTemplate "dot_config/systemd/user/opencode-server.service.tmpl" . | sha256sum }}
+# {{ includeTemplate "dot_config/systemd/user/cloudflared.service.tmpl" . | sha256sum }}
+# {{ includeTemplate "dot_config/systemd/user/ida-pro-mcp.service.tmpl" . | sha256sum }}
+# {{ includeTemplate "dot_config/systemd/user/ntfy.service.tmpl" . | sha256sum }}
+# {{ includeTemplate "dot_config/systemd/user/opencode-server.service.tmpl" . | sha256sum }}
 
 set -eu
 
