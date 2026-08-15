@@ -11,7 +11,7 @@ Volume=headed-playwright-browser-profile.volume:{{ $.headed_playwright_service.p
 EnvironmentFile=%h/.config/headed-playwright-service/service.env
 
 [Service]
-Restart=on-failure
+Restart=always
 RestartSec=5s
 
 [Install]
