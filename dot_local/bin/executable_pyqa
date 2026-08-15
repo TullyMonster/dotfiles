@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -eu
+
+rc=0
+ruff check --fix "$@" || rc=1
+ruff format "$@" || rc=1
+pyright "$@" || rc=1
+exit "$rc"

@@ -56,6 +56,7 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 仓库内维护的 Python 脚本以 Python 3.12 为最低支持版本。
 包含 PEP 723 内联脚本元数据的文件必须声明 `requires-python = ">=3.12"`。
 新增或修改代码时，推荐直接使用 Python 3.12 的语法特性。
+检查 Python 文件时直接运行 `pyqa <file>`；它会依次执行 Ruff 修复检查、Ruff 格式化和 Pyright，并保留全部步骤的综合失败状态。
 
 外部项目或上游脚本则遵循其自身的 Python 版本约束。
 

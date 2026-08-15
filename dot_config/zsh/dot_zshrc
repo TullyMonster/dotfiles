@@ -147,10 +147,3 @@ alias lg='lazygit'              # 打开 lazygit TUI
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 10. 自定义函数     <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-pyqa() {
-  local rc=0
-  ruff check --fix "$@" || rc=1
-  ruff format "$@" || rc=1
-  pyright "$@" || rc=1
-  return $rc
-}
