@@ -1,10 +1,7 @@
 {
   "files.associations": {
     "*.tmpl": "plaintext",
-    "start-bound-browser": "javascript",
-    "restart-mcp-on-browser-exit": "python",
-    "start-playwright-mcp": "shellscript",
-    "executable_opencode-ida-pro-mcp-skill": "shellscript",
+    "dot_z{login,logout,profile,shrc}": "shellscript",
     "modify_omo.jsonc": "javascript"
   },
   "customLocalFormatters.formatters": [
