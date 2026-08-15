@@ -6,9 +6,10 @@
 # ==================================================
 # 安装 ~/.config/mise/config.toml 中声明的系统包和工具
 # ==================================================
-# mise config hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
+# {{ include "dot_config/mise/config.toml" | sha256sum }}
+# {{ include "dot_local/libexec/mise-bootstrap/executable_configure-xpra-apt-repository" | sha256sum }}
 
 set -eu
 
-"{{ $miseBin }}" bootstrap --only packages,tools --yes
+"{{ $miseBin }}" bootstrap --only packages,user,tools --yes
 {{- end }}

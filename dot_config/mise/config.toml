@@ -1,3 +1,36 @@
+[settings]
+idiomatic_version_file_enable_tools = ["node", "bun", "python"]
+node.corepack = true
+npm.package_manager = "pnpm"
+python.uv_venv_auto = "create|source"
+
+[bootstrap.hooks.pre-packages]
+run = '"$HOME/.local/libexec/mise-bootstrap/configure-xpra-apt-repository"'
+
+[bootstrap.packages]
+"apt:7zip" = "latest"
+"apt:build-essential" = "latest"
+"apt:bzip2" = "latest"
+"apt:ca-certificates" = "latest"
+"apt:curl" = "latest"
+"apt:git" = "latest"
+"apt:moreutils" = "latest"
+"apt:nala" = "latest"
+"apt:network-manager" = "latest"
+"apt:openssh-server" = "latest"
+"apt:plocate" = "latest"
+"apt:podman" = "latest"
+"apt:unar" = "latest"
+"apt:unzip" = "latest"
+"apt:wget" = "latest"
+"apt:xpra" = "latest"
+"apt:xz-utils" = "latest"
+"apt:zsh" = "latest"
+"apt:zstd" = "latest"
+
+[bootstrap.user]
+login_shell = "/usr/bin/zsh"
+
 [tools]
 bat = "latest"
 biome = "latest"
@@ -62,14 +95,3 @@ viddy = "latest"
 xh = "latest"
 yq = "latest"
 zoxide = "latest"
-
-[settings]
-idiomatic_version_file_enable_tools = ["node", "bun", "python"]
-node.corepack = true
-npm.package_manager = "pnpm"
-python.uv_venv_auto = "create|source"
-
-[bootstrap.packages]
-"apt:unzip" = "latest"
-"apt:curl" = "latest"
-"apt:wget" = "latest"

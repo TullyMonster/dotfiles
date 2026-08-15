@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+
+set -eu
+
+fatal() {
+  printf '%s\n' "$*" >&2
+  exit 1
+}
+
+. /etc/os-release
+
+case "${ID:-}" in
+  debian | ubuntu) ;;
+  *) fatal 'Xpra APT repository is only supported on Debian and Ubuntu' ;;
+esac
+: "${VERSION_CODENAME:?VERSION_CODENAME is missing from /etc/os-release}"
+
+tmpdir="$(mktemp -d)"
+cleanup() {
+  rm -rf "$tmpdir"
+}
+trap 'cleanup' 0
+trap 'exit 1' HUP INT TERM
+
+key_file="${tmpdir}/xpra.asc"
+sources_file="${tmpdir}/xpra.sources"
+
+curl --fail --location --silent --show-error --output "$key_file" 'https://xpra.org/xpra.asc'
+curl --fail --location --silent --show-error --output "$sources_file" "https://raw.githubusercontent.com/Xpra-org/xpra/master/packaging/repos/${VERSION_CODENAME}/xpra.sources"
+
+if ! grep -Fx 'Types: deb' "$sources_file" >/dev/null \
+  || ! grep -Fx 'URIs: https://xpra.org' "$sources_file" >/dev/null \
+  || ! grep -Fx "Suites: ${VERSION_CODENAME}" "$sources_file" >/dev/null \
+  || ! grep -Fx 'Components: main' "$sources_file" >/dev/null \
+  || ! grep -Fx 'Signed-By: /usr/share/keyrings/xpra.asc' "$sources_file" >/dev/null; then
+  fatal 'Downloaded Xpra source definition is invalid'
+fi
+
+changed=0
+if ! cmp -s "$key_file" /usr/share/keyrings/xpra.asc; then
+  sudo install -m 0644 "$key_file" /usr/share/keyrings/xpra.asc
+  changed=1
+fi
+if ! cmp -s "$sources_file" /etc/apt/sources.list.d/xpra.sources; then
+  sudo install -m 0644 "$sources_file" /etc/apt/sources.list.d/xpra.sources
+  changed=1
+fi
+
+if [ "$changed" -eq 1 ]; then
+  sudo apt-get update
+fi
