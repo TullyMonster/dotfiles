@@ -1,7 +1,0 @@
-tunnel: {{ .cloudflared.tunnel_name | quote }}
-ingress:
-{{- if .ntfy.is_hosting_server }}
-  - hostname: {{ .ntfy.public_hostname | quote }}
-    service: {{ printf "http://127.0.0.1:%d" .ntfy.listen_port }}
-{{- end }}
-  - service: http_status:404
