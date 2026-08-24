@@ -48,19 +48,9 @@
   },
   "plugin": [
     "oh-my-openagent@latest",
-    "@slkiser/opencode-quota@latest",
-    [
-      "opencode-visual-cache@latest",
-      {
-        "enabled": true
-      }
-    ],
-    [
-      "opencode-subagent-magazine@latest",
-      {
-        "enabled": true
-      }
-    ],
-    "@cortexkit/opencode-magic-context@latest"
+    "opencode-subagent-magazine@latest",
+    "opencode-visual-cache@latest",
+    "@cortexkit/opencode-magic-context@latest",
+    "@slkiser/opencode-quota@latest"
   ]
 }
