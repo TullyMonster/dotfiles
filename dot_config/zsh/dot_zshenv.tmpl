@@ -40,12 +40,12 @@ export OPENCODE_GO_AUTH_COOKIE={{ .opencode.go.auth_cookie | quote }}  # OpenCod
 # 命令与函数搜索路径
 typeset -U path fpath
 path=(
-    /usr/local/bin                  # 系统级手动安装的程序
-    $HOME/bin                       # 用户自定义脚本目录
-    $HOME/.local/bin                # 用户级安装的程序
-    $HOME/.local/share/pnpm/bin     # pnpm 全局安装包的 bin 目录
-    $HOME/.cargo/bin                # Rust 工具链
-    $HOME/.go/bin                   # Go 工具
+    $HOME/bin                   # 用户自定义脚本目录
+    $HOME/.local/bin            # 用户级安装的程序
+    $HOME/.local/share/pnpm/bin # pnpm 全局安装的程序
+    $HOME/.cargo/bin            # Cargo 安装的程序
+    $HOME/go/bin                # Go 安装的程序
+    /usr/local/bin              # 系统级手动安装的程序
     $path
 )
 fpath=(
