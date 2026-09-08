@@ -37,20 +37,12 @@
    systemctl --user start headed-playwright-service.service
    ```
 
-2. **配置 MCP**：
+2. **在项目目录中启用 MCP**：
 
-   > 以 OpenCode 为例。
+   > 以 OpenCode 为例。在需要使用 Headed Playwright MCP 的项目根目录下运行：
 
-   ```json
-   {
-     "mcp": {
-       "playwright": {
-         "enabled": true,
-         "type": "remote",
-         "url": "http://127.0.0.1:8931/mcp"
-       }
-     }
-   }
+   ```shell
+   opencode-project-mcp add playwright
    ```
 
 3. **playwright-cli**：
@@ -69,6 +61,12 @@
 ## Ghidra Headless MCP（可选）
 
 可选地提供了 `ghidra-manager`、`ghidra-mcp-build` 和 `ghidra-mcp-headless` 命令分别用于管理 Ghidra 本体、准备 GhidraMCP 组件，以及在 OpenCode 中提供 headless Ghidra MCP 分析能力。
+
+在需要使用 Ghidra Headless MCP 的项目根目录下，运行以下命令完成启用：
+
+```shell
+opencode-project-mcp add ghidra
+```
 
 ## IDA Pro MCP
 
@@ -151,7 +149,13 @@ IDA Pro 安装目录的 `dbgsrv/` 中包含适用于不同操作系统和处理�
 
 ### 适时启停 ida-pro-mcp.service
 
-启动 `ida-pro-mcp.service` 是成功启用 OpenCode 中的 `ida-pro` MCP 的前提。
+启动 `ida-pro-mcp.service` 是成功启用 OpenCode 中的 `ida-pro` MCP 的前提。在需要使用 IDA Pro MCP 的项目根目录下，运行以下命令完成启用：
+
+```shell
+opencode-project-mcp add ida-pro
+```
+
+启动与管理服务：
 
 ```shell
 systemctl --user start   ida-pro-mcp.service
@@ -160,3 +164,29 @@ systemctl --user restart ida-pro-mcp.service
 ```
 
 > 停止或重启该服务会终止 MCP 服务器及当前用户的全部 IDALib 工作进程；正在执行的 MCP 请求会中断，不会终止 IDA Pro GUI 进程。
+
+## 项目级 MCP 辅助工具 (opencode-project-mcp)
+
+为了方便在特定项目目录中按需启用 MCP 服务，系统提供了 `opencode-project-mcp` 命令行工具。
+
+### 工作原理与通用契约
+
+- **Catalog 位置**：MCP Catalog 配置文件路径为 `${XDG_CONFIG_HOME:-$HOME/.config}/opencode/project-mcp-catalog.jsonc`；默认路径为 `~/.config/opencode/project-mcp-catalog.jsonc`。
+- **目标选择与文件创建**：命令优先选择 `$PWD/opencode.jsonc`，若不存在则选择 `$PWD/opencode.json`。当两者均不存在时，仅 `add` 命令会创建 `$PWD/opencode.jsonc`；`remove` 命令不会创建任何文件。
+- **通用命令语法**：
+  - 基础添加命令：
+    ```shell
+    opencode-project-mcp add <name>...
+    ```
+  - 强行覆盖现有配置：
+    ```shell
+    opencode-project-mcp add --force <name>...
+    ```
+    如果目标项目配置中已存在语义相同的同名 MCP，`opencode-project-mcp add` 会成功结束且不修改文件；只有同名条目的内容不同时，命令才会提示冲突并拒绝覆盖。`opencode-project-mcp add --force` 会用 Catalog 条目整体替换现有 MCP 对象，绝不合并字段。
+  - 移除配置命令：
+    ```shell
+    opencode-project-mcp remove <name>...
+    ```
+    `opencode-project-mcp remove` 直接从当前项目的配置文件中删除指定 MCP 条目，其执行独立于 Catalog 的存在或内容。指定条目不存在时，命令同样会成功结束，既不修改现有文件，也不创建配置文件。
+- **密钥与环境变量**：模板及配置支持使用 `{env:VAR}` 占位符引用环境变量，避免在配置文件中硬编码敏感密钥。
+- **配置持久化与源路径**：持久源路径为 `dot_config/opencode/project-mcp-catalog.jsonc`。已应用的 Catalog 并非缓存。如需使 Catalog 模板变更持久生效，请直接修改 chezmoi 源仓库中的 `dot_config/opencode/project-mcp-catalog.jsonc` 文件，并按正常的 chezmoi 工作流处理。

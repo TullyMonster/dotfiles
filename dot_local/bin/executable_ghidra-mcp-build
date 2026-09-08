@@ -1,5 +1,6 @@
-{{- if get .mcp "is_providing_ghidra" -}}
 #!/usr/bin/env sh
+# shellcheck disable=SC2016
+
 set -eu
 
 if [ "${GHIDRA_MCP_BUILD_MISE_READY:-}" != true ]; then
@@ -23,18 +24,18 @@ usage() {
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-  --update)
-    update=true
-    ;;
-  --help | -h)
-    usage
-    exit 0
-    ;;
-  *)
-    usage
-    printf 'Error: unknown argument: %s\n' "$1" >&2
-    exit 2
-    ;;
+    --update)
+      update=true
+      ;;
+    --help | -h)
+      usage
+      exit 0
+      ;;
+    *)
+      usage
+      printf 'Error: unknown argument: %s\n' "$1" >&2
+      exit 2
+      ;;
   esac
   shift
 done
@@ -65,4 +66,3 @@ rm -f "${repo_dir}"/target/GhidraMCP-*.jar           # 构建前清理旧版本 
 mvn -f "${repo_dir}" package -P headless -DskipTests # 构建无 GUI 版本的 GhidraMCP JAR
 
 printf 'Built %s\n' "${repo_dir}"/target/GhidraMCP-*.jar
-{{ end -}}

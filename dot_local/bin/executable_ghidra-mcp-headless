@@ -1,5 +1,6 @@
-{{- if get .mcp "is_providing_ghidra" -}}
 #!/usr/bin/env sh
+# shellcheck disable=SC2016
+
 set -eu
 
 if [ "${GHIDRA_MCP_HEADLESS_MISE_READY:-}" != true ]; then
@@ -28,15 +29,15 @@ require_no_args() {
   fi
 
   case "$1" in
-  --help | -h)
-    usage
-    exit 0
-    ;;
-  *)
-    usage
-    printf 'Error: unknown argument: %s\n' "$1" >&2
-    exit 2
-    ;;
+    --help | -h)
+      usage
+      exit 0
+      ;;
+    *)
+      usage
+      printf 'Error: unknown argument: %s\n' "$1" >&2
+      exit 2
+      ;;
   esac
 }
 
@@ -68,6 +69,7 @@ start_server() {
   mkdir -p "${log_file%/*}"
   : >"${log_file}"
 
+  # shellcheck disable=SC2086
   java ${java_opts} \
     -Dghidra.home="${ghidra_home}" \
     -Dapplication.name=GhidraMCP \
@@ -149,4 +151,3 @@ fi
 
 export GHIDRA_MCP_URL=${ghidra_url}
 uv run --directory "${repo_dir}" bridge-mcp-ghidra --transport stdio
-{{ end -}}

@@ -1,0 +1,229 @@
+#!/usr/bin/env sh
+set -eu
+
+catalog_path="${HOME}/.config/opencode/project-mcp-catalog.jsonc"
+target_path=''
+staged_path=''
+
+path_exists() {
+  [ -e "$1" ] || [ -L "$1" ]
+}
+
+cleanup() {
+  exit_status=$1
+  trap - 0 HUP INT TERM
+  if [ -n "${staged_path}" ] && path_exists "${staged_path}"; then
+    rm -f "${staged_path}" || :
+  fi
+  exit "${exit_status}"
+}
+
+trap 'cleanup "$?"' 0
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+info() {
+  printf '%s\n' "$1"
+}
+
+fatal() {
+  printf 'Error: %s\n' "$1" >&2
+  exit 1
+}
+
+usage() {
+  prog=${0##*/}
+
+  printf 'Usage:\n'
+  printf '  %s add [--force] <name> [<name>...]\n' "${prog}"
+  printf '  %s remove <name> [<name>...]\n' "${prog}"
+  printf '  %s -h | --help\n' "${prog}"
+  printf '\nCommands:\n'
+  printf '  add      Add MCP entries from the catalog to the project config.\n'
+  printf '  remove   Remove MCP entries from the project config.\n'
+  printf '\nOptions:\n'
+  printf '  --force     Replace conflicting project MCP entries with catalog entries.\n'
+  printf '  -h, --help  Show this help message.\n'
+}
+
+create_temp() {
+  path_exists "$1" && fatal "temporary path already exists: $1"
+  (
+    set -C
+    : >"$1"
+  ) 2>/dev/null || fatal "cannot create temporary file: $1"
+}
+
+validate_jsonc() {
+  source_path=$1
+  biome check --write --stdin-file-path=validate.jsonc <"${source_path}" >/dev/null || fatal "invalid JSONC: ${source_path}"
+}
+
+load_project_config() {
+  source_path=$1
+  validate_jsonc "${source_path}"
+  if ! project_json=$(cat "${source_path}" | jsonc read); then
+    fatal "jsonc could not read: ${source_path}"
+  fi
+  printf '%s\n' "${project_json}" | jq -e '
+    type == "object" and
+    ((has("mcp") | not) or (.mcp | type == "object"))
+  ' >/dev/null || fatal "project config root and mcp must be objects: ${source_path}"
+}
+
+select_target() {
+  if path_exists "${PWD}/opencode.jsonc"; then
+    target_path="${PWD}/opencode.jsonc"
+  elif path_exists "${PWD}/opencode.json"; then
+    target_path="${PWD}/opencode.json"
+  fi
+  if [ -n "${target_path}" ] && [ ! -f "${target_path}" ]; then
+    fatal "project config does not resolve to a regular file: ${target_path}"
+  fi
+}
+
+stage_target() {
+  target_name=${target_path##*/}
+  staged_candidate="${PWD}/.${target_name}.opencode-project-mcp.$$.jsonc"
+  create_temp "${staged_candidate}"
+  staged_path=${staged_candidate}
+  if [ "$1" = 'existing' ]; then
+    cp -p "${target_path}" "${staged_path}" || fatal "cannot copy project config: ${target_path}"
+  else
+    # shellcheck disable=SC2016
+    if ! printf '%s\n' '{"$schema":"https://opencode.ai/config.json","mcp":{}}' | jq -M '.' >"${staged_path}"; then
+      fatal 'cannot create new project config'
+    fi
+  fi
+}
+
+modify_staged() {
+  json_path=$1
+  shift
+  if ! modified_json=$(cat "${staged_path}" | jsonc modify -p "${json_path}" "$@"); then
+    fatal 'jsonc failed while updating an MCP entry'
+  fi
+  printf '%s\n' "${modified_json}" >"${staged_path}" || fatal 'cannot update temporary project config'
+}
+
+require_names() {
+  [ "$#" -gt 0 ] || {
+    usage >&2
+    exit 2
+  }
+  for name in "$@"; do
+    [ "${name}" != '--force' ] || {
+      usage >&2
+      exit 2
+    }
+  done
+}
+
+finish_update() {
+  load_project_config "${staged_path}"
+  mv "${staged_path}" "${target_path}" || fatal "cannot atomically replace project config: ${target_path}"
+  staged_path=''
+  info "Updated ${target_path}"
+}
+
+cmd_add() {
+  force=false
+  if [ "${1:-}" = '--force' ]; then
+    force=true
+    shift
+  fi
+  require_names "$@"
+
+  select_target
+  path_exists "${catalog_path}" || fatal "catalog does not exist: ${catalog_path}"
+  [ -f "${catalog_path}" ] || fatal "catalog is not a regular file: ${catalog_path}"
+  validate_jsonc "${catalog_path}"
+  if ! catalog_json=$(cat "${catalog_path}" | jsonc read); then
+    fatal "jsonc could not read catalog: ${catalog_path}"
+  fi
+  printf '%s\n' "${catalog_json}" | jq -e '.mcp | type == "object"' >/dev/null || fatal 'catalog mcp must be an object'
+
+  target_json='{"mcp":{}}'
+  target_state=new
+  if [ -n "${target_path}" ]; then
+    load_project_config "${target_path}"
+    target_json=${project_json}
+    target_state=existing
+  else
+    target_path="${PWD}/opencode.jsonc"
+  fi
+
+  for name in "$@"; do
+    printf '%s\n' "${catalog_json}" | jq -e --arg name "${name}" '
+      .mcp | has($name) and
+      (.[$name] | type == "object") and
+      (.[$name] |
+        (.type == "remote" and (.url | type == "string")) or
+        (.type == "local" and (.command | type == "array" and length > 0 and all(type == "string"))))
+    ' >/dev/null || fatal "catalog entry is missing or invalid: ${name}"
+    catalog_entry=$(printf '%s\n' "${catalog_json}" | jq -S -c --arg name "${name}" '.mcp[$name]')
+    if printf '%s\n' "${target_json}" | jq -e --arg name "${name}" '(.mcp // {}) | has($name)' >/dev/null; then
+      target_entry=$(printf '%s\n' "${target_json}" | jq -S -c --arg name "${name}" '.mcp[$name]')
+      [ "${target_entry}" = "${catalog_entry}" ] && continue
+      [ "${force}" = true ] || fatal "MCP entry conflicts with project config: ${name}"
+    fi
+    [ -n "${staged_path}" ] || stage_target "${target_state}"
+    json_path=$(jq -cn --arg name "${name}" '["mcp", $name]')
+    modify_staged "${json_path}" -v "${catalog_entry}"
+  done
+
+  if [ -z "${staged_path}" ]; then
+    info 'Requested MCP entries already match the catalog'
+    return
+  fi
+  finish_update
+}
+
+cmd_remove() {
+  require_names "$@"
+  select_target
+  if [ -z "${target_path}" ]; then
+    info 'No project config exists; nothing to remove'
+    return
+  fi
+  load_project_config "${target_path}"
+  target_json=${project_json}
+
+  for name in "$@"; do
+    if printf '%s\n' "${target_json}" | jq -e --arg name "${name}" '(.mcp // {}) | has($name)' >/dev/null; then
+      [ -n "${staged_path}" ] || stage_target existing
+      json_path=$(jq -cn --arg name "${name}" '["mcp", $name]')
+      modify_staged "${json_path}" -d
+    fi
+  done
+  if [ -z "${staged_path}" ]; then
+    info 'Requested MCP entries are already absent'
+    return
+  fi
+  finish_update
+}
+
+if [ "$#" -eq 1 ] && { [ "$1" = '--help' ] || [ "$1" = '-h' ]; }; then
+  usage
+  exit 0
+fi
+[ "$#" -gt 0 ] || {
+  usage >&2
+  exit 2
+}
+
+action=$1
+shift
+case "${action}" in
+  add)
+    cmd_add "$@"
+    ;;
+  remove)
+    cmd_remove "$@"
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac

@@ -224,25 +224,6 @@
       "enabled": true,
       "type": "remote",
       "url": "https://mcp.deepwiki.com/mcp"
-    },
-    "playwright": {
-      "enabled": true,
-      "type": "remote",
-      "url": "http://127.0.0.1:8931/mcp"
-    },
-{{- if get .mcp "is_providing_ghidra" }}
-    "ghidra": {
-      "enabled": false,
-      "type": "local",
-      "command": [
-        "ghidra-mcp-headless"
-      ]
-    },
-{{- end }}
-    "ida-pro": {
-      "enabled": false,
-      "type": "remote",
-      "url": "http://127.0.0.1:8745/mcp?ext=dbg"
     }
   }
 }

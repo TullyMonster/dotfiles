@@ -24,7 +24,6 @@ ace_base_url        = {{ promptStringOnce . "mcp.ace_base_url"        "MCP: ace-
 ace_token           = {{ promptStringOnce . "mcp.ace_token"           "MCP: ace-tool MCP token"                                                                             | quote }}
 windsurf_api_key    = {{ promptStringOnce . "mcp.windsurf_api_key"    "MCP: WINDSURF_API_KEY"                                                                               | quote }}
 tavily_api_key      = {{ promptStringOnce . "mcp.tavily_api_key"      "MCP: tavilyApiKey"                                                                                   | quote }}
-is_providing_ghidra = {{ promptBoolOnce   . "mcp.is_providing_ghidra" "MCP: provide Ghidra support on this device" false }}
 ida_pro_dir         = {{ promptStringOnce . "mcp.ida_pro_dir"         "MCP: IDA Pro directory"                     (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") | quote }}
 
 [data.opencode.server]
