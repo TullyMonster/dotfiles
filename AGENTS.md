@@ -28,7 +28,7 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 
 ### Shell 风格
 
-- 不含 Go 模板的 Shell 脚本使用 `shfmt -i 2 -ci -bn -w <file>` 格式化。
+- 不含 Go 模板的 Shell 脚本使用 `shqa <file>` 格式化并检查。
 - 严格模式：`set -eu`。POSIX sh 不支持 `pipefail`，无需添加。
 - 变量展开始终加引号：`"${var}"`，带默认值时用 `"${var:-default}"`。
 - 日志函数统一使用以下命名，不再引入其他命名的日志函数：
