@@ -1,0 +1,47 @@
+#!/usr/bin/env sh
+
+set -eu
+
+usage() {
+  printf 'Usage: %s [HOST [PORT]]  (defaults: localhost 22)\n' "${0##*/}"
+}
+
+case "${1:-}" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+esac
+
+if [ "$#" -gt 2 ]; then
+  usage >&2
+  exit 2
+fi
+
+host="${1:-localhost}"
+port="${2:-22}"
+
+if resolved=$(getent ahosts "$host" 2>/dev/null); then
+  addresses=$(
+    printf '%s\n' "$resolved" \
+      | awk '!seen[$1]++ {printf "%s%s", sep, $1; sep=", "}'
+  )
+else
+  addresses="unresolved"
+fi
+
+printf 'SSH target: %s:%s -> %s\n' "$host" "$port" "$addresses"
+
+keys=$(ssh-keyscan -p "$port" "$host" 2>/dev/null || true)
+
+if [ -z "$keys" ]; then
+  printf 'Error: no SSH host keys received.\n' >&2
+  exit 1
+fi
+
+fingerprints=$(
+  printf '%s\n' "$keys" \
+    | ssh-keygen -lf - -E sha256
+)
+
+printf '%s\n' "$fingerprints" | column -t
