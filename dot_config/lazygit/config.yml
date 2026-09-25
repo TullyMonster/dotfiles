@@ -4,7 +4,6 @@ gui:
   showFileTree: false
   showNumstatInFilesView: true
   filterMode: fuzzy
-
 git:
-  pagers:
-    - pager: delta --light --paging=never
+  diffRenderers:
+    - command: delta --light --paging=never
