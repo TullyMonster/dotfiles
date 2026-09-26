@@ -1,0 +1,114 @@
+{{- if eq .chezmoi.os "linux" -}}
+{{- $miseBin := or (lookPath "mise") (joinPath .chezmoi.homeDir ".local" "bin" "mise") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 同步从远程仓库安装的全局 Agent Skills
+# ==================================================
+
+set -eu
+
+skills_bin="$("{{ $miseBin }}" which skills)"
+jq_bin="$("{{ $miseBin }}" which jq)"
+node_bin="$("{{ $miseBin }}" which node)"
+
+fatal() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+canonicalize_skill_name() {
+  "${node_bin}" -e '
+    process.stdout.write(
+      process.argv[1]
+        .toLowerCase()
+        .replace(/[^a-z0-9._]+/g, "-")
+        .replace(/^[.\-]+|[.\-]+$/g, "")
+        .substring(0, 255)
+        || "unnamed-skill"
+    );
+  ' -- "$1"
+}
+
+assert_unique_skill_names() {
+  while [ "$#" -gt 0 ]; do
+    skill_spec=$1
+    shift
+    skill_name="$(canonicalize_skill_name "${skill_spec##*@}")"
+
+    for other_skill_spec in "$@"; do
+      other_skill_name="$(canonicalize_skill_name "${other_skill_spec##*@}")"
+      [ "${skill_name}" != "${other_skill_name}" ] \
+        || fatal "duplicate skill name: ${skill_name}"
+    done
+  done
+}
+
+ensure_declared_skills() {
+  installed_skills_snapshot="$("${skills_bin}" ls -g --json)"
+
+  for skill_spec in "$@"; do
+    skill_name="$(canonicalize_skill_name "${skill_spec##*@}")"
+    skill_source=${skill_spec%@*}
+
+    if [ "$(
+      # shellcheck disable=SC2016
+      printf '%s\n' "${installed_skills_snapshot}" | "${jq_bin}" -r \
+        --arg name "${skill_name}" \
+        --arg source "${skill_source}" \
+        'any(.[]; .name == $name and .source == $source)'
+    )" = true ]; then
+      "${skills_bin}" update "${skill_name}" --global --yes
+    else
+      "${skills_bin}" add "${skill_spec}" --global --yes --agent universal
+    fi
+  done
+}
+
+remove_undeclared_skills() {
+  installed_skills_snapshot="$("${skills_bin}" ls -g --json)"
+
+  managed_skill_names="$(
+    # shellcheck disable=SC2016
+    printf '%s\n' "${installed_skills_snapshot}" | "${jq_bin}" -r \
+      --arg skills_dir_prefix "${HOME}/.agents/skills/" \
+      '.[] | select(
+        .source != null
+        and .path == ($skills_dir_prefix + .name)
+      ) | .name'
+  )"
+
+  [ -n "${managed_skill_names}" ] || return 0
+
+  while read -r managed_skill_name; do
+    is_declared=false
+    for declared_skill_spec in "$@"; do
+      declared_skill_name="$(canonicalize_skill_name "${declared_skill_spec##*@}")"
+      if [ "${managed_skill_name}" = "${declared_skill_name}" ]; then
+        is_declared=true
+        break
+      fi
+    done
+
+    [ "${is_declared}" = true ] && continue
+    "${skills_bin}" remove "${managed_skill_name}" --global --yes
+  done <<EOF
+${managed_skill_names}
+EOF
+}
+
+reconcile_declared_skills() {
+  assert_unique_skill_names "$@"
+  ensure_declared_skills "$@"
+  remove_undeclared_skills "$@"
+}
+
+reconcile_declared_skills \
+  humanlayer/skills@show-me \
+  vercel-labs/skills@find-skills \
+  mattpocock/skills@grill-me \
+  mattpocock/skills@grill-with-docs \
+  mattpocock/skills@grilling \
+  mattpocock/skills@domain-modeling \
+  nextlevelbuilder/ui-ux-pro-max-skill@ui-ux-pro-max
+{{- end }}

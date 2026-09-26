@@ -190,3 +190,28 @@ systemctl --user restart ida-pro-mcp.service
     `opencode-project-mcp remove` 直接从当前项目的配置文件中删除指定 MCP 条目，其执行独立于 Catalog 的存在或内容。指定条目不存在时，命令同样会成功结束，既不修改现有文件，也不创建配置文件。
 - **密钥与环境变量**：模板及配置支持使用 `{env:VAR}` 占位符引用环境变量，避免在配置文件中硬编码敏感密钥。
 - **配置持久化与源路径**：持久源路径为 `dot_config/opencode/project-mcp-catalog.jsonc`。已应用的 Catalog 并非缓存。如需使 Catalog 模板变更持久生效，请直接修改 chezmoi 源仓库中的 `dot_config/opencode/project-mcp-catalog.jsonc` 文件，并按正常的 chezmoi 工作流处理。
+
+## 全局 Agent Skill 维护
+
+系统的全局远程 Agent Skill 统一在 `.chezmoiscripts/run_onchange_after_25-install-agent-skills.sh.tmpl` 中维护，这是唯一的声明文件。OpenCode 会直接读取 `~/.agents/skills` 目录下的全局 Skill。
+
+每新增或维护一个远程 Skill，在脚本末尾的 `reconcile_declared_skills` 参数列表中声明一项：
+
+```shell
+reconcile_declared_skills \
+  owner/repo@skill
+```
+
+当该声明文件发生变更时，chezmoi 会自动重跑整个脚本，按声明状态进行调和（Reconcile）：
+
+- **匹配更新**：全局清单中名称与 `source` 均匹配的声明 Skill 会执行更新（`skills update`）。
+- **缺失与源变更安装**：尚不存在或名称相同但 `source` 变更的声明 Skill 会安装到 Universal 作用域（`skills add owner/repo@skill --global --yes --agent universal`）。
+- **末尾清理**：完成所有声明项的更新或安装命令后，脚本会重新读取全局清单，并卸载不在声明列表中的受管 Skill。
+- **所有权边界**：`source` 非空且路径为 `~/.agents/skills/<name>` 的全局 Skill 均属于清理范围；无 `source` 的本地 Skill（如 `headed-playwright-cli`）和其他路径下的 Skill 不会被自动清理。卸载按名称作用于全部 Agent 的同名全局链接。
+
+> **注意**：脚本依赖 `skills` 命令的退出状态判断操作是否完成，不会额外核验安装结果。该机制不保证版本与 upstream 字节级一致（更新会跟随上游最新版本），也不提供回滚或事务保证。
+
+常用管理命令：
+
+- 查看全局 Skill 清单：`skills ls -g`
+- 显式卸载指定 Skill 及其全部全局 Agent 链接：`skills remove <skill> --global --yes`
