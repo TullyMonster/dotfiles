@@ -47,6 +47,7 @@ github-cli = "latest"
 "github:achristmascarl/rainfrog" = "latest"
 "github:babarot/gomi" = "latest"
 "github:cortexkit/magic-context" = { version = "latest", version_prefix = "dashboard-v", matching_regex = "AppImage", bin = "magic-context-dashboard" }
+"github:gu1llaum-3/sshm" = "latest"
 "github:joshmedeski/sesh" = "latest"
 "github:micro-editor/micro" = "latest"
 "github:missdeer/ace-tool-rs" = { version = "latest", rename_exe = "ace-tool" }

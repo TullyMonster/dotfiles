@@ -96,6 +96,7 @@ _cache_completion   rg              rg --generate complete-zsh
 _cache_completion   ruff            ruff generate-shell-completion zsh
 _cache_completion   rustup          rustup completions zsh
 _cache_completion   sesh            sesh completion zsh
+_cache_completion   sshm            sshm completion zsh
 _cache_completion   taplo           taplo completions zsh
 _cache_completion   tldr            curl -fsSL -m 5 --connect-timeout 2 https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh
 _cache_completion   tree-sitter     tree-sitter complete --shell zsh
