@@ -1,6 +1,5 @@
 {{- if eq .chezmoi.os "linux" -}}
-{{- $home := .chezmoi.homeDir -}}
-{{- $miseBin := or (findExecutable "mise" (list ".local/bin" "bin")) (lookPath "mise") (joinPath $home ".local" "bin" "mise") -}}
+{{- $miseBin := or (lookPath "mise") (joinPath .chezmoi.homeDir ".local" "bin" "mise") -}}
 #!/usr/bin/env sh
 
 # ==================================================
