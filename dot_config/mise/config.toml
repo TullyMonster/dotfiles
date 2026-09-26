@@ -44,6 +44,7 @@ fzf = "latest"
 gdu = "latest"
 github-cli = "latest"
 "github:BtbN/FFmpeg-Builds" = { version = "latest", asset_pattern = "ffmpeg-*-linux64-gpl.tar.xz" }
+"github:JFryy/systemd-lsp" = "latest"
 "github:achristmascarl/rainfrog" = "latest"
 "github:babarot/gomi" = "latest"
 "github:cortexkit/magic-context" = { version = "latest", version_prefix = "dashboard-v", matching_regex = "AppImage", bin = "magic-context-dashboard" }
@@ -77,7 +78,8 @@ node = "lts"
 "npm:typescript" = "latest"
 "npm:typescript-language-server" = "latest"
 "npm:uipro-cli" = "latest"
-"npm:yaml-language-server" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+"npm:yaml-language-server" = { version = "latest", pnpm_args = "--config.node-linker=hoisted" }
 opencode = "latest"
 pnpm = "latest"
 prettier = "latest"
