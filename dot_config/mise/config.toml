@@ -42,6 +42,7 @@ fastfetch = "latest"
 fd = "latest"
 fzf = "latest"
 gdu = "latest"
+git-filter-repo = "latest"
 github-cli = "latest"
 "github:BtbN/FFmpeg-Builds" = { version = "latest", asset_pattern = "ffmpeg-*-linux64-gpl.tar.xz" }
 "github:JFryy/systemd-lsp" = "latest"
