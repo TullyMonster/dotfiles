@@ -8,6 +8,10 @@
 
 set -eu
 
+if [ -z "${MISE_SHELL:-}" ]; then
+  eval "$("{{ $miseBin }}" env)"
+fi
+
 skills_bin="$("{{ $miseBin }}" which skills)"
 jq_bin="$("{{ $miseBin }}" which jq)"
 node_bin="$("{{ $miseBin }}" which node)"
