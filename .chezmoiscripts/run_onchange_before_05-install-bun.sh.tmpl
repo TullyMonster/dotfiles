@@ -1,0 +1,12 @@
+{{- if eq .chezmoi.os "linux" -}}
+{{- $miseBin := or (lookPath "mise") (joinPath .chezmoi.homeDir ".local" "bin" "mise") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 安装 bun
+# ==================================================
+
+set -eu
+
+"{{ $miseBin }}" install --yes bun@latest
+{{- end }}

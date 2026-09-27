@@ -1,8 +1,7 @@
 {
   "files.associations": {
     "*.tmpl": "plaintext",
-    "dot_z{login,logout,profile,shrc}": "shellscript",
-    "modify_omo.jsonc": "javascript"
+    "dot_z{login,logout,profile,shrc}": "shellscript"
   },
   "customLocalFormatters.formatters": [
     {

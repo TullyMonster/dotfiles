@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bun run --install=fallback --loader .jsonc:js
+#!/usr/bin/env -S {{ or (lookPath "bun") (joinPath .chezmoi.homeDir ".local/share/mise/installs/bun/latest/bin/bun") }} run --install=fallback --loader .jsonc:js
 
 import { applyEdits, modify, parse } from "jsonc-parser@^3.0.0";
 
@@ -8,20 +8,6 @@ const existingConfig = parse(targetConfigText, parseErrors);
 
 if (parseErrors.length > 0) {
   console.error(`Invalid JSONC: ${parseErrors.length} parse error(s)`);
-  process.exit(1);
-}
-
-const templateResult = Bun.spawnSync([
-  "chezmoi",
-  "execute-template",
-  "{{ .omo | toJson }}",
-]);
-
-if (!templateResult.success) {
-  console.error(
-    templateResult.stderr.toString().trim() ||
-      "chezmoi execute-template failed",
-  );
   process.exit(1);
 }
 
@@ -41,9 +27,7 @@ const updateConfigValue = (path, value) => {
   );
 };
 
-for (const [key, value] of Object.entries(
-  JSON.parse(templateResult.stdout.toString()),
-)) {
+for (const [key, value] of Object.entries({{ .omo | toJson }})) {
   if (key === "[opencode]") {
     for (const [opencodeKey, opencodeValue] of Object.entries(value)) {
       updateConfigValue([key, opencodeKey], opencodeValue);
