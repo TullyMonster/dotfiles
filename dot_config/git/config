@@ -31,3 +31,6 @@
 
 [merge]
     conflictstyle = zdiff3
+
+[user]
+    useConfigOnly = true
