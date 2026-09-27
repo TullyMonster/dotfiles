@@ -1,12 +1,12 @@
 {{- $keyPath := joinPath .chezmoi.homeDir ".config" "chezmoi" "key.txt" -}}
 {{- if not (stat $keyPath) -}}
-    {{- fail "ERROR: Age private key not found. Please restore it from Bitwarden to ~/.config/chezmoi/key.txt first." -}}
+    {{- fail "ERROR: Age private key not found. Please restore it to ~/.config/chezmoi/key.txt first." -}}
 {{- end -}}
 
 encryption = "age"
 
 [age]
-recipient = {{ trim (output "chezmoi" "age-keygen" "-y" $keyPath) | quote }}
+recipient = {{ trim (output .chezmoi.executable "age-keygen" "-y" $keyPath) | quote }}
 identity  = {{ $keyPath                                           | quote }}
 
 [diff]
