@@ -1,3 +1,19 @@
+[user]
+    useConfigOnly = true
+    signingkey = {{ .git.user_signing_key }}
+
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    allowedSignersFile = {{ .chezmoi.homeDir }}/.config/git/allowed_signers
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+
 [init]
     defaultBranch = main
 
@@ -33,5 +49,10 @@
 [merge]
     conflictstyle = zdiff3
 
-[user]
-    useConfigOnly = true
+[credential "https://github.com"]
+    helper =
+    helper = !{{ printf "%s/.local/share/mise/shims/gh" .chezmoi.homeDir }} auth git-credential
+
+[credential "https://gist.github.com"]
+    helper =
+    helper = !{{ printf "%s/.local/share/mise/shims/gh" .chezmoi.homeDir }} auth git-credential

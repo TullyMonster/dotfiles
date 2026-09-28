@@ -15,15 +15,24 @@ exclude = ["scripts"]
 [data.zsh]
 zdotdir = {{ joinPath .chezmoi.homeDir ".config" "zsh" | quote }}
 
+[data.git]
+user_signing_key = {{ promptStringOnce . "git.user_signing_key" "Git: SSH signing public key path" | quote }}
+
+[data.systemd.user]
+is_reload_after_apply = {{ promptBoolOnce . "systemd.user.is_reload_after_apply" "systemd user: Reload the user manager after apply" true }}
+
+[data.npm]
+is_using_mirror = {{ promptBoolOnce . "npm.is_using_mirror" "NPM: Use a registry mirror on this device" false }}
+
 [data.sub_store]
 backend_path = {{ promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" | quote }}
 
 [data.mcp]
-context7_api_key    = {{ promptStringOnce . "mcp.context7_api_key"    "MCP: CONTEXT7_API_KEY"                                                                               | quote }}
 ace_base_url        = {{ promptStringOnce . "mcp.ace_base_url"        "MCP: ace-tool MCP base-url"                                                                          | quote }}
 ace_token           = {{ promptStringOnce . "mcp.ace_token"           "MCP: ace-tool MCP token"                                                                             | quote }}
-windsurf_api_key    = {{ promptStringOnce . "mcp.windsurf_api_key"    "MCP: WINDSURF_API_KEY"                                                                               | quote }}
+context7_api_key    = {{ promptStringOnce . "mcp.context7_api_key"    "MCP: CONTEXT7_API_KEY"                                                                               | quote }}
 tavily_api_key      = {{ promptStringOnce . "mcp.tavily_api_key"      "MCP: tavilyApiKey"                                                                                   | quote }}
+windsurf_api_key    = {{ promptStringOnce . "mcp.windsurf_api_key"    "MCP: WINDSURF_API_KEY"                                                                               | quote }}
 ida_pro_dir         = {{ promptStringOnce . "mcp.ida_pro_dir"         "MCP: IDA Pro directory"                     (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") | quote }}
 
 [data.opencode.server]
@@ -33,9 +42,6 @@ password = {{ promptStringOnce . "opencode.server.password" "OpenCode Headless S
 [data.opencode.go]
 workspace_id = {{ promptStringOnce . "opencode.go.workspace_id" "OpenCode Go: OPENCODE_GO_WORKSPACE_ID" | quote }}
 auth_cookie  = {{ promptStringOnce . "opencode.go.auth_cookie"  "OpenCode Go: OPENCODE_GO_AUTH_COOKIE"  | quote }}
-
-[data.npm]
-is_using_mirror = {{ promptBoolOnce . "npm.is_using_mirror" "NPM: Use a registry mirror on this device" false }}
 
 [data.headed_playwright_service]
 image_ref           = {{ promptStringOnce . "headed_playwright_service.image_ref"           "Headed Playwright Service: image reference"     "localhost/headed-playwright-service:0.0.76" | quote }}
@@ -48,6 +54,3 @@ mcp_port            = {{ promptIntOnce    . "headed_playwright_service.mcp_port"
 endpoint_port       = {{ promptIntOnce    . "headed_playwright_service.endpoint_port"       "Headed Playwright Service: endpoint port"       8932 }}
 vnc_port            = {{ promptIntOnce    . "headed_playwright_service.vnc_port"            "Headed Playwright Service: VNC port"            5900 }}
 novnc_port          = {{ promptIntOnce    . "headed_playwright_service.novnc_port"          "Headed Playwright Service: noVNC port"          6080 }}
-
-[data.systemd.user]
-is_reload_after_apply = {{ promptBoolOnce . "systemd.user.is_reload_after_apply" "systemd user: Reload the user manager after apply" true }}
