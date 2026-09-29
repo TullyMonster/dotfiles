@@ -19,7 +19,7 @@
 
      ```shell
      mkdir -p ~/.config/chezmoi
-     $EDITOR ~/.config/chezmoi/key.txt  # 写入形如 `AGE-SECRET-KEY-...` 的私钥
+     editor ~/.config/chezmoi/key.txt  # 写入形如 `AGE-SECRET-KEY-...` 的私钥
      chmod 600 ~/.config/chezmoi/key.txt
      ```
 
