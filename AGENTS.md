@@ -43,7 +43,7 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 `run_` + (`once_` | `onchange_`) + (`before_` | `after_`) + `序号-描述`。
 例如 `run_once_before_00-bootstrap-tools.sh.tmpl` 表示「首次应用前运行一次」。
 
-当 `dot_config/systemd/user/` 下的 Unit 模板文件发生新增、删除或重命名时，必须同步更新 `.chezmoiscripts/run_onchange_after_50-user-systemd-daemon-reload.sh.tmpl` 中由 `includeTemplate ... | sha256sum` 构成的显式依赖列表。此举旨在确保 Unit 集合的结构性变更能正确触发 `systemctl --user daemon-reload`；仅修改现有 Unit 模板的内容无需手动调整该列表。
+当 `dot_config/systemd/user/` 与 `dot_config/containers/systemd/` 下的 Unit 或 quadlet 模板文件发生新增、删除或重命名时，必须同步更新 `.chezmoiscripts/run_onchange_after_50-user-systemd-daemon-reload.sh.tmpl` 中由 `includeTemplate ... | sha256sum` 构成的显式依赖列表。此举旨在确保 Unit 集合的结构性变更能正确触发 `systemctl --user daemon-reload`（quadlet 文件由 podman 生成器在重载时转换为用户单元）；仅修改现有模板的内容无需手动调整该列表。
 
 所有会因设备或部署而变化的数据，都应以 `.chezmoi.toml.tmpl` 的 `[data]` 段为单一来源，避免在多个脚本中重复定义或二次包装。
 
