@@ -12,6 +12,9 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"      # 用户级配�
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"         # 用户级缓存文件目录
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"     # 用户级应用数据目录
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"   # 用户级状态数据目录
+if [ -z "${XDG_RUNTIME_DIR:-}" ] && [ -d "/run/user/$(id -u)" ]; then
+    export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+fi
 
 # Zsh 目录
 export ZDOTDIR="{{ .zsh.zdotdir }}"                 # .zprofile、.zshrc、.zlogin、.zlogout 路径
