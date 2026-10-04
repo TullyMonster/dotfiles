@@ -8,3 +8,5 @@ git:
   overrideGpg: true
   diffRenderers:
     - command: delta --light --paging=never
+  commit:
+    autoWrapCommitMessage: false
