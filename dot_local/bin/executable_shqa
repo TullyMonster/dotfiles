@@ -2,7 +2,7 @@
 
 set -eu
 
-rc=0
-shfmt -i 2 -ci -bn -s -w "$@" || rc=1
-shellcheck "$@" || rc=1
-exit "$rc"
+_rc=0
+shuck format "${@}" || _rc=1
+shuck check "${@}" || _rc=1
+exit "${_rc}"

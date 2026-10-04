@@ -1,0 +1,12 @@
+[format]
+indent-style = "space"
+indent-width = 2
+switch-case-indent = true
+binary-next-line = true
+space-redirects = true
+
+[lint]
+extend-select = ["S001", "S002", "S003", "S004", "S008", "S014", "S021"]
+
+[per-file-shell]
+"**/dot_config/zsh/dot_z*" = "zsh"
