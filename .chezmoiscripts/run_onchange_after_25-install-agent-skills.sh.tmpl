@@ -56,7 +56,6 @@ ensure_declared_skills() {
     skill_source=${skill_spec%@*}
 
     if [ "$(
-      # shellcheck disable=SC2016
       printf '%s\n' "${installed_skills_snapshot}" | "${jq_bin}" -r \
         --arg name "${skill_name}" \
         --arg source "${skill_source}" \
@@ -73,7 +72,6 @@ remove_undeclared_skills() {
   installed_skills_snapshot="$("${skills_bin}" ls -g --json)"
 
   managed_skill_names="$(
-    # shellcheck disable=SC2016
     printf '%s\n' "${installed_skills_snapshot}" | "${jq_bin}" -r \
       --arg skills_dir_prefix "${HOME}/.agents/skills/" \
       '.[] | select(

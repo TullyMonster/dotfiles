@@ -91,7 +91,7 @@ stage_target() {
   if [ "$1" = 'existing' ]; then
     cp -p "${target_path}" "${staged_path}" || fatal "cannot copy project config: ${target_path}"
   else
-    # shellcheck disable=SC2016
+    # shuck: disable=C005
     if ! printf '%s\n' '{"$schema":"https://opencode.ai/config.json","mcp":{}}' | jq -M '.' > "${staged_path}"; then
       fatal 'cannot create new project config'
     fi
