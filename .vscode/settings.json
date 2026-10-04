@@ -1,6 +1,7 @@
 {
   "files.associations": {
     "*.tmpl": "plaintext",
+    "*.zsh": "shellscript",
     "dot_z{login,logout,profile,shrc}": "shellscript"
   },
   "customLocalFormatters.formatters": [
@@ -45,6 +46,12 @@
         "python"
       ],
       "command": "ruff format --config=dot_config/ruff/pyproject.toml --stdin-filename=input.py -"
+    },
+    {
+      "languages": [
+        "shellscript"
+      ],
+      "command": "shuck format --stdin-filename=\"${file}\" -"
     }
   ],
   "[json]": {
@@ -72,6 +79,10 @@
     "editor.defaultFormatter": "jkillian.custom-local-formatters"
   },
   "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+  },
+  "[shellscript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "jkillian.custom-local-formatters"
   },

@@ -28,9 +28,11 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 
 ### Shell 风格
 
-- 不含 Go 模板的 Shell 脚本使用 `shqa <file>` 格式化并检查。
+- 不含 Go 模板的 sh、Bash、Zsh 脚本使用 `shqa <file-or-dir>...` 命令执行 Shuck 格式化和静态检查。
 - 严格模式：`set -eu`。POSIX sh 不支持 `pipefail`，无需添加。
-- 变量展开始终加引号：`"${var}"`，带默认值时用 `"${var:-default}"`。
+- 变量引用一律写成 `${...}`（含 `$1`、`$#`、`$@`、`$arr[i]`、算术中的 `10#${x}`）；`(( ))` 内的裸名字保持原样。
+- 引号：字面量用单引号；含展开的字符串用双引号（如 `"${var}"`、`"${var:-default}"`）；有意做模式匹配时不加引号，必要时用转义；空串写成 `''`。
+- 命名：脚本内部的函数与变量用小写加下划线前缀（如 `_func_*`）；全大写只留给会被 `export` 或对外可配置的名字；常量仅作约定（`typeset -g`），不用 `typeset -r`。
 - 日志函数统一使用以下命名，不再引入其他命名的日志函数：
   - `info()`：正常流程、状态变化、关键步骤
   - `warn()`：可继续运行，但有潜在问题
@@ -47,6 +49,11 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 
 所有会因设备或部署而变化的数据，都应以 `.chezmoi.toml.tmpl` 的 `[data]` 段为单一来源，避免在多个脚本中重复定义或二次包装。
 
+### Zsh 脚本
+
+- 自定义函数放 `dot_config/zsh/functions/<name>.zsh`，由 `dot_zshrc` source。
+- 函数首行使用 `emulate -L zsh`；文件缩进 2 空格。
+
 ### 克隆外部仓库
 
 脚本如果只是直接克隆外部仓库用于本地使用、构建或运行，默认使用 `git clone --depth 1`。
@@ -57,7 +64,7 @@ chezmoi 通过文件名前缀和后缀编码 target 行为，前缀顺序有严�
 仓库内维护的 Python 脚本以 Python 3.12 为最低支持版本。
 包含 PEP 723 内联脚本元数据的文件必须声明 `requires-python = ">=3.12"`。
 新增或修改代码时，推荐直接使用 Python 3.12 的语法特性。
-检查 Python 文件时直接运行 `pyqa <file>`；它会依次执行 Ruff 修复检查、Ruff 格式化和 Pyright，并保留全部步骤的综合失败状态。
+检查 Python 文件时直接运行 `pyqa <file-or-directory>...`；它会依次执行 Ruff 修复检查、Ruff 格式化和 Pyright，并保留全部步骤的综合失败状态。
 
 外部项目或上游脚本则遵循其自身的 Python 版本约束。
 
