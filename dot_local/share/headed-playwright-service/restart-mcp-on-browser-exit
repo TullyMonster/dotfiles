@@ -38,6 +38,8 @@ def wait_for_mcp_to_stop(rpc: xmlrpc.client.ServerProxy) -> None:
             log(f'could not inspect MCP state: {error.faultString}')
             return
 
+        if not isinstance(info, dict):
+            raise TypeError(f'unexpected getProcessInfo response: {info!r}')
         if str(info.get('statename')) in STOPPED_STATES:
             return
         time.sleep(0.2)
