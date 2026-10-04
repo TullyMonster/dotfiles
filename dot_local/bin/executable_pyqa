@@ -2,8 +2,8 @@
 
 set -eu
 
-rc=0
-ruff check --fix "$@" || rc=1
-ruff format "$@" || rc=1
-pyright "$@" || rc=1
-exit "$rc"
+_rc=0
+ruff check --fix "$@" || _rc=1
+ruff format "$@" || _rc=1
+pyright "$@" || _rc=1
+exit "$_rc"

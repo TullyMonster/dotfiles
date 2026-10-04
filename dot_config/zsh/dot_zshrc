@@ -4,39 +4,39 @@
 # =============================================================================
 
 # 启用 Powerlevel10k 即时提示
-() { [[ -r "$1" ]] && source "$1" } "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+() { [[ -r "$1" ]] && source "$1"; } "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" # shuck: ignore=C002
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 1. Shell 基础选项  <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-setopt AUTO_CD                  # 目录名自动 cd
-setopt EXTENDED_GLOB            # 启用扩展通配符
-setopt HIST_IGNORE_DUPS         # [历史命令行为] 不连续重复地记录命令
-setopt HIST_IGNORE_SPACE        # [历史命令行为] 不记录有前导空格的命令
-setopt SHARE_HISTORY            # [历史命令行为] 历史命令多终端窗口共享
-setopt HIST_EXPIRE_DUPS_FIRST   # [历史命令行为] 历史重复条目优先过期
-setopt HIST_REDUCE_BLANKS       # [历史命令行为] 存储前去除多余空格
-setopt IGNORE_EOF               # 禁止 shell 收到 EOF（通常由 Ctrl+D 发送）后直接退出
-unsetopt BEEP                   # 关闭终端响铃
+setopt AUTO_CD                # 目录名自动 cd
+setopt EXTENDED_GLOB          # 启用扩展通配符
+setopt HIST_IGNORE_DUPS       # [历史命令行为] 不连续重复地记录命令
+setopt HIST_IGNORE_SPACE      # [历史命令行为] 不记录有前导空格的命令
+setopt SHARE_HISTORY          # [历史命令行为] 历史命令多终端窗口共享
+setopt HIST_EXPIRE_DUPS_FIRST # [历史命令行为] 历史重复条目优先过期
+setopt HIST_REDUCE_BLANKS     # [历史命令行为] 存储前去除多余空格
+setopt IGNORE_EOF             # 禁止 shell 收到 EOF（通常由 Ctrl+D 发送）后直接退出
+unsetopt BEEP                 # 关闭终端响铃
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 2. 环境变量        <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-export MANPAGER='bat -plman --theme="Monokai Extended Light"'   # 将 bat 作为 man 的彩色分页器
-export MANROFFOPT="-c"                                          # 修正 man 渲染器 SGR 输出以配合 bat
-export YSU_MESSAGE_POSITION="after"                             # 消息显示位置（MichaelAquilina/zsh-you-should-use）
+export MANPAGER='bat -plman --theme="Monokai Extended Light"' # 将 bat 作为 man 的彩色分页器
+export MANROFFOPT="-c"                                        # 修正 man 渲染器 SGR 输出以配合 bat
+export YSU_MESSAGE_POSITION="after"                           # 消息显示位置（MichaelAquilina/zsh-you-should-use）
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 3. 历史命令配置    <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-history_ignore_keywords=(       # 从历史记录和自动建议中过滤的关键词
-    claude
+history_ignore_keywords=(# 从历史记录和自动建议中过滤的关键词
+  claude
 )
 
-HISTSIZE=5000                               # 内存保留历史命令的条目数
-SAVEHIST=50000                              # 退出 Zsh 时最大的历史命令写入数
-HISTFILE=~/.zsh_history                     # 历史命令持久化文件路径
-HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1    # 历史搜索结果去重
+HISTSIZE=5000                            # 内存保留历史命令的条目数
+SAVEHIST=50000                           # 退出 Zsh 时最大的历史命令写入数
+HISTFILE=~/.zsh_history                  # 历史命令持久化文件路径
+HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1 # shuck: ignore=C001 # 历史搜索结果去重
 ZSH_AUTOSUGGEST_HISTORY_IGNORE="*(${(j:|:)history_ignore_keywords})*"
 
 function zshaddhistory() {
@@ -49,71 +49,71 @@ function zshaddhistory() {
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 4. 补全前置准备    <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-eval "$(mise activate zsh)"     # 激活 mise（多种二进制工具的管理器）
-source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh  # 引入 Antidote
+eval "$(mise activate zsh)"                     # 激活 mise（多种二进制工具的管理器）
+source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh # shuck: ignore=C003 # 引入 Antidote
 antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.pre-compinit.txt
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 5. 补全系统初始化  <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 _cache_completion() {
-    # 用法：_cache_completion <命令名> <生成补全脚本的命令...>
-    emulate -L zsh  # 隔离函数内的 Zsh 选项
+  # 用法：_cache_completion <命令名> <生成补全脚本的命令...>
+  emulate -L zsh # 隔离函数内的 Zsh 选项
 
-    local name="$1" # 待补全的命令名
-    shift           # 以剩余参数作为补全脚本的生成命令
+  local name="$1" # 待补全的命令名
+  shift           # 以剩余参数作为补全脚本的生成命令
 
-    local target="${SITE_FUNCTIONS}/_${name}"   # 目标补全文件名（以下划线开头）
-    local tmp="${target}.tmp.$$"                # 临时文件名
+  local target="${SITE_FUNCTIONS}/_${name}" # 目标补全文件名（以下划线开头）
+  local tmp="${target}.tmp.$$"              # 临时文件名
 
-    (( ${+commands[$name]} )) || return 0                                 # 待补全的命令不存在，跳过
-    [[ -s "$target" && "$target" -nt "${commands[$name]}" ]] && return 0  # 补全文件非空且比目标可执行文件新，跳过
+  ((${+commands[$name]})) || return 0                                  # 待补全的命令不存在，跳过
+  [[ -s "$target" && "$target" -nt "${commands[$name]}" ]] && return 0 # 补全文件非空且比目标可执行文件新，跳过
 
-    if command "$@" >| "$tmp" 2>/dev/null && [[ -s "$tmp" ]]; then  # 成功生成补全文件
-        mv -f -- "$tmp" "$target"               # 替换为目标补全文件
-    fi
+  if command "$@" >| "$tmp" 2> /dev/null && [[ -s "$tmp" ]]; then # 成功生成补全文件
+    mv -f -- "$tmp" "$target"                                     # 替换为目标补全文件
+  fi
 
-    rm -f -- "$tmp" # 清理临时文件
+  rm -f -- "$tmp" # 清理临时文件
 }
 
-mkdir -p -- "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}"  # 创建补全脚本及缓存目录
+mkdir -p -- "${SITE_FUNCTIONS}" "${ZSH_COMPDUMP:h}" # 创建补全脚本及缓存目录
 
 # mise 源
-_cache_completion   mise            mise completion zsh
-_cache_completion   bat             bat --completion zsh
-_cache_completion   bun             bun completions zsh
-_cache_completion   cargo           rustup completions zsh cargo
-_cache_completion   delta           delta --generate-completion zsh
-_cache_completion   fd              fd --gen-completions zsh
-_cache_completion   gdu             gdu completion zsh
-_cache_completion   gh              gh completion -s zsh
-_cache_completion   lazygit         lazygit completion zsh
-_cache_completion   miniserve       miniserve --print-completions zsh
-_cache_completion   opencode        opencode completion
-_cache_completion   openspec        openspec completion generate zsh
-_cache_completion   pnpm            pnpm completion zsh
-_cache_completion   rg              rg --generate complete-zsh
-_cache_completion   ruff            ruff generate-shell-completion zsh
-_cache_completion   rustup          rustup completions zsh
-_cache_completion   sesh            sesh completion zsh
-_cache_completion   sshm            sshm completion zsh
-_cache_completion   taplo           taplo completions zsh
-_cache_completion   tldr            curl -fsSL -m 5 --connect-timeout 2 https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh
-_cache_completion   tree-sitter     tree-sitter complete --shell zsh
-_cache_completion   usage           usage generate completion --usage-cmd 'usage --usage-spec' zsh usage
-_cache_completion   uv              uv generate-shell-completion zsh
-_cache_completion   uvx             uvx --generate-shell-completion zsh
-_cache_completion   xh              xh --generate complete-zsh
-_cache_completion   yq              yq shell-completion zsh
+_cache_completion mise mise completion zsh
+_cache_completion bat bat --completion zsh
+_cache_completion bun bun completions zsh
+_cache_completion cargo rustup completions zsh cargo
+_cache_completion delta delta --generate-completion zsh
+_cache_completion fd fd --gen-completions zsh
+_cache_completion gdu gdu completion zsh
+_cache_completion gh gh completion -s zsh
+_cache_completion lazygit lazygit completion zsh
+_cache_completion miniserve miniserve --print-completions zsh
+_cache_completion opencode opencode completion
+_cache_completion openspec openspec completion generate zsh
+_cache_completion pnpm pnpm completion zsh
+_cache_completion rg rg --generate complete-zsh
+_cache_completion ruff ruff generate-shell-completion zsh
+_cache_completion rustup rustup completions zsh
+_cache_completion sesh sesh completion zsh
+_cache_completion sshm sshm completion zsh
+_cache_completion taplo taplo completions zsh
+_cache_completion tldr curl -fsSL -m 5 --connect-timeout 2 https://github.com/tealdeer-rs/tealdeer/releases/latest/download/completions_zsh
+_cache_completion tree-sitter tree-sitter complete --shell zsh
+_cache_completion usage usage generate completion --usage-cmd 'usage --usage-spec' zsh usage
+_cache_completion uv uv generate-shell-completion zsh
+_cache_completion uvx uvx --generate-shell-completion zsh
+_cache_completion xh xh --generate complete-zsh
+_cache_completion yq yq shell-completion zsh
 # apt 源
-_cache_completion   caddy           caddy completion zsh
-_cache_completion   chezmoi         chezmoi completion zsh
-_cache_completion   nala            nala --show-completion zsh
-_cache_completion   podman          podman completion zsh
-_cache_completion   tailscale       tailscale completion zsh
+_cache_completion caddy caddy completion zsh
+_cache_completion chezmoi chezmoi completion zsh
+_cache_completion nala nala --show-completion zsh
+_cache_completion podman podman completion zsh
+_cache_completion tailscale tailscale completion zsh
 
-disabled_command_completions=(  # 禁用专属补全的命令列表
-    tree
+disabled_command_completions=(# 禁用专属补全的命令列表
+  tree
 )
 
 autoload -Uz compinit
@@ -124,26 +124,26 @@ unfunction _cache_completion
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 6. 按键绑定        <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-bindkey -e                      # 将 Zsh 的键位方案设置为 Emacs 模式
+bindkey -e # 将 Zsh 的键位方案设置为 Emacs 模式
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 7. 交互增强        <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-eval "$(zoxide init zsh)"       # 初始化 zoxide
-source <(fzf --zsh)             # 初始化 fzf
+eval "$(zoxide init zsh)" # 初始化 zoxide
+source <(fzf --zsh)       # shuck: ignore=C002 # 初始化 fzf
 antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.post-compinit.txt
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 8. 提示符          <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-[[ -f $ZDOTDIR/.p10k.zsh ]] && source $ZDOTDIR/.p10k.zsh  # 加载 Powerlevel10k 配置
+[[ -f $ZDOTDIR/.p10k.zsh ]] && source $ZDOTDIR/.p10k.zsh # shuck: ignore=C003 # 加载 Powerlevel10k 配置
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 9. 别名            <<<<<<<<<<
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-alias -g -- --help='--help |& bat -plhelp --theme="Monokai Extended Light"'  # 使用 bat 高亮显示 --help 信息
-alias ls="command ls --color=auto --group-directories-first -h --time-style=$'+%m-%d  %Y\n%m-%d %H:%M'"  # 在终端输出颜色，目录优先，显示易读大小，并简化长列表时间格式
-alias lg='lazygit'              # 打开 lazygit TUI
+alias -g -- --help='--help |& bat -plhelp --theme="Monokai Extended Light"'                            # 使用 bat 高亮显示 --help 信息
+alias ls="command ls --color=auto --group-directories-first -h --time-style=$'+%m-%d  %Y\n%m-%d %H:%M'" # 在终端输出颜色，目录优先，显示易读大小，并简化长列表时间格式
+alias lg='lazygit'                                                                                     # 打开 lazygit TUI
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>> 10. 自定义函数     <<<<<<<<<<

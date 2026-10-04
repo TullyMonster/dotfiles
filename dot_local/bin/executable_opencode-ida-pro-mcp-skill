@@ -122,21 +122,21 @@ if [ "$#" -ne 1 ]; then
 fi
 
 case "$1" in
-install)
-  cmd_install
-  ;;
-update)
-  cmd_update
-  ;;
-uninstall)
-  cmd_uninstall
-  ;;
---help | -h)
-  usage
-  exit 0
-  ;;
-*)
-  usage
-  exit 2
-  ;;
+  install)
+    cmd_install
+    ;;
+  update)
+    cmd_update
+    ;;
+  uninstall)
+    cmd_uninstall
+    ;;
+  --help | -h)
+    usage
+    exit 0
+    ;;
+  *)
+    usage
+    exit 2
+    ;;
 esac

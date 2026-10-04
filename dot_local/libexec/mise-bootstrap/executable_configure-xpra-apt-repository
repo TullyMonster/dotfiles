@@ -7,11 +7,13 @@ fatal() {
   exit 1
 }
 
-. /etc/os-release
+. /etc/os-release # shuck: ignore=C003
 
 case "${ID:-}" in
   debian | ubuntu) ;;
-  *) fatal 'Xpra APT repository is only supported on Debian and Ubuntu' ;;
+  *)
+    fatal 'Xpra APT repository is only supported on Debian and Ubuntu'
+    ;;
 esac
 : "${VERSION_CODENAME:?VERSION_CODENAME is missing from /etc/os-release}"
 
@@ -28,11 +30,11 @@ sources_file="${tmpdir}/xpra.sources"
 curl --fail --location --silent --show-error --output "$key_file" 'https://xpra.org/xpra.asc'
 curl --fail --location --silent --show-error --output "$sources_file" "https://raw.githubusercontent.com/Xpra-org/xpra/master/packaging/repos/${VERSION_CODENAME}/xpra.sources"
 
-if ! grep -Fx 'Types: deb' "$sources_file" >/dev/null \
-  || ! grep -Fx 'URIs: https://xpra.org' "$sources_file" >/dev/null \
-  || ! grep -Fx "Suites: ${VERSION_CODENAME}" "$sources_file" >/dev/null \
-  || ! grep -Fx 'Components: main' "$sources_file" >/dev/null \
-  || ! grep -Fx 'Signed-By: /usr/share/keyrings/xpra.asc' "$sources_file" >/dev/null; then
+if ! grep -Fx 'Types: deb' "$sources_file" > /dev/null ||
+  ! grep -Fx 'URIs: https://xpra.org' "$sources_file" > /dev/null ||
+  ! grep -Fx "Suites: ${VERSION_CODENAME}" "$sources_file" > /dev/null ||
+  ! grep -Fx 'Components: main' "$sources_file" > /dev/null ||
+  ! grep -Fx 'Signed-By: /usr/share/keyrings/xpra.asc' "$sources_file" > /dev/null; then
   fatal 'Downloaded Xpra source definition is invalid'
 fi
 

@@ -51,13 +51,13 @@ create_temp() {
   path_exists "$1" && fatal "temporary path already exists: $1"
   (
     set -C
-    : >"$1"
-  ) 2>/dev/null || fatal "cannot create temporary file: $1"
+    : > "$1"
+  ) 2> /dev/null || fatal "cannot create temporary file: $1"
 }
 
 validate_jsonc() {
   source_path=$1
-  biome check --write --stdin-file-path=validate.jsonc <"${source_path}" >/dev/null || fatal "invalid JSONC: ${source_path}"
+  biome check --write --stdin-file-path=validate.jsonc < "${source_path}" > /dev/null || fatal "invalid JSONC: ${source_path}"
 }
 
 load_project_config() {
@@ -69,7 +69,7 @@ load_project_config() {
   printf '%s\n' "${project_json}" | jq -e '
     type == "object" and
     ((has("mcp") | not) or (.mcp | type == "object"))
-  ' >/dev/null || fatal "project config root and mcp must be objects: ${source_path}"
+  ' > /dev/null || fatal "project config root and mcp must be objects: ${source_path}"
 }
 
 select_target() {
@@ -92,7 +92,7 @@ stage_target() {
     cp -p "${target_path}" "${staged_path}" || fatal "cannot copy project config: ${target_path}"
   else
     # shellcheck disable=SC2016
-    if ! printf '%s\n' '{"$schema":"https://opencode.ai/config.json","mcp":{}}' | jq -M '.' >"${staged_path}"; then
+    if ! printf '%s\n' '{"$schema":"https://opencode.ai/config.json","mcp":{}}' | jq -M '.' > "${staged_path}"; then
       fatal 'cannot create new project config'
     fi
   fi
@@ -104,7 +104,7 @@ modify_staged() {
   if ! modified_json=$(cat "${staged_path}" | jsonc modify -p "${json_path}" "$@"); then
     fatal 'jsonc failed while updating an MCP entry'
   fi
-  printf '%s\n' "${modified_json}" >"${staged_path}" || fatal 'cannot update temporary project config'
+  printf '%s\n' "${modified_json}" > "${staged_path}" || fatal 'cannot update temporary project config'
 }
 
 require_names() {
@@ -142,7 +142,7 @@ cmd_add() {
   if ! catalog_json=$(cat "${catalog_path}" | jsonc read); then
     fatal "jsonc could not read catalog: ${catalog_path}"
   fi
-  printf '%s\n' "${catalog_json}" | jq -e '.mcp | type == "object"' >/dev/null || fatal 'catalog mcp must be an object'
+  printf '%s\n' "${catalog_json}" | jq -e '.mcp | type == "object"' > /dev/null || fatal 'catalog mcp must be an object'
 
   target_json='{"mcp":{}}'
   target_state=new
@@ -161,9 +161,9 @@ cmd_add() {
       (.[$name] |
         (.type == "remote" and (.url | type == "string")) or
         (.type == "local" and (.command | type == "array" and length > 0 and all(type == "string"))))
-    ' >/dev/null || fatal "catalog entry is missing or invalid: ${name}"
+    ' > /dev/null || fatal "catalog entry is missing or invalid: ${name}"
     catalog_entry=$(printf '%s\n' "${catalog_json}" | jq -S -c --arg name "${name}" '.mcp[$name]')
-    if printf '%s\n' "${target_json}" | jq -e --arg name "${name}" '(.mcp // {}) | has($name)' >/dev/null; then
+    if printf '%s\n' "${target_json}" | jq -e --arg name "${name}" '(.mcp // {}) | has($name)' > /dev/null; then
       target_entry=$(printf '%s\n' "${target_json}" | jq -S -c --arg name "${name}" '.mcp[$name]')
       [ "${target_entry}" = "${catalog_entry}" ] && continue
       [ "${force}" = true ] || fatal "MCP entry conflicts with project config: ${name}"
@@ -191,7 +191,7 @@ cmd_remove() {
   target_json=${project_json}
 
   for name in "$@"; do
-    if printf '%s\n' "${target_json}" | jq -e --arg name "${name}" '(.mcp // {}) | has($name)' >/dev/null; then
+    if printf '%s\n' "${target_json}" | jq -e --arg name "${name}" '(.mcp // {}) | has($name)' > /dev/null; then
       [ -n "${staged_path}" ] || stage_target existing
       json_path=$(jq -cn --arg name "${name}" '["mcp", $name]')
       modify_staged "${json_path}" -d

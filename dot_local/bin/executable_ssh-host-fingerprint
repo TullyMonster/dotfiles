@@ -21,7 +21,7 @@ fi
 host="${1:-localhost}"
 port="${2:-22}"
 
-if resolved=$(getent ahosts "$host" 2>/dev/null); then
+if resolved=$(getent ahosts "$host" 2> /dev/null); then
   addresses=$(
     printf '%s\n' "$resolved" \
       | awk '!seen[$1]++ {printf "%s%s", sep, $1; sep=", "}'
@@ -32,7 +32,7 @@ fi
 
 printf 'SSH target: %s:%s -> %s\n' "$host" "$port" "$addresses"
 
-keys=$(ssh-keyscan -p "$port" "$host" 2>/dev/null || true)
+keys=$(ssh-keyscan -p "$port" "$host" 2> /dev/null || true)
 
 if [ -z "$keys" ]; then
   printf 'Error: no SSH host keys received.\n' >&2
