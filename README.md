@@ -183,9 +183,15 @@ systemctl --user restart ida-pro-mcp.service
 
 ### 工作原理与通用契约
 
-- **Catalog 位置**：MCP Catalog 配置文件路径为 `${XDG_CONFIG_HOME:-$HOME/.config}/opencode/project-mcp-catalog.jsonc`；默认路径为 `~/.config/opencode/project-mcp-catalog.jsonc`。
+- **Catalog 位置**：MCP Catalog 配置文件固定为 `~/.config/opencode/project-mcp-catalog.jsonc`。
 - **目标选择与文件创建**：命令优先选择 `$PWD/opencode.jsonc`，若不存在则选择 `$PWD/opencode.json`。当两者均不存在时，仅 `add` 命令会创建 `$PWD/opencode.jsonc`；`remove` 命令不会创建任何文件。
 - **通用命令语法**：
+  - 查看可用条目：
+    ```shell
+    opencode-project-mcp list
+    ```
+    第一行显示 Catalog 配置文件位置；随后按名称排序列出 Catalog 中可由 `add` 添加的 MCP 条目，已存在于当前项目配置中的条目会标注 `(installed)`。命令只读，不创建或修改任何文件；Catalog 不存在时仅显示路径，存在但不是普通文件或内容无效时会失败。
+
   - 基础添加命令：
     ```shell
     opencode-project-mcp add <name>...

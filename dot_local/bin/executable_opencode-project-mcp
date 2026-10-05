@@ -36,10 +36,12 @@ usage() {
   prog=${0##*/}
 
   printf 'Usage:\n'
+  printf '  %s list\n' "${prog}"
   printf '  %s add [--force] <name> [<name>...]\n' "${prog}"
   printf '  %s remove <name> [<name>...]\n' "${prog}"
   printf '  %s -h | --help\n' "${prog}"
   printf '\nCommands:\n'
+  printf '  list     List MCP entries available in the catalog.\n'
   printf '  add      Add MCP entries from the catalog to the project config.\n'
   printf '  remove   Remove MCP entries from the project config.\n'
   printf '\nOptions:\n'
@@ -70,6 +72,15 @@ load_project_config() {
     type == "object" and
     ((has("mcp") | not) or (.mcp | type == "object"))
   ' > /dev/null || fatal "project config root and mcp must be objects: ${source_path}"
+}
+
+load_catalog() {
+  [ -f "${catalog_path}" ] || fatal "catalog is not a regular file: ${catalog_path}"
+  validate_jsonc "${catalog_path}"
+  if ! catalog_json=$(cat "${catalog_path}" | jsonc read); then
+    fatal "jsonc could not read catalog: ${catalog_path}"
+  fi
+  printf '%s\n' "${catalog_json}" | jq -e '.mcp | type == "object"' > /dev/null || fatal 'catalog mcp must be an object'
 }
 
 select_target() {
@@ -127,6 +138,34 @@ finish_update() {
   info "Updated ${target_path}"
 }
 
+cmd_list() {
+  [ "$#" -eq 0 ] || {
+    usage >&2
+    exit 2
+  }
+
+  printf 'Catalog: ~%s\n' "${catalog_path#"${HOME}"}"
+  path_exists "${catalog_path}" || return 0
+  load_catalog
+
+  project_json=''
+  select_target
+  if [ -n "${target_path}" ]; then
+    load_project_config "${target_path}"
+  fi
+
+  printf '%s\n' "${catalog_json}" | jq -r --argjson project "${project_json:-null}" '
+    .mcp | to_entries | sort_by(.key)[] |
+    select(.value | (
+      type == "object" and
+      ((.type == "remote" and (.url | type == "string")) or
+        (.type == "local" and (.command | type == "array" and length > 0 and all(type == "string")))))
+    ) |
+    .key as $name |
+    "- \($name)\(if (($project.mcp // {}) | has($name)) then " (installed)" else "" end)"
+  '
+}
+
 cmd_add() {
   force=false
   if [ "${1:-}" = '--force' ]; then
@@ -137,12 +176,7 @@ cmd_add() {
 
   select_target
   path_exists "${catalog_path}" || fatal "catalog does not exist: ${catalog_path}"
-  [ -f "${catalog_path}" ] || fatal "catalog is not a regular file: ${catalog_path}"
-  validate_jsonc "${catalog_path}"
-  if ! catalog_json=$(cat "${catalog_path}" | jsonc read); then
-    fatal "jsonc could not read catalog: ${catalog_path}"
-  fi
-  printf '%s\n' "${catalog_json}" | jq -e '.mcp | type == "object"' > /dev/null || fatal 'catalog mcp must be an object'
+  load_catalog
 
   target_json='{"mcp":{}}'
   target_state=new
@@ -216,6 +250,9 @@ fi
 action=$1
 shift
 case "${action}" in
+  list)
+    cmd_list "$@"
+    ;;
   add)
     cmd_add "$@"
     ;;
