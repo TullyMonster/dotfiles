@@ -118,6 +118,19 @@ modify_staged() {
   printf '%s\n' "${modified_json}" > "${staged_path}" || fatal 'cannot update temporary project config'
 }
 
+format_staged() {
+  if ! formatted_json=$(biome format \
+    --stdin-file-path="${target_path##*/}" \
+    --json-formatter-expand=always \
+    --json-formatter-trailing-commas=none \
+    --json-formatter-indent-style=space \
+    --json-formatter-indent-width=2 \
+    < "${staged_path}"); then
+    fatal 'cannot format temporary project config'
+  fi
+  printf '%s\n' "${formatted_json}" > "${staged_path}" || fatal 'cannot update temporary project config'
+}
+
 require_names() {
   [ "$#" -gt 0 ] || {
     usage >&2
@@ -132,6 +145,7 @@ require_names() {
 }
 
 finish_update() {
+  format_staged
   load_project_config "${staged_path}"
   mv "${staged_path}" "${target_path}" || fatal "cannot atomically replace project config: ${target_path}"
   staged_path=''
