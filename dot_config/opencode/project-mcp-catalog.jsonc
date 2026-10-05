@@ -17,6 +17,15 @@
       "enabled": true,
       "type": "remote",
       "url": "http://127.0.0.1:8745/mcp?ext=dbg"
+    },
+    "ssh-mcp-server": {
+      "enabled": true,
+      "type": "local",
+      "command": [
+        "ssh-mcp-server",
+        "--config-file",
+        ".ssh-mcp-server.json"
+      ]
     }
   }
 }
