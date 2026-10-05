@@ -120,6 +120,7 @@ opencode-ida-pro-mcp-skill uninstall
 2. 下载 IDA Pro 的 Linux 安装包并执行安装（以 x64 架构为例）：
    - 同意最终用户许可协议 (End User License Agreement, EULA)
    - 确认或修改安装目录，建议安装在 `~/.local/opt/ida-pro-*.*`
+
    ```shell
    chmod +x ida-pro_*_x64linux.run
    ./ida-pro_*_x64linux.run
@@ -131,6 +132,7 @@ opencode-ida-pro-mcp-skill uninstall
 
 - 参考 [kasmtech/KasmVNC](https://github.com/kasmtech/KasmVNC) 完成安装与配置
 - 常用命令：
+
   ```shell
   vncserver                         # 启动新会话
   vncserver -list                   # 查看运行中的会话
@@ -187,25 +189,35 @@ systemctl --user restart ida-pro-mcp.service
 - **目标选择与文件创建**：命令优先选择 `$PWD/opencode.jsonc`，若不存在则选择 `$PWD/opencode.json`。当两者均不存在时，仅 `add` 命令会创建 `$PWD/opencode.jsonc`；`remove` 命令不会创建任何文件。
 - **通用命令语法**：
   - 查看可用条目：
+
     ```shell
     opencode-project-mcp list
     ```
+
     第一行显示 Catalog 配置文件位置；随后按名称排序列出 Catalog 中可由 `add` 添加的 MCP 条目，已存在于当前项目配置中的条目会标注 `(installed)`。命令只读，不创建或修改任何文件；Catalog 不存在时仅显示路径，存在但不是普通文件或内容无效时会失败。
 
   - 基础添加命令：
+
     ```shell
     opencode-project-mcp add <name>...
     ```
+
   - 强行覆盖现有配置：
+
     ```shell
     opencode-project-mcp add --force <name>...
     ```
+
     如果目标项目配置中已存在语义相同的同名 MCP，`opencode-project-mcp add` 会成功结束且不修改文件；只有同名条目的内容不同时，命令才会提示冲突并拒绝覆盖。`opencode-project-mcp add --force` 会用 Catalog 条目整体替换现有 MCP 对象，绝不合并字段。
+
   - 移除配置命令：
+
     ```shell
     opencode-project-mcp remove <name>...
     ```
+
     `opencode-project-mcp remove` 直接从当前项目的配置文件中删除指定 MCP 条目，其执行独立于 Catalog 的存在或内容。指定条目不存在时，命令同样会成功结束，既不修改现有文件，也不创建配置文件。
+
 - **密钥与环境变量**：模板及配置支持使用 `{env:VAR}` 占位符引用环境变量，避免在配置文件中硬编码敏感密钥。
 - **配置持久化与源路径**：持久源路径为 `dot_config/opencode/project-mcp-catalog.jsonc`。已应用的 Catalog 并非缓存。如需使 Catalog 模板变更持久生效，请直接修改 chezmoi 源仓库中的 `dot_config/opencode/project-mcp-catalog.jsonc` 文件，并按正常的 chezmoi 工作流处理。
 

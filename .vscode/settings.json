@@ -68,7 +68,10 @@
   },
   "[markdown]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "jkillian.custom-local-formatters"
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.markdownlint": "explicit"
+    }
   },
   "[yaml]": {
     "editor.formatOnSave": true,
