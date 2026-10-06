@@ -16,8 +16,5 @@
     "pi": {
       "model": "deepseek/deepseek-flash"
     }
-  },
-  "sidekick": {
-    "model": "deepseek/deepseek-flash"
   }
 }
