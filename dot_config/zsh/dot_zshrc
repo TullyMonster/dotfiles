@@ -89,6 +89,7 @@ _cache_completion gdu gdu completion zsh
 _cache_completion gh gh completion -s zsh
 _cache_completion lazygit lazygit completion zsh
 _cache_completion miniserve miniserve --print-completions zsh
+_cache_completion npm npm completion zsh
 _cache_completion opencode opencode completion
 _cache_completion openspec openspec completion generate zsh
 _cache_completion pnpm pnpm completion zsh
