@@ -1,0 +1,14 @@
+{{- if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 通过 update-alternatives 设置系统默认编辑器（editor 组）
+# ==================================================
+
+set -eu
+
+editor_bin='{{ .chezmoi.homeDir }}/.local/share/mise/installs/github-micro-editor-micro/latest/micro'
+
+sudo update-alternatives --install /usr/bin/editor editor "${editor_bin}" 50
+sudo update-alternatives --set editor "${editor_bin}"
+{{- end }}
