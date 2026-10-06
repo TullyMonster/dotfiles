@@ -51,8 +51,6 @@
         ".less",
         ".vue",
         ".svelte",
-        ".json",
-        ".jsonc",
         ".yaml",
         ".yml",
         ".toml",
@@ -61,6 +59,23 @@
         ".mdx",
         ".graphql",
         ".gql"
+      ],
+      "disabled": false
+    },
+    "biome": {
+      "command": [
+        "biome",
+        "format",
+        "--write",
+        "--json-formatter-expand=always",
+        "--json-formatter-trailing-commas=none",
+        "--json-formatter-indent-style=space",
+        "--json-formatter-indent-width=2",
+        "$FILE"
+      ],
+      "extensions": [
+        ".json",
+        ".jsonc"
       ],
       "disabled": false
     }
