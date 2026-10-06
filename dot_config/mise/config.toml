@@ -83,7 +83,7 @@ node = "lts"
 "npm:uipro-cli" = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:yaml-language-server" = { version = "latest", pnpm_args = "--config.node-linker=hoisted" }
-opencode = "latest"
+opencode = "1.18.34"
 pnpm = "latest"
 prettier = "latest"
 python = "3.13"
