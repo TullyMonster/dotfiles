@@ -22,13 +22,6 @@
       "websearch": {
         "provider": "exa"
       },
-      "codegraph": {
-        "enabled": true,
-        "daemon": true,
-        "auto_init": true,
-        "auto_provision": false,
-        "telemetry": false
-      },
       "git_master": {
         "commit_footer": false,
         "include_co_authored_by": false,
