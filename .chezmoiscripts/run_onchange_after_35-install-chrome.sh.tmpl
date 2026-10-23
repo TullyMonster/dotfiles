@@ -1,0 +1,41 @@
+{{- if eq .chezmoi.os "linux" -}}
+{{- $miseBin := or (lookPath "mise") (joinPath .chezmoi.homeDir ".local" "bin" "mise") -}}
+#!/usr/bin/env sh
+
+# ==================================================
+# 安装 playwright cli/mcp 依赖的系统 Google Chrome
+# ==================================================
+
+set -eu
+
+info() {
+  printf '%s\n' "$*"
+}
+
+warn() {
+  printf 'warning: %s\n' "$*" >&2
+}
+
+if [ "$(uname -m)" != 'x86_64' ]; then
+  warn "Google Chrome has no Linux build for $(uname -m); skipping"
+  exit 0
+fi
+
+if [ -x /opt/google/chrome/chrome ]; then
+  info 'system Chrome is already installed'
+  exit 0
+fi
+
+if [ -z "${MISE_SHELL:-}" ]; then
+  eval "$("{{ $miseBin }}" env)"
+fi
+
+playwright_cli="$("{{ $miseBin }}" which playwright-cli)"
+
+if "${playwright_cli}" install-browser chrome; then
+  info 'system Chrome is ready'
+else
+  warn 'system Chrome installation failed; run `playwright-cli install-browser chrome` manually'
+fi
+
+{{- end }}

@@ -34,42 +34,6 @@
 
    > 完成后重开终端或执行 `exec zsh -l` 命令，启动完整的 Zsh 登录环境以替换当前的 Shell 进程。
 
-## Headed Playwright Service
-
-该服务提供三类能力：面向 AI Agent 的 MCP Streamable HTTP 端点；供 `playwright-cli attach` 使用的 wsEndpoint（MCP 与 CLI 连接同一个持久浏览器上下文）；以及面向用户观察和接管浏览器会话的 noVNC 入口。
-为减少暴露面，MCP、wsEndpoint 与 VNC 默认仅监听 `127.0.0.1`。
-
-1. **构建镜像、运行服务**：
-
-   > 仅在修改 Containerfile、容器内脚本或 supervisor 配置后，需重建本地服务镜像。若服务已在运行，使用 `restart` 生效。
-
-   ```shell
-   build-headed-playwright-service-image
-   systemctl --user daemon-reload
-   systemctl --user start headed-playwright-service.service
-   ```
-
-2. **在项目目录中启用 MCP**：
-
-   > 以 OpenCode 为例。在需要使用 Headed Playwright MCP 的项目根目录下运行：
-
-   ```shell
-   opencode-project-mcp add playwright
-   ```
-
-3. **playwright-cli**：
-
-   AI Agent （如 OpenCode）可通过 `headed-playwright-cli` skill 使用宿主机 `playwright-cli` 连接同一个持久浏览器上下文。
-
-4. **从其他 tailnet 设备访问浏览器 GUI（可选）**：
-
-   > 通过 `https://<host>.<tailnet>.ts.net:6080/vnc.html` 访问。
-   > 亦可用 SSH 本地端口转发（`ssh -N -L 6080:127.0.0.1:6080 <user>@<host>`），并通过 `http://127.0.0.1:6080/vnc.html` 访问。
-
-   ```shell
-   tailscale serve --bg --https=6080 http://127.0.0.1:6080
-   ```
-
 ## Ghidra Headless MCP（可选）
 
 可选地提供了 `ghidra-manager`、`ghidra-mcp-build` 和 `ghidra-mcp-headless` 命令分别用于管理 Ghidra 本体、准备 GhidraMCP 组件，以及在 OpenCode 中提供 headless Ghidra MCP 分析能力。
@@ -237,7 +201,7 @@ reconcile_declared_skills \
 - **匹配更新**：全局清单中名称与 `source` 均匹配的声明 Skill 会执行更新（`skills update`）。
 - **缺失与源变更安装**：尚不存在或名称相同但 `source` 变更的声明 Skill 会安装到 Universal 作用域（`skills add owner/repo@skill --global --yes --agent universal`）。
 - **末尾清理**：完成所有声明项的更新或安装命令后，脚本会重新读取全局清单，并卸载不在声明列表中的受管 Skill。
-- **所有权边界**：`source` 非空且路径为 `~/.agents/skills/<name>` 的全局 Skill 均属于清理范围；无 `source` 的本地 Skill（如 `headed-playwright-cli`）和其他路径下的 Skill 不会被自动清理。卸载按名称作用于全部 Agent 的同名全局链接。
+- **所有权边界**：`source` 非空且路径为 `~/.agents/skills/<name>` 的全局 Skill 均属于清理范围；无 `source` 的本地 Skill 和其他路径下的 Skill 不会被自动清理。卸载按名称作用于全部 Agent 的同名全局链接。
 
 > **注意**：脚本依赖 `skills` 命令的退出状态判断操作是否完成，不会额外核验安装结果。该机制不保证版本与 upstream 字节级一致（更新会跟随上游最新版本），也不提供回滚或事务保证。
 

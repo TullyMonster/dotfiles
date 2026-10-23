@@ -3,8 +3,11 @@
   "mcp": {
     "playwright": {
       "enabled": true,
-      "type": "remote",
-      "url": "http://127.0.0.1:8931/mcp"
+      "type": "local",
+      "command": [
+        "playwright-mcp",
+        "--headless"
+      ]
     },
     "ghidra": {
       "enabled": true,

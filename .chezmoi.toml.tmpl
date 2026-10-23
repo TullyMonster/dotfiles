@@ -42,15 +42,3 @@ password = {{ promptStringOnce . "opencode.server.password" "OpenCode Headless S
 [data.opencode.go]
 workspace_id = {{ promptStringOnce . "opencode.go.workspace_id" "OpenCode Go: OPENCODE_GO_WORKSPACE_ID" | quote }}
 auth_cookie  = {{ promptStringOnce . "opencode.go.auth_cookie"  "OpenCode Go: OPENCODE_GO_AUTH_COOKIE"  | quote }}
-
-[data.headed_playwright_service]
-image_ref           = {{ promptStringOnce . "headed_playwright_service.image_ref"           "Headed Playwright Service: image reference"     "localhost/headed-playwright-service:0.0.76" | quote }}
-container_name      = {{ promptStringOnce . "headed_playwright_service.container_name"      "Headed Playwright Service: container name"      "headed-playwright-service"                  | quote }}
-profile_volume_name = {{ promptStringOnce . "headed_playwright_service.profile_volume_name" "Headed Playwright Service: profile volume name" "headed-playwright-browser-profile"          | quote }}
-profile_dir         = {{ promptStringOnce . "headed_playwright_service.profile_dir"         "Headed Playwright Service: profile directory"   "/profile"                                   | quote }}
-x11_display         = {{ promptStringOnce . "headed_playwright_service.x11_display"         "Headed Playwright Service: X11 display"         ":99"                                        | quote }}
-xvfb_whd            = {{ promptStringOnce . "headed_playwright_service.xvfb_whd"            "Headed Playwright Service: Xvfb whd"            "1280x720x24"                                | quote }}
-mcp_port            = {{ promptIntOnce    . "headed_playwright_service.mcp_port"            "Headed Playwright Service: MCP port"            8931 }}
-endpoint_port       = {{ promptIntOnce    . "headed_playwright_service.endpoint_port"       "Headed Playwright Service: endpoint port"       8932 }}
-vnc_port            = {{ promptIntOnce    . "headed_playwright_service.vnc_port"            "Headed Playwright Service: VNC port"            5900 }}
-novnc_port          = {{ promptIntOnce    . "headed_playwright_service.novnc_port"          "Headed Playwright Service: noVNC port"          6080 }}
