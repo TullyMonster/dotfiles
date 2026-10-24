@@ -34,11 +34,3 @@ context7_api_key    = {{ promptStringOnce . "mcp.context7_api_key"    "MCP: CONT
 tavily_api_key      = {{ promptStringOnce . "mcp.tavily_api_key"      "MCP: tavilyApiKey"                                                                                   | quote }}
 windsurf_api_key    = {{ promptStringOnce . "mcp.windsurf_api_key"    "MCP: WINDSURF_API_KEY"                                                                               | quote }}
 ida_pro_dir         = {{ promptStringOnce . "mcp.ida_pro_dir"         "MCP: IDA Pro directory"                     (joinPath .chezmoi.homeDir ".local" "opt" "ida-pro-9.3") | quote }}
-
-[data.opencode.server]
-username = {{ promptStringOnce . "opencode.server.username" "OpenCode Headless Server: OPENCODE_SERVER_USERNAME" | quote }}
-password = {{ promptStringOnce . "opencode.server.password" "OpenCode Headless Server: OPENCODE_SERVER_PASSWORD" | quote }}
-
-[data.opencode.go]
-workspace_id = {{ promptStringOnce . "opencode.go.workspace_id" "OpenCode Go: OPENCODE_GO_WORKSPACE_ID" | quote }}
-auth_cookie  = {{ promptStringOnce . "opencode.go.auth_cookie"  "OpenCode Go: OPENCODE_GO_AUTH_COOKIE"  | quote }}

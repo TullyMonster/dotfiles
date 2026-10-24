@@ -1,20 +1,21 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": [
+  "plugins": [
     "cc-safety-net@latest",
-    "oh-my-openagent@latest",
-    "opencode-subagent-magazine@latest",
-    "opencode-visual-cache@latest",
     "@cortexkit/opencode-magic-context@latest",
     "@dietrichgebert/ponytail@latest",
     "@slkiser/opencode-quota@latest"
   ],
+  "update": "disable",
+  "agents": {
+    "title": {
+      "model": "deepseek/deepseek-chat"
+    }
+  },
   "compaction": {
     "auto": false,
     "prune": false
   },
-  "autoupdate": false,
-  "small_model": "deepseek/deepseek-chat",
   "formatter": {
     "ruff": {
       "command": [
@@ -80,149 +81,49 @@
       "disabled": false
     }
   },
-  "lsp": {
-    "python": {
-      "command": [
-        "pyright-langserver",
-        "--stdio"
-      ],
-      "extensions": [
-        ".py",
-        ".pyi"
-      ]
-    },
-    "yaml": {
-      "command": [
-        "yaml-language-server",
-        "--stdio"
-      ],
-      "extensions": [
-        ".yaml",
-        ".yml"
-      ]
-    },
-    "markdown": {
-      "command": [
-        "marksman",
-        "server"
-      ],
-      "extensions": [
-        ".md",
-        ".markdown",
-        ".mdx"
-      ]
-    },
-    "toml": {
-      "command": [
-        "taplo",
-        "lsp",
-        "stdio"
-      ],
-      "extensions": [
-        ".toml"
-      ]
-    },
-    "html": {
-      "command": [
-        "vscode-html-language-server",
-        "--stdio"
-      ],
-      "extensions": [
-        ".html",
-        ".htm",
-        ".xhtml",
-        ".shtml"
-      ]
-    },
-    "css": {
-      "command": [
-        "vscode-css-language-server",
-        "--stdio"
-      ],
-      "extensions": [
-        ".css",
-        ".scss",
-        ".less"
-      ]
-    },
-    "json": {
-      "command": [
-        "vscode-json-language-server",
-        "--stdio"
-      ],
-      "extensions": [
-        ".json",
-        ".jsonc"
-      ]
-    },
-    "systemd": {
-      "command": [
-        "systemd-lsp"
-      ],
-      "extensions": [
-        ".service",
-        ".socket",
-        ".timer",
-        ".mount",
-        ".automount",
-        ".swap",
-        ".target",
-        ".path",
-        ".slice",
-        ".scope",
-        ".device",
-        ".container",
-        ".volume",
-        ".network",
-        ".kube",
-        ".pod",
-        ".build",
-        ".image",
-        ".artifact"
-      ]
-    }
-  },
   "mcp": {
-    "context7": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "headers": {
-        "CONTEXT7_API_KEY": {{ .mcp.context7_api_key | quote }}
+    "servers": {
+      "context7": {
+        "disabled": false,
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp",
+        "headers": {
+          "CONTEXT7_API_KEY": {{ .mcp.context7_api_key | quote }}
+        }
+      },
+      "ace": {
+        "disabled": false,
+        "type": "local",
+        "command": [
+          "ace-tool",
+          "--base-url",
+          {{ .mcp.ace_base_url | quote }},
+          "--token",
+          {{ .mcp.ace_token | quote }},
+          "--no-webbrowser-enhance-prompt"
+        ]
+      },
+      "fast-context": {
+        "disabled": false,
+        "type": "local",
+        "command": [
+          "fast-context-mcp"
+        ],
+        "environment": {
+          "WINDSURF_API_KEY": {{ .mcp.windsurf_api_key | quote }},
+          "FC_HIDE_EXTRACT_WINDSURF_KEY_TOOL": "true"
+        }
+      },
+      "tavily": {
+        "disabled": false,
+        "type": "remote",
+        "url": {{ printf "https://mcp.tavily.com/mcp/?tavilyApiKey=%s" .mcp.tavily_api_key | quote }}
+      },
+      "deepwiki": {
+        "disabled": false,
+        "type": "remote",
+        "url": "https://mcp.deepwiki.com/mcp"
       }
-    },
-    "ace": {
-      "enabled": true,
-      "type": "local",
-      "command": [
-        "ace-tool",
-        "--base-url",
-        {{ .mcp.ace_base_url | quote }},
-        "--token",
-        {{ .mcp.ace_token | quote }},
-        "--no-webbrowser-enhance-prompt"
-      ]
-    },
-    "fast-context": {
-      "enabled": true,
-      "type": "local",
-      "command": [
-        "fast-context-mcp"
-      ],
-      "environment": {
-        "WINDSURF_API_KEY": {{ .mcp.windsurf_api_key | quote }},
-        "FC_HIDE_EXTRACT_WINDSURF_KEY_TOOL": "true"
-      }
-    },
-    "tavily": {
-      "enabled": true,
-      "type": "remote",
-      "url": {{ printf "https://mcp.tavily.com/mcp/?tavilyApiKey=%s" .mcp.tavily_api_key | quote }}
-    },
-    "deepwiki": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://mcp.deepwiki.com/mcp"
     }
   }
 }

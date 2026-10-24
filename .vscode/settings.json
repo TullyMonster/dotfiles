@@ -88,24 +88,5 @@
   "[shellscript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "jkillian.custom-local-formatters"
-  },
-  "json.schemas": [
-    {
-      "fileMatch": [
-        "/.chezmoidata/omo.jsonc"
-      ],
-      "schema": {
-        "type": "object",
-        "properties": {
-          "omo": {
-            "$ref": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json"
-          }
-        },
-        "required": [
-          "omo"
-        ],
-        "additionalProperties": false
-      }
-    }
-  ]
+  }
 }

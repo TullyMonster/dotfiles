@@ -1,34 +1,36 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "playwright": {
-      "enabled": true,
-      "type": "local",
-      "command": [
-        "playwright-mcp",
-        "--headless"
-      ]
-    },
-    "ghidra": {
-      "enabled": true,
-      "type": "local",
-      "command": [
-        "ghidra-mcp-headless"
-      ]
-    },
-    "ida-pro": {
-      "enabled": true,
-      "type": "remote",
-      "url": "http://127.0.0.1:8745/mcp?ext=dbg"
-    },
-    "ssh-mcp-server": {
-      "enabled": true,
-      "type": "local",
-      "command": [
-        "ssh-mcp-server",
-        "--config-file",
-        ".ssh-mcp-server.json"
-      ]
+    "servers": {
+      "playwright": {
+        "disabled": false,
+        "type": "local",
+        "command": [
+          "playwright-mcp",
+          "--headless"
+        ]
+      },
+      "ghidra": {
+        "disabled": false,
+        "type": "local",
+        "command": [
+          "ghidra-mcp-headless"
+        ]
+      },
+      "ida-pro": {
+        "disabled": false,
+        "type": "remote",
+        "url": "http://127.0.0.1:8745/mcp?ext=dbg"
+      },
+      "ssh-mcp-server": {
+        "disabled": false,
+        "type": "local",
+        "command": [
+          "ssh-mcp-server",
+          "--config-file",
+          ".ssh-mcp-server.json"
+        ]
+      }
     }
   }
 }

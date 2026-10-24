@@ -1,5 +1,5 @@
 [settings]
-idiomatic_version_file_enable_tools = ["node", "bun", "python"]
+idiomatic_version_file_enable_tools = ["node", "python"]
 node.corepack = true
 npm.package_manager = "pnpm"
 python.uv_venv_auto = "create|source"
@@ -35,7 +35,6 @@ login_shell = "/usr/bin/zsh"
 bat = "latest"
 biome = "latest"
 btop = "latest"
-bun = "latest"
 cmake = "latest"
 delta = "latest"
 fastfetch = "latest"
@@ -58,7 +57,6 @@ github-cli = "latest"
 "github:svenstaro/miniserve" = "latest"
 "github:tealdeer-rs/tealdeer" = { version = "latest", bin = "tldr" }
 "github:us/crw" = "latest"
-"github:zhoufanscut/oModel" = "latest"
 jd = "latest"
 jq = "latest"
 lazygit = "latest"
@@ -82,7 +80,7 @@ node = "lts"
 "npm:uipro-cli" = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:yaml-language-server" = { version = "latest", pnpm_args = "--config.node-linker=hoisted" }
-opencode = "1.18.34"
+"npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
 pnpm = "latest"
 prettier = "latest"
 python = "3.13"
