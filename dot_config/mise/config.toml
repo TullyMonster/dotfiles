@@ -66,6 +66,8 @@ node = "lts"
 "npm:@cortexkit/magic-context" = "latest"
 "npm:@fangjunjie/ssh-mcp-server" = "latest"
 "npm:@fission-ai/openspec" = "latest"
+"npm:@openchamber/web" = "latest"
+"npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
 "npm:@playwright/cli" = "latest"
 "npm:@playwright/mcp" = "latest"
 "npm:@sammysnake/fast-context-mcp" = { version = "latest", pnpm_args = "--registry=https://registry.npmjs.org/" }
@@ -80,7 +82,6 @@ node = "lts"
 "npm:uipro-cli" = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:yaml-language-server" = { version = "latest", pnpm_args = "--config.node-linker=hoisted" }
-"npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
 pnpm = "latest"
 prettier = "latest"
 python = "3.13"

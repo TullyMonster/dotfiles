@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+
+set -eu
+
+STATE_FILE="${XDG_STATE_HOME:-${HOME}/.local/state}/opencode/service.json"
+READY_TIMEOUT=30
+
+log() { printf '%s\n' "$*" >&2; }
+die() {
+  log "error: $*"
+  exit 1
+}
+
+for cmd in jq opencode openchamber; do
+  command -v "${cmd}" > /dev/null 2>&1 || die "'${cmd}' not found in PATH"
+done
+
+load_service() {
+  [ -r "${STATE_FILE}" ] || return 1
+  _out=$(
+  jq -er '
+      select(.pid and .url and .password)
+      | [.pid, .url, .password] | map(tostring) | .[]
+    ' "${STATE_FILE}" 2> /dev/null
+) || return 1
+  {
+    IFS= read -r svc_pid
+    IFS= read -r svc_url
+    IFS= read -r svc_password
+  } << EOF
+${_out}
+EOF
+  kill -0 "${svc_pid}" 2> /dev/null
+}
+
+ensure_service() {
+  load_service && return 0
+
+  log 'starting OpenCode background service'
+  opencode service start > /dev/null
+
+  _waited=0
+  until load_service; do
+    [ "${_waited}" -lt "${READY_TIMEOUT}" ] ||
+      die "OpenCode service not ready after ${READY_TIMEOUT}s"
+    _waited=$((_waited + 1))
+    sleep 1
+  done
+}
+
+ensure_service
+
+export OPENCODE_HOST="${svc_url}"
+export OPENCODE_SERVER_PASSWORD="${svc_password}"
+export OPENCODE_SKIP_START=true
+
+exec openchamber serve --foreground --hostname 127.0.0.1 --port 3000

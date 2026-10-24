@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenChamber Web
+Documentation=https://docs.openchamber.dev/
+After=network.target
+
+[Service]
+Type=simple
+Environment=PATH=%h/.local/share/mise/shims:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/bin/openchamber-serve
+KillMode=process
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
