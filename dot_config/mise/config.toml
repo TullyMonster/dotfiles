@@ -14,6 +14,7 @@ run = '"$HOME/.local/libexec/mise-bootstrap/configure-xpra-apt-repository"'
 "apt:ca-certificates" = "latest"
 "apt:curl" = "latest"
 "apt:git" = "latest"
+"apt:libwayland-server0" = "latest"
 "apt:moreutils" = "latest"
 "apt:nala" = "latest"
 "apt:network-manager" = "latest"
