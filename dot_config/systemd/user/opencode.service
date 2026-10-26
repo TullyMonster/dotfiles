@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenCode background server
+Documentation=https://opencode.ai/v2/docs/
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=PATH=%h/.local/share/mise/shims:/usr/bin:/bin
+ExecStart=%h/.local/share/mise/shims/opencode service start
+ExecStop=-%h/.local/share/mise/shims/opencode service stop
+
+[Install]
+WantedBy=default.target
