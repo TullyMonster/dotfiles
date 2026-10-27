@@ -1,0 +1,23 @@
+[Unit]
+Description=OpenAI-compatible Edge TTS
+Documentation=https://github.com/travisvn/openai-edge-tts/
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Pull=never
+Image=localhost/openai-edge-tts:latest
+ContainerName=openai-edge-tts
+PublishPort=127.0.0.1:5050:5050
+Environment=REQUIRE_API_KEY=False
+Environment=DEFAULT_VOICE=zh-CN-XiaoxiaoNeural
+NoNewPrivileges=true
+
+[Service]
+ExecStartPre=/usr/bin/sh -c 'podman image exists localhost/openai-edge-tts:latest || podman build -t localhost/openai-edge-tts:latest %h/.config/containers/build/openai-edge-tts'
+TimeoutStartSec=900
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
