@@ -1,5 +1,6 @@
 [Unit]
 Description=Sub-Store
+Documentation=https://sub-store-org.github.io/doc/
 After=network-online.target
 Wants=network-online.target
 
@@ -19,8 +20,3 @@ RestartSec=5
 
 [Install]
 WantedBy=default.target
-
-# 启动：
-# 1. systemctl --user daemon-reload
-# 2. systemctl --user start sub-store.service
-# 3. loginctl enable-linger "$USER"
