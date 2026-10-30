@@ -30,6 +30,19 @@
           "--config-file",
           ".ssh-mcp-server.json"
         ]
+      },
+      "codegraph": {
+        "disabled": false,
+        "type": "local",
+        "command": [
+          "codegraph",
+          "serve",
+          "--mcp"
+        ],
+        "environment": {
+          "DO_NOT_TRACK": "1"
+        },
+        "codemode": false
       }
     }
   }
