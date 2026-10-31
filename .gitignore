@@ -1,7 +1,6 @@
 # age 私钥
 key.txt
 # AI Agent 相关
-/.ace-tool/
 /.codegraph/
 /.cortexkit/
 /.opencode/

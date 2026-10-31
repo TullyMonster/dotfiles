@@ -53,7 +53,6 @@ github-cli = "latest"
 "github:gu1llaum-3/sshm" = "latest"
 "github:joshmedeski/sesh" = "latest"
 "github:micro-editor/micro" = "latest"
-"github:missdeer/ace-tool-rs" = { version = "latest", rename_exe = "ace-tool" }
 "github:peteretelej/tree" = "latest"
 "github:svenstaro/miniserve" = "latest"
 "github:tealdeer-rs/tealdeer" = { version = "latest", bin = "tldr" }

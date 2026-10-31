@@ -28,8 +28,6 @@ is_using_mirror = {{ promptBoolOnce . "npm.is_using_mirror" "NPM: Use a registry
 backend_path = {{ promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" | quote }}
 
 [data.mcp]
-ace_base_url        = {{ promptStringOnce . "mcp.ace_base_url"        "MCP: ace-tool MCP base-url"                                                                          | quote }}
-ace_token           = {{ promptStringOnce . "mcp.ace_token"           "MCP: ace-tool MCP token"                                                                             | quote }}
 context7_api_key    = {{ promptStringOnce . "mcp.context7_api_key"    "MCP: CONTEXT7_API_KEY"                                                                               | quote }}
 tavily_api_key      = {{ promptStringOnce . "mcp.tavily_api_key"      "MCP: tavilyApiKey"                                                                                   | quote }}
 windsurf_api_key    = {{ promptStringOnce . "mcp.windsurf_api_key"    "MCP: WINDSURF_API_KEY"                                                                               | quote }}
