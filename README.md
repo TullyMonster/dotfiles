@@ -183,7 +183,7 @@ systemctl --user restart ida-pro-mcp.service
     `opencode-project-mcp remove` 直接从当前项目的配置文件中删除指定 MCP 条目，其执行独立于 Catalog 的存在或内容。指定条目不存在时，命令同样会成功结束，既不修改现有文件，也不创建配置文件。
 
 - **密钥与环境变量**：模板及配置支持使用 `{env:VAR}` 占位符引用环境变量，避免在配置文件中硬编码敏感密钥。
-- **配置持久化与源路径**：持久源路径为 `dot_config/opencode/project-mcp-catalog.jsonc`。已应用的 Catalog 并非缓存。如需使 Catalog 模板变更持久生效，请直接修改 chezmoi 源仓库中的 `dot_config/opencode/project-mcp-catalog.jsonc` 文件，并按正常的 chezmoi 工作流处理。
+- **配置持久化与源路径**：持久源路径为 `dot_config/private_opencode/project-mcp-catalog.jsonc`。已应用的 Catalog 并非缓存。如需使 Catalog 模板变更持久生效，请直接修改 chezmoi 源仓库中的 `dot_config/private_opencode/project-mcp-catalog.jsonc` 文件，并按正常的 chezmoi 工作流处理。
 
 ## 全局 Agent Skill 维护
 

@@ -124,7 +124,7 @@ chezmoi 管理的文件应具备跨设备可复用性。
 
 - **README.md**：人类阅读的项目说明。
 - **AGENTS.md**（本文件）：给操作本仓库的 AI agent 看的操作约束。
-- **`dot_config/opencode/AGENTS.md`**：会被 apply 到 `~/.config/opencode/AGENTS.md`，作为 OpenCode 在所有项目中的全局编码规范。与本文件受众完全不同。
+- **`dot_config/private_opencode/AGENTS.md`**：会被 apply 到 `~/.config/opencode/AGENTS.md`，作为 OpenCode 在所有项目中的全局编码规范。与本文件受众完全不同。
 
 ## 安全红线
 
