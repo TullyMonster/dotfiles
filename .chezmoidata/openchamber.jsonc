@@ -1,0 +1,221 @@
+{
+  "openchamber": {
+    "preferences": {
+      // ── 通用 ──────────────────────────────────────────────
+      // 文件与编辑器
+      "fileEditorKeymap": "default", // 文件编辑器键位映射
+      "fileTreeSide": "right", // 文件树位置
+      "autoSaveEnabled": true, // 自动保存文件
+      "confirmFileTreeMove": true, // 移动文件前确认
+      "directoryShowHidden": true, // 显示点文件
+      "defaultFileViewerPreview": true, // 以预览模式打开可预览文件
+      // 面板与链接
+      "sessionTabsEnabled": true, // 在页眉中以标签页显示会话
+      "layoutAnimations": true, // 面板动画
+      "openTrackerLinksOnBoard": true, // 在 OpenChamber 中打开 Issue 和拉取请求
+      // OpenCode CLI
+      "showOpenCodeUpdateNotifications": true, // 显示 OpenCode 更新通知
+      // 消息流传输方式
+      "messageStreamTransport": "auto", // 优先使用 WebSocket，必要时回退到 SSE
+      // 隐私
+      "reportUsage": true, // 发送匿名使用报告
+      // ── 外观 ──────────────────────────────────────────────
+      // 颜色模式与主题
+      "useSystemTheme": true, // 跟随系统
+      "lightThemeId": "opencode-light", // 浅色主题
+      "darkThemeId": "opencode-dark", // 深色主题
+      // 本地化
+      "locale": "zh-CN", // 语言
+      "timeFormatPreference": "24h", // 时间格式
+      "weekStartPreference": "monday", // 一周起始日
+      // 密度与字体
+      "uiFont": "system", // 界面字体
+      "customUiFont": "", // 自定义界面字体
+      "monoFont": "custom", // 代码字体
+      "customMonoFont": "MesloLGS NF", // 自定义代码字体
+      "fontSize": 100, // 界面字体大小
+      "terminalFontSize": 14, // 终端字体大小
+      "editorFontSize": 13, // 编辑器字体大小
+      "padding": 100, // 间距密度
+      // ── 聊天 ──────────────────────────────────────────────
+      // ── 消息
+      // 智能体活动
+      "chatRenderMode": "live", // 聊天渲染模式
+      "activityRenderMode": "collapsed", // 活动默认状态
+      "showReasoningTraces": false, // 显示推理轨迹
+      "collapsibleThinkingBlocks": true, // 可折叠推理块（需启用显示推理轨迹）
+      "expandReasoningWhileStreaming": false, // 流式输出时展开推理（需启用显示推理轨迹）
+      "showToolFileIcons": true, // 显示工具文件图标
+      "showTurnChangedFiles": true, // 显示已完成回合的更改文件
+      // 阅读
+      "wideChatLayoutEnabled": false, // 宽聊天布局
+      "streamingAutoFollowEnabled": true, // 流式输出时跟随新内容
+      "collapsibleUserMessages": true, // 折叠较长的用户消息
+      "stickyUserHeader": false, // 固定用户消息头
+      "promptNavigatorEnabled": true, // 提示词导航
+      "showSplitAssistantMessageActions": false, // 内联助手操作
+      // 格式
+      "userMessageRenderingMode": "markdown", // 用户消息渲染
+      "mermaidRenderingMode": "svg", // Mermaid 渲染
+      "diffLayoutPreference": "dynamic", // 差异布局
+      "codeBlockLineWrap": false, // 代码块自动换行
+      "tableCellWrap": true, // 表格单元格自动换行
+      "copyMessagesAsPlainText": false, // 以纯文本复制消息
+      "diffHideWhitespace": false, // 隐藏空白更改
+      // ── 输入框
+      // 发送
+      "enterToSend": true, // 发送快捷键
+      "enterToSendConfigured": true, // 发送键已显式选定
+      "followUpBehavior": "queue", // 追问处理行为
+      "largeTextPasteBehavior": "ask", // 粘贴大段文本
+      "allowPromptingSubagentSessions": false, // 允许向子智能体会话发送提示
+      "savePastedImagesAsFiles": true, // 将粘贴的图像保存为文件
+      // 草稿与历史
+      "inputSpellcheckEnabled": false, // 在文本输入框启用拼写检查
+      "inputHistoryScope": "session", // 输入历史范围
+      "inputHistoryLimit": 40, // 要记住的提示词数量
+      // ── 辅助
+      // 会话辅助
+      "draftStartersVisible": true, // 在新会话页面显示快捷入口
+      "sessionRecapEnabled": true, // 生成会话回顾
+      "sessionSuggestionEnabled": true, // 生成下一条用户消息建议
+      "sessionReviewOfferEnabled": true, // 提议审查更改
+      // 目标
+      "sessionGoalEnabled": true, // 启用会话目标
+      "sessionGoalChecker": "classifier", // 进度检查
+      "sessionGoalMaxAutoTurns": 20, // 轮次上限
+      "sessionGoalDefaultBudgetEnabled": false, // 默认词元预算
+      "sessionGoalDefaultBudget": 200000, // 词元预算
+      // ── 通知 ──────────────────────────────────────────────
+      // 通知投递
+      "nativeNotificationsEnabled": true, // 启用通知
+      "notificationMode": "hidden-only", // 应用聚焦时通知
+      // 通知事件
+      "notifyOnCompletion": true, // 智能体完成
+      "notifyOnSubtasks": true, // 子智能体完成
+      "notifyOnError": true, // 智能体错误
+      "notifyOnQuestion": true, // 智能体提问
+      // ── 会话 ──────────────────────────────────────────────
+      // 新会话
+      "defaultModel": "opencode-go/deepseek-v4.1-flash", // 模型
+      "defaultVariant": "high", // 思考变体
+      "defaultAgent": "build", // 智能体
+      // 其他模型
+      "smallModelUseDefault": false, // 使用默认小模型
+      "smallModelOverride": "opencode-go/deepseek-v4.1-flash", //小模型（覆写 OpenCode 的 title 智能体所用的模型）
+      "smallModelVariant": "default", // 小模型思考变体
+      "walkthroughModelOverride": "opencode-go/deepseek-v4.1-flash", // 改动导读模型（覆写小模型）
+      "walkthroughModelVariant": "default", // 导读模型思考变体
+      // 用量限制
+      "fallbackModel": "opencode-go/deepseek-v4.1-flash", // 备用模型
+      "fallbackVariant": "high", // 备用模型思考变体
+      // 侧边栏
+      "sidebarShowChatsSection": true, // 在侧边栏中显示聊天
+      "sidebarShowWorkSection": true, // 在侧边栏中显示进行中
+      "sessionWorkEnabled": true, // 显示进行中的会话
+      "sidebarProjectSortOrder": "recent", // 排序项目
+      "sidebarProjectDisplayMode": "all", // 显示项目
+      // 会话保留
+      "showDeletionDialog": true, // 显示删除对话框
+      // ── 语音 ──────────────────────────────────────────────
+      // 语音识别
+      "dictationEnabled": true, // 启用语音输入
+      "sttLanguage": "", // 语言
+      // ── 用量 ──────────────────────────────────────────────
+      "usageDisplayMode": "remaining", // 显示指标
+      // ── Git ──────────────────────────────────────────────
+      // Git 偏好设置
+      "filesViewShowGitignored": false // 显示 Gitignored 文件
+    },
+    "settings": {
+      // ── 通用 ──────────────────────────────────────────────
+      // 终端
+      "terminalShell": "auto", // 终端 Shell
+      "terminalLoginShells": [], // 作为登录 Shell 启动
+      // OpenChamber 工具
+      "agentControlToolEnabled": true, // 智能体控制工具
+      "agentScheduleToolEnabled": true, // 智能体计划工具
+      "agentWebToolEnabled": true, // OpenChamber Web 工具
+      "browserProvider": "builtin", // 浏览器提供方
+      "agentNotifyToolEnabled": true, // 智能体通知工具
+      "agentRenderToolEnabled": true, // 智能体展示工具
+      "agentMemoryToolEnabled": true, //
+      "agentKnowledgeToolEnabled": true, // 项目知识工具
+      "agentToolsCodeMode": false, // 通过 Code Mode 运行
+      // ── 外观 ──────────────────────────────────────────────
+      // 应用安装
+      "pwaAppName": "", // 安装应用名称
+      "pwaOrientation": "system", // 安装方向
+      // ── 聊天 ──────────────────────────────────────────────
+      // 消息搜索
+      "messageSearchEnabled": true, // 在所有对话中搜索消息
+      "messageSearchReasoningEnabled": false, // 同时搜索智能体的推理
+      // ── 会话 ──────────────────────────────────────────────
+      // 新会话
+      "permissionDefaultMode": "safety", // 权限
+      // 会话保留
+      "autoDeleteEnabled": false, // 启用自动清理
+      "sessionRetentionOnlyArchived": false, // 适用于已归档的会话
+      "autoDeleteAfterDays": 30, // 保留时长（天）
+      "sessionRetentionAction": "archive", // 会话过期时
+      "mergedWorktreeCleanupEnabled": false, // PR 合并后归档会话并移除工作树
+      // ── 语音 ──────────────────────────────────────────────
+      // 语音识别
+      "sttProvider": "openai-compatible", // 提供方
+      "sttServerUrl": "https://api.siliconflow.cn/v1", // 服务器 URL
+      "sttModel": "Qwen/Qwen3-ASR-1.7B" // 模型
+    },
+    "routing": {
+      // ── Auto 模式 ──────────────────────────────────────────
+      "enabled": true, // 启用 Auto 模式
+      "preserveCache": true, // 尽量保留缓存
+      "fallback": {
+        "model": {
+          // 备用模型
+          "providerID": "opencode-go",
+          "modelID": "deepseek-v4.1-flash"
+        },
+        "variant": "low" // 备用思考级别
+      }
+      // ── 类别 ──────────────────────────────────────────────
+      // "categories": {
+      //   "trivial": {
+      //     "builtin": true, // 内置
+      //     "disabled": false, // 禁用
+      //     "deleted": false, // 已移除
+      //     "name": "机械任务", // 名称
+      //     "agent": "...", // 智能体
+      //     "model": { "providerID": "...", "modelID": "..." }, // 模型
+      //     "variant": "..." // 思考变体
+      //   },
+      //   "research": {
+      //     "builtin": true,
+      //     "disabled": false,
+      //     "deleted": false,
+      //     "name": "代码调研",
+      //     "agent": "...",
+      //     "model": { "providerID": "...", "modelID": "..." },
+      //     "variant": "..."
+      //   },
+      //   "implement": {
+      //     "builtin": true,
+      //     "disabled": false,
+      //     "deleted": false,
+      //     "name": "常规开发",
+      //     "agent": "...",
+      //     "model": { "providerID": "...", "modelID": "..." },
+      //     "variant": "..."
+      //   },
+      //   "hard": {
+      //     "builtin": true,
+      //     "disabled": false,
+      //     "deleted": false,
+      //     "name": "高难攻坚",
+      //     "agent": "...",
+      //     "model": { "providerID": "...", "modelID": "..." },
+      //     "variant": "..."
+      //   }
+      // }
+    }
+  }
+}

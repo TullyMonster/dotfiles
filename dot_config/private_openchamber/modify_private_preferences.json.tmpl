@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+
+set -eu
+
+managed=$(
+  cat << 'EOF'
+{{ if index .openchamber "preferences" }}{{ .openchamber.preferences | toJson }}{{ else }}{}{{ end }}
+EOF
+)
+
+current=$(cat)
+[ -n "${current}" ] || current='{"version":1,"fields":{}}'
+
+if ! printf '%s' "${current}" | jq -e '.version == 1 and (.fields | type == "object") and all(.fields[]; type == "object")' > /dev/null 2>&1; then
+  printf '%s' "${current}"
+  echo 'openchamber: {{ .chezmoi.targetFile | replace .chezmoi.homeDir "~" }} 不是可合并的 version 1 文档' >&2
+  exit 0
+fi
+
+merged=$(printf '%s' "${current}" | jq --argjson managed "${managed}" '
+  def deepmerge($new):
+    if type == "object" and ($new | type) == "object" then
+      reduce ($new | to_entries[]) as $e (.; .[$e.key] |= deepmerge($e.value))
+    else $new end;
+  def entry($old; $wanted):
+    ($old.value | deepmerge($wanted)) as $next
+    | if $old.value == $next then $old
+      else {value: $next, updatedAt: (now * 1000 | floor)}
+        + (if ($old.surfaces | type) == "object" then {surfaces: $old.surfaces} else {} end)
+      end;
+  .fields as $cur
+  | .fields = ($cur + ($managed | with_entries(
+      .key as $k | .value as $wanted | .value = entry($cur[$k] // {}; $wanted)
+    )))
+')
+
+if printf '%s' "${current}" | jq -e --argjson merged "${merged}" '. == $merged' > /dev/null 2>&1; then
+  printf '%s' "${current}"
+else
+  printf '%s' "${merged}"
+fi

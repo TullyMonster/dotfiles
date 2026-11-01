@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+
+set -eu
+
+managed=$(
+  cat << 'EOF'
+{{ if index .openchamber "routing" }}{{ .openchamber.routing | toJson }}{{ else }}{}{{ end }}
+EOF
+)
+
+current=$(cat)
+[ -n "${current}" ] || current='{"version":1}'
+
+if ! printf '%s' "${current}" | jq -e 'type == "object" and .version == 1' > /dev/null 2>&1; then
+  printf '%s\n' "${current}"
+  echo 'openchamber: {{ .chezmoi.targetFile | replace .chezmoi.homeDir "~" }} 不是可合并的 version 1 文档' >&2
+  exit 0
+fi
+
+merged=$(printf '%s' "${current}" | jq --argjson managed "${managed}" '
+  def deepmerge($new):
+    if type == "object" and ($new | type) == "object" then
+      reduce ($new | to_entries[]) as $e (.; .[$e.key] |= deepmerge($e.value))
+    else $new end;
+  deepmerge($managed)
+')
+
+if printf '%s' "${current}" | jq -e --argjson merged "${merged}" '. == $merged' > /dev/null 2>&1; then
+  printf '%s\n' "${current}"
+else
+  printf '%s\n' "${merged}"
+fi
