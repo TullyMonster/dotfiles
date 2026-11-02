@@ -73,7 +73,6 @@ node = "lts"
 "npm:@playwright/mcp" = "latest"
 "npm:@sammysnake/fast-context-mcp" = { version = "latest", pnpm_args = "--registry=https://registry.npmjs.org/" }
 "npm:@slkiser/opencode-quota" = "latest"
-"npm:aistupidmeter" = "latest"
 "npm:czg" = "latest"
 "npm:jsonc-cli" = "latest"
 "npm:pyright" = "latest"
