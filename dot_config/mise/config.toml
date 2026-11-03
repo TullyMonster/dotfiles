@@ -9,6 +9,7 @@ run = '"$HOME/.local/libexec/mise-bootstrap/configure-xpra-apt-repository"'
 
 [bootstrap.packages]
 "apt:7zip" = "latest"
+"apt:aria2" = "latest"
 "apt:build-essential" = "latest"
 "apt:bzip2" = "latest"
 "apt:ca-certificates" = "latest"
