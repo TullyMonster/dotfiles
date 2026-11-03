@@ -33,6 +33,9 @@ export VISUAL=micro     # 默认的全屏编辑器
 export skip_global_compinit=1                                                       # 跳过 /etc/zsh/zshrc 中的 compinit 初始化
 export ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}"  # 补全系统缓存路径
 
+# npm
+export NPM_CONFIG_USERCONFIG="${HOME}/.config/npm/npmrc"  # 用户级配置文件路径
+
 # OpenCode
 export OPENCODE_DISABLE_CLAUDE_CODE=1   # 禁用对 Claude Code 的回退性兼容
 export OPENSPEC_TELEMETRY=0             # 禁用 OpenSpec 遥测

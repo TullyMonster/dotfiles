@@ -1,0 +1,12 @@
+{{ if .mirror.is_using_mirror -}}
+# PyPI 镜像
+index-url = "https://repo.huaweicloud.com/repository/pypi/simple"
+
+# CPython 镜像
+python-install-mirror = "https://registry.npmmirror.com/-/binary/python-build-standalone"
+
+{{ end -}}
+
+# 自动选择最合适的 PyTorch 索引
+[pip]
+torch-backend = "auto"

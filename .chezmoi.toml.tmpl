@@ -12,6 +12,9 @@ identity  = {{ $keyPath                                           | quote }}
 [diff]
 exclude = ["scripts"]
 
+[scriptEnv]
+NPM_CONFIG_USERCONFIG = {{ joinPath .chezmoi.homeDir ".config" "npm" "npmrc" | quote }}
+
 [data.zsh]
 zdotdir = {{ joinPath .chezmoi.homeDir ".config" "zsh" | quote }}
 
@@ -21,8 +24,8 @@ user_signing_key = {{ promptStringOnce . "git.user_signing_key" "Git: SSH signin
 [data.systemd.user]
 is_reload_after_apply = {{ promptBoolOnce . "systemd.user.is_reload_after_apply" "systemd user: Reload the user manager after apply" true }}
 
-[data.npm]
-is_using_mirror = {{ promptBoolOnce . "npm.is_using_mirror" "NPM: Use a registry mirror on this device" false }}
+[data.mirror]
+is_using_mirror = {{ promptBoolOnce . "mirror.is_using_mirror" "Mirror: Use package registry mirrors (npm/pnpm, PyPI) on this device" false }}
 
 [data.sub_store]
 backend_path = {{ promptStringOnce . "sub_store.backend_path" "Sub-Store: SUB_STORE_FRONTEND_BACKEND_PATH" | quote }}

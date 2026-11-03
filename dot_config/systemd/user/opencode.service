@@ -6,6 +6,7 @@ Documentation=https://opencode.ai/v2/docs/
 Type=oneshot
 RemainAfterExit=yes
 Environment=PATH=%h/.local/share/mise/shims:/usr/bin:/bin
+Environment=NPM_CONFIG_USERCONFIG=%h/.config/npm/npmrc
 ExecStart=%h/.local/share/mise/shims/opencode service start
 ExecStop=-%h/.local/share/mise/shims/opencode service stop
 

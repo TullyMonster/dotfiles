@@ -1,0 +1,2 @@
+registry={{ if .mirror.is_using_mirror }}https://registry.npmmirror.com/{{ else }}https://registry.npmjs.org/{{ end }}
+cache={{ .chezmoi.homeDir }}/.cache/npm/
