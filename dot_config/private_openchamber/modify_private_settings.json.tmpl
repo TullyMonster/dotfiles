@@ -2,6 +2,8 @@
 
 set -eu
 
+jq_bin="$("{{ or (lookPath "mise") (joinPath .chezmoi.homeDir ".local" "bin" "mise") }}" where jq@latest)/jq"
+
 managed=$(
   cat << 'EOF'
 {{ if index .openchamber "settings" }}{{ .openchamber.settings | toJson }}{{ else }}{}{{ end }}
@@ -11,13 +13,13 @@ EOF
 current=$(cat)
 [ -n "${current}" ] || current='{}'
 
-if ! printf '%s' "${current}" | jq -e 'type == "object"' > /dev/null 2>&1; then
+if ! printf '%s' "${current}" | "${jq_bin}" -e 'type == "object"' > /dev/null 2>&1; then
   printf '%s' "${current}"
   echo 'openchamber: {{ .chezmoi.targetFile | replace .chezmoi.homeDir "~" }} 不是对象' >&2
   exit 0
 fi
 
-merged=$(printf '%s' "${current}" | jq --argjson managed "${managed}" '
+merged=$(printf '%s' "${current}" | "${jq_bin}" --argjson managed "${managed}" '
   def deepmerge($new):
     if type == "object" and ($new | type) == "object" then
       reduce ($new | to_entries[]) as $e (.; .[$e.key] |= deepmerge($e.value))
@@ -25,7 +27,7 @@ merged=$(printf '%s' "${current}" | jq --argjson managed "${managed}" '
   deepmerge($managed)
 ')
 
-if printf '%s' "${current}" | jq -e --argjson merged "${merged}" '. == $merged' > /dev/null 2>&1; then
+if printf '%s' "${current}" | "${jq_bin}" -e --argjson merged "${merged}" '. == $merged' > /dev/null 2>&1; then
   printf '%s' "${current}"
 else
   printf '%s' "${merged}"

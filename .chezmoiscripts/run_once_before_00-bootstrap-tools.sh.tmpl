@@ -2,7 +2,7 @@
 #!/usr/bin/env sh
 
 # ==================================================
-# 下载 mise / antidote
+# 安装引导工具
 # ==================================================
 
 set -eu
@@ -19,6 +19,9 @@ install_item() {
 install_item \
     'command -v mise >/dev/null 2>&1 || [ -x "$HOME/.local/bin/mise" ]' \
     'curl -fsSL https://mise.run | sh'
+
+# mise: jq
+"$(command -v mise || printf '%s\n' "${HOME}/.local/bin/mise")" install jq@latest
 
 # 【antidote】
 install_item \
