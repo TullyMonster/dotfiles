@@ -23,16 +23,30 @@
      chmod 600 ~/.config/chezmoi/key.txt
      ```
 
-2. **应用配置文件**：
+2. **准备 GitHub token**（建议）：
+
+   > 首次全量安装会请求 GitHub API 十几次，匿名额度只有 60 次/小时/IP。
+
+   ```shell
+   [ -x "$HOME/.local/bin/mise" ] || curl -fsSL https://mise.run | sh
+   export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+   mise install github-cli
+   gh auth login
+   export GITHUB_TOKEN="$(gh auth token)"
+   ```
+
+   > 已有 token 可直接 `export GITHUB_TOKEN=...`。仍失败时补跑 `mise bootstrap --only tools --yes`。
+
+3. **应用配置文件**：
 
    > 按需下载安装 chezmoi 并立即初始化源仓库、应用到用户目录。
 
    ```shell
    [ -x "$HOME/.local/bin/chezmoi" ] || sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
-   "$HOME/.local/bin/chezmoi" init --apply https://github.com/TullyMonster/dotfiles.git
+   "$HOME/.local/bin/chezmoi" init --keep-going --apply https://github.com/TullyMonster/dotfiles.git
    ```
 
-   > 完成后重开终端或执行 `exec zsh -l` 命令，启动完整的 Zsh 登录环境以替换当前的 Shell 进程。
+   > 完成后重开终端或 `exec zsh -l`。WSL 还需在 `/etc/wsl.conf` 设置 `[boot] systemd=true` 并从 Windows 侧执行 `wsl --shutdown`，否则 apply 会因用户服务不可用而报错。
 
 ## Ghidra Headless MCP（可选）
 
