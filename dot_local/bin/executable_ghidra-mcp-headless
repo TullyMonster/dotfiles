@@ -2,6 +2,8 @@
 
 set -eu
 
+. "${HOME}/.local/lib/shell/log.sh" # shuck: ignore=C003
+
 if [ "${GHIDRA_MCP_HEADLESS_MISE_READY:-}" != true ]; then
   export GHIDRA_MCP_HEADLESS_MISE_READY=true
   exec mise x java@temurin-21 -- "$0" "$@"
@@ -34,7 +36,7 @@ require_no_args() {
       ;;
     *)
       usage
-      printf 'Error: unknown argument: %s\n' "$1" >&2
+      error "Unknown argument: '$1'."
       exit 2
       ;;
   esac
@@ -43,7 +45,7 @@ require_no_args() {
 find_headless_jar() {
   set -- "${repo_dir}"/target/GhidraMCP-*.jar
   if [ ! -f "$1" ]; then
-    printf 'Error: no GhidraMCP JAR found under %s/target\n' "${repo_dir}" >&2
+    error "No GhidraMCP JAR found under '${repo_dir}/target'."
     printf '%s\n' 'Run `ghidra-mcp-build` first.' >&2
     exit 1
   fi
@@ -118,18 +120,17 @@ cleanup() {
 require_no_args "$@"
 
 if ! command -v curl > /dev/null 2>&1; then
-  printf 'Error: curl is required but not installed.\n' >&2
-  exit 1
+  fatal 'curl is required but not installed.'
 fi
 
 if [ ! -d "${repo_dir}/.git" ]; then
-  printf 'Error: %s is not a ghidra-mcp Git repository.\n' "${repo_dir}" >&2
+  error "'${repo_dir}' is not a ghidra-mcp Git repository."
   printf '%s\n' 'Run `ghidra-mcp-build` first.' >&2
   exit 1
 fi
 
 if [ ! -x "${ghidra_home}/support/analyzeHeadless" ]; then
-  printf 'Error: Ghidra is not installed at %s.\n' "${ghidra_home}" >&2
+  error "Ghidra is not installed at '${ghidra_home}'."
   printf '%s\n' 'Run `ghidra-manager use <version>` or `ghidra-manager upgrade` first.' >&2
   exit 1
 fi
@@ -142,7 +143,7 @@ trap cleanup EXIT HUP INT TERM
 if ! server_ready; then
   start_server
   if ! wait_for_server; then
-    printf 'Error: GhidraMCP headless server did not become ready at %s.\n' "${ghidra_url}" >&2
+    error "GhidraMCP headless server did not become ready at '${ghidra_url}'."
     printf 'See log: %s\n' "${log_file}" >&2
     exit 1
   fi

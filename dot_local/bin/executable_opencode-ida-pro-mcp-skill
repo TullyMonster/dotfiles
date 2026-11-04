@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
+. "${HOME}/.local/lib/shell/log.sh" # shuck: ignore=C003
+
 url='https://github.com/mrexodia/ida-pro-mcp/archive/refs/heads/main.tar.gz'
 skills_dir='.opencode/skills'
 target_name='idapython'
@@ -22,16 +24,16 @@ cleanup() {
   trap - EXIT HUP INT TERM
   if [ -n "${backup_dir}" ] && path_exists "${backup_dir}"; then
     if target_exists; then
-      printf 'Backup left at %s\n' "${backup_dir}" >&2
+      error "Backup left at '${backup_dir}'."
     else
       if ! mv "${backup_dir}" "${target_dir}"; then
-        printf 'Error: failed to restore backup; left at %s\n' "${backup_dir}" >&2
+        error "Failed to restore backup; left at '${backup_dir}'."
       fi
     fi
   fi
   if [ -n "${staging_dir}" ] && [ -d "${staging_dir}" ]; then
     if ! rm -rf "${staging_dir}"; then
-      printf 'Warning: failed to remove staging directory %s\n' "${staging_dir}" >&2
+      warn "Failed to remove staging directory '${staging_dir}'."
     fi
   fi
   exit "${cleanup_status}"
@@ -41,15 +43,6 @@ trap 'cleanup "$?"' EXIT
 trap 'exit 129' HUP
 trap 'exit 130' INT
 trap 'exit 143' TERM
-
-info() {
-  printf '%s\n' "$1"
-}
-
-fatal() {
-  printf 'Error: %s\n' "$1" >&2
-  exit 1
-}
 
 usage() {
   printf 'Usage: %s {install|update|uninstall|--help|-h}\n' "${0##*/}" >&2
@@ -62,38 +55,38 @@ stage_new_copy() {
   staging_dir="${staging_candidate}"
 
   tarball="${staging_dir}/upstream.tar.gz"
-  info "Downloading upstream skill..."
+  info 'Downloading upstream skill...'
   curl -fsSL "${url}" -o "${tarball}"
 
-  info "Extracting skill..."
+  info 'Extracting skill...'
   tar -xzf "${tarball}" -C "${staging_dir}" --strip-components=3 "ida-pro-mcp-main/skills/${target_name}"
   rm -f "${tarball}"
 
-  [ -f "${staging_dir}/SKILL.md" ] || fatal "staged SKILL.md is missing or not a regular file"
-  [ -d "${staging_dir}/docs" ] || fatal "staged docs/ is missing or not a directory"
+  [ -f "${staging_dir}/SKILL.md" ] || fatal 'Staged SKILL.md is missing or not a regular file.'
+  [ -d "${staging_dir}/docs" ] || fatal 'Staged docs/ is missing or not a directory.'
 }
 
 cmd_install() {
   if target_exists; then
-    fatal "target already exists: ${target_dir}"
+    fatal "Target already exists: '${target_dir}'."
   fi
 
   stage_new_copy
 
   mv "${staging_dir}" "${target_dir}"
   staging_dir=''
-  info "Installed ${target_dir}"
+  info "Installed '${target_dir}'."
 }
 
 cmd_update() {
-  target_exists || fatal "target does not exist: ${target_dir}"
-  [ -d "${target_dir}" ] || [ -L "${target_dir}" ] || fatal "target exists but is not a directory or symlink: ${target_dir}"
+  target_exists || fatal "Target does not exist: '${target_dir}'."
+  [ -d "${target_dir}" ] || [ -L "${target_dir}" ] || fatal "Target exists but is not a directory or symlink: '${target_dir}'."
 
   stage_new_copy
 
   backup_candidate="${skills_dir}/.backup-${target_name}-$$"
   if path_exists "${backup_candidate}"; then
-    fatal "temporary backup path already exists: ${backup_candidate}"
+    fatal "Temporary backup path already exists: '${backup_candidate}'."
   fi
   backup_dir="${backup_candidate}"
   mv "${target_dir}" "${backup_dir}"
@@ -102,18 +95,18 @@ cmd_update() {
   staging_dir=''
   rm -rf "${backup_dir}"
   backup_dir=''
-  info "Updated ${target_dir}"
+  info "Updated '${target_dir}'."
 }
 
 cmd_uninstall() {
   if ! target_exists; then
-    info "${target_dir} is not installed"
+    info "Target '${target_dir}' is not installed."
     return
   fi
-  [ -d "${target_dir}" ] || [ -L "${target_dir}" ] || fatal "target exists but is not a directory or symlink: ${target_dir}"
+  [ -d "${target_dir}" ] || [ -L "${target_dir}" ] || fatal "Target exists but is not a directory or symlink: '${target_dir}'."
 
   rm -rf "${target_dir}"
-  info "Uninstalled ${target_dir}"
+  info "Uninstalled '${target_dir}'."
 }
 
 if [ "$#" -ne 1 ]; then

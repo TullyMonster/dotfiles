@@ -2,6 +2,8 @@
 
 set -eu
 
+. "${HOME}/.local/lib/shell/log.sh" # shuck: ignore=C003
+
 usage() {
   printf 'Usage: %s [HOST [PORT]]  (defaults: localhost 22)\n' "${0##*/}"
 }
@@ -35,8 +37,7 @@ printf 'SSH target: %s:%s -> %s\n' "$host" "$port" "$addresses"
 keys=$(ssh-keyscan -p "$port" "$host" 2> /dev/null || true)
 
 if [ -z "$keys" ]; then
-  printf 'Error: no SSH host keys received.\n' >&2
-  exit 1
+  fatal 'No SSH host keys received.'
 fi
 
 fingerprints=$(

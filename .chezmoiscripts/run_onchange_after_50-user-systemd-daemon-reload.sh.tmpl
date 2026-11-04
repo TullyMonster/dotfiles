@@ -13,17 +13,14 @@
 
 set -eu
 
-fatal() {
-  printf 'fatal: %s\n' "$*" >&2
-  exit 1
-}
+. "${HOME}/.local/lib/shell/log.sh"
 
 if [ -z "${XDG_RUNTIME_DIR:-}" ] && [ -d "/run/user/$(id -u)" ]; then
   export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 fi
 
 if ! systemctl --user show-environment >/dev/null 2>&1; then
-  fatal 'no systemd user instance available; cannot daemon-reload'
+  fatal 'No systemd user instance is available; cannot daemon-reload.'
 fi
 
 systemctl --user daemon-reload

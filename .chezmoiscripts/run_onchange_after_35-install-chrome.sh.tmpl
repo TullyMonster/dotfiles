@@ -8,21 +8,15 @@
 
 set -eu
 
-info() {
-  printf '%s\n' "$*"
-}
-
-warn() {
-  printf 'warning: %s\n' "$*" >&2
-}
+. "${HOME}/.local/lib/shell/log.sh"
 
 if [ "$(uname -m)" != 'x86_64' ]; then
-  warn "Google Chrome has no Linux build for $(uname -m); skipping"
+  warn "Google Chrome has no Linux build for $(uname -m); skipping."
   exit 0
 fi
 
 if [ -x /opt/google/chrome/chrome ]; then
-  info 'system Chrome is already installed'
+  info 'System Chrome is already installed.'
   exit 0
 fi
 
@@ -33,9 +27,9 @@ fi
 playwright_cli="$("{{ $miseBin }}" which playwright-cli)"
 
 if "${playwright_cli}" install-browser chrome; then
-  info 'system Chrome is ready'
+  info 'System Chrome is ready.'
 else
-  warn 'system Chrome installation failed; run `playwright-cli install-browser chrome` manually'
+  warn 'System Chrome installation failed; run `playwright-cli install-browser chrome` manually.'
 fi
 
 {{- end }}

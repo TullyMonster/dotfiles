@@ -8,6 +8,8 @@
 
 set -eu
 
+. "${HOME}/.local/lib/shell/log.sh"
+
 if [ -z "${MISE_SHELL:-}" ]; then
   eval "$("{{ $miseBin }}" env)"
 fi
@@ -15,11 +17,6 @@ fi
 skills_bin="$("{{ $miseBin }}" which skills)"
 jq_bin="$("{{ $miseBin }}" which jq)"
 node_bin="$("{{ $miseBin }}" which node)"
-
-fatal() {
-  printf 'error: %s\n' "$*" >&2
-  exit 1
-}
 
 canonicalize_skill_name() {
   "${node_bin}" -e '
@@ -43,7 +40,7 @@ assert_unique_skill_names() {
     for other_skill_spec in "$@"; do
       other_skill_name="$(canonicalize_skill_name "${other_skill_spec##*@}")"
       [ "${skill_name}" != "${other_skill_name}" ] \
-        || fatal "duplicate skill name: ${skill_name}"
+        || fatal "Duplicate skill name: '${skill_name}'."
     done
   done
 }

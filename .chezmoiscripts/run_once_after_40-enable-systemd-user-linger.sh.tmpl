@@ -7,15 +7,12 @@
 
 set -eu
 
-fatal() {
-  printf 'fatal: %s\n' "$*" >&2
-  exit 1
-}
+. "${HOME}/.local/lib/shell/log.sh"
 
 user="$(id -un)"
 
 if ! linger="$(loginctl show-user "${user}" --property=Linger --value 2>/dev/null)"; then
-  fatal 'logind unavailable; cannot enable linger'
+  fatal 'logind is unavailable; cannot enable linger.'
 fi
 
 if [ "${linger}" != "yes" ]; then

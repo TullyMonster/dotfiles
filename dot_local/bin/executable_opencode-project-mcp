@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
+. "${HOME}/.local/lib/shell/log.sh" # shuck: ignore=C003
+
 catalog_path="${HOME}/.config/opencode/project-mcp-catalog.jsonc"
 target_path=''
 staged_path=''
@@ -25,15 +27,6 @@ trap 'exit 129' HUP
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-info() {
-  printf '%s\n' "$1"
-}
-
-fatal() {
-  printf 'Error: %s\n' "$1" >&2
-  exit 1
-}
-
 usage() {
   prog=${0##*/}
 
@@ -52,38 +45,38 @@ usage() {
 }
 
 create_temp() {
-  path_exists "$1" && fatal "temporary path already exists: $1"
+  path_exists "$1" && fatal "Temporary path already exists: '$1'."
   (
     set -C
     : > "$1"
-  ) 2> /dev/null || fatal "cannot create temporary file: $1"
+  ) 2> /dev/null || fatal "Cannot create temporary file: '$1'."
 }
 
 validate_jsonc() {
   source_path=$1
-  biome check --write --stdin-file-path=validate.jsonc < "${source_path}" > /dev/null || fatal "invalid JSONC: ${source_path}"
+  biome check --write --stdin-file-path=validate.jsonc < "${source_path}" > /dev/null || fatal "Invalid JSONC: '${source_path}'."
 }
 
 load_project_config() {
   source_path=$1
   validate_jsonc "${source_path}"
   if ! project_json=$(cat "${source_path}" | jsonc read); then
-    fatal "jsonc could not read: ${source_path}"
+    fatal "jsonc could not read '${source_path}'."
   fi
   printf '%s\n' "${project_json}" | jq -e '
     type == "object" and
     ((.mcp // {}) | type == "object") and
     ((.mcp.servers // {}) | type == "object")
-  ' > /dev/null || fatal "project config root, mcp, and mcp.servers must be objects: ${source_path}"
+  ' > /dev/null || fatal "Project config root, mcp, and mcp.servers must be objects: '${source_path}'."
 }
 
 load_catalog() {
-  [ -f "${catalog_path}" ] || fatal "catalog is not a regular file: ${catalog_path}"
+  [ -f "${catalog_path}" ] || fatal "Catalog is not a regular file: '${catalog_path}'."
   validate_jsonc "${catalog_path}"
   if ! catalog_json=$(cat "${catalog_path}" | jsonc read); then
-    fatal "jsonc could not read catalog: ${catalog_path}"
+    fatal "jsonc could not read catalog '${catalog_path}'."
   fi
-  printf '%s\n' "${catalog_json}" | jq -e '.mcp.servers | type == "object"' > /dev/null || fatal 'catalog mcp.servers must be an object'
+  printf '%s\n' "${catalog_json}" | jq -e '.mcp.servers | type == "object"' > /dev/null || fatal 'Catalog mcp.servers must be an object.'
 }
 
 select_target() {
@@ -93,7 +86,7 @@ select_target() {
     target_path="${PWD}/opencode.json"
   fi
   if [ -n "${target_path}" ] && [ ! -f "${target_path}" ]; then
-    fatal "project config does not resolve to a regular file: ${target_path}"
+    fatal "Project config does not resolve to a regular file: '${target_path}'."
   fi
 }
 
@@ -103,10 +96,10 @@ stage_target() {
   create_temp "${staged_candidate}"
   staged_path=${staged_candidate}
   if [ "$1" = 'existing' ]; then
-    cp -p "${target_path}" "${staged_path}" || fatal "cannot copy project config: ${target_path}"
+    cp -p "${target_path}" "${staged_path}" || fatal "Cannot copy project config: '${target_path}'."
   else
     if ! printf '%s\n' "${empty_project_config}" | jq -M '.' > "${staged_path}"; then
-      fatal 'cannot create new project config'
+      fatal 'Cannot create new project config.'
     fi
   fi
 }
@@ -115,9 +108,9 @@ modify_staged() {
   json_path=$1
   shift
   if ! modified_json=$(cat "${staged_path}" | jsonc modify -p "${json_path}" "$@"); then
-    fatal 'jsonc failed while updating an MCP entry'
+    fatal 'jsonc failed while updating an MCP entry.'
   fi
-  printf '%s\n' "${modified_json}" > "${staged_path}" || fatal 'cannot update temporary project config'
+  printf '%s\n' "${modified_json}" > "${staged_path}" || fatal 'Cannot update temporary project config.'
 }
 
 format_staged() {
@@ -128,9 +121,9 @@ format_staged() {
     --json-formatter-indent-style=space \
     --json-formatter-indent-width=2 \
     < "${staged_path}"); then
-    fatal 'cannot format temporary project config'
+    fatal 'Cannot format temporary project config.'
   fi
-  printf '%s\n' "${formatted_json}" > "${staged_path}" || fatal 'cannot update temporary project config'
+  printf '%s\n' "${formatted_json}" > "${staged_path}" || fatal 'Cannot update temporary project config.'
 }
 
 require_names() {
@@ -149,9 +142,9 @@ require_names() {
 finish_update() {
   format_staged
   load_project_config "${staged_path}"
-  mv "${staged_path}" "${target_path}" || fatal "cannot atomically replace project config: ${target_path}"
+  mv "${staged_path}" "${target_path}" || fatal "Cannot atomically replace project config: '${target_path}'."
   staged_path=''
-  info "Updated ${target_path}"
+  info "Updated '${target_path}'."
 }
 
 cmd_list() {
@@ -191,7 +184,7 @@ cmd_add() {
   require_names "$@"
 
   select_target
-  path_exists "${catalog_path}" || fatal "catalog does not exist: ${catalog_path}"
+  path_exists "${catalog_path}" || fatal "Catalog does not exist: '${catalog_path}'."
   load_catalog
 
   target_json=${empty_project_config}
@@ -211,12 +204,12 @@ cmd_add() {
       (.[$name] |
         (.type == "remote" and (.url | type == "string")) or
         (.type == "local" and (.command | type == "array" and length > 0 and all(type == "string"))))
-    ' > /dev/null || fatal "catalog entry is missing or invalid: ${name}"
+    ' > /dev/null || fatal "Catalog entry is missing or invalid: '${name}'."
     catalog_entry=$(printf '%s\n' "${catalog_json}" | jq -S -c --arg name "${name}" '.mcp.servers[$name]')
     if printf '%s\n' "${target_json}" | jq -e --arg name "${name}" '(.mcp.servers // {}) | has($name)' > /dev/null; then
       target_entry=$(printf '%s\n' "${target_json}" | jq -S -c --arg name "${name}" '.mcp.servers[$name]')
       [ "${target_entry}" = "${catalog_entry}" ] && continue
-      [ "${force}" = true ] || fatal "MCP entry conflicts with project config: ${name}"
+      [ "${force}" = true ] || fatal "MCP entry conflicts with project config: '${name}'."
     fi
     [ -n "${staged_path}" ] || stage_target "${target_state}"
     json_path=$(jq -cn --arg name "${name}" '["mcp", "servers", $name]')
@@ -224,7 +217,7 @@ cmd_add() {
   done
 
   if [ -z "${staged_path}" ]; then
-    info 'Requested MCP entries already match the catalog'
+    info 'Requested MCP entries already match the catalog.'
     return
   fi
   finish_update
@@ -234,7 +227,7 @@ cmd_remove() {
   require_names "$@"
   select_target
   if [ -z "${target_path}" ]; then
-    info 'No project config exists; nothing to remove'
+    info 'No project config exists; nothing to remove.'
     return
   fi
   load_project_config "${target_path}"
@@ -248,7 +241,7 @@ cmd_remove() {
     fi
   done
   if [ -z "${staged_path}" ]; then
-    info 'Requested MCP entries are already absent'
+    info 'Requested MCP entries are already absent.'
     return
   fi
   finish_update

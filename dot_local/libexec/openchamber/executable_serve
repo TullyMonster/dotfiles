@@ -2,14 +2,10 @@
 
 set -eu
 
+. "${HOME}/.local/lib/shell/log.sh" # shuck: ignore=C003
+
 _state_file="${XDG_STATE_HOME:-${HOME}/.local/state}/opencode/service.json"
 _ready_timeout=30
-
-info() { printf '%s\n' "$*" >&2; }
-fatal() {
-  printf 'error: %s\n' "$*" >&2
-  exit 1
-}
 
 _read_service() {
   [ -r "${_state_file}" ] || return 1
@@ -35,13 +31,13 @@ _is_opencode_ready() {
 }
 
 if ! _is_opencode_ready; then
-  info 'Starting OpenCode background service'
+  info 'Starting OpenCode background service.' >&2
   systemctl --user restart opencode.service
 
   _waited=0
   until _is_opencode_ready; do
     [ "${_waited}" -lt "${_ready_timeout}" ] ||
-      fatal "OpenCode background service not ready after ${_ready_timeout}s"
+      fatal "OpenCode background service is not ready after ${_ready_timeout}s."
     _waited=$((_waited + 1))
     sleep 1
   done
