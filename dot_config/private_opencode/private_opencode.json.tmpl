@@ -50,14 +50,10 @@
         ".htm",
         ".css",
         ".scss",
-        ".sass",
         ".less",
         ".vue",
-        ".svelte",
         ".yaml",
         ".yml",
-        ".toml",
-        ".xml",
         ".md",
         ".mdx",
         ".graphql",
@@ -79,6 +75,31 @@
       "extensions": [
         ".json",
         ".jsonc"
+      ],
+      "disabled": false
+    },
+    "taplo": {
+      "command": [
+        "taplo",
+        "format",
+        "--no-auto-config",
+        "$FILE"
+      ],
+      "extensions": [
+        ".toml"
+      ],
+      "disabled": false
+    },
+    "shuck": {
+      "command": [
+        "shuck",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".sh",
+        ".bash",
+        ".zsh"
       ],
       "disabled": false
     }
