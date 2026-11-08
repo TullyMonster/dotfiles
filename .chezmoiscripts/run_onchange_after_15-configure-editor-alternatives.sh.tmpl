@@ -1,4 +1,4 @@
-{{- if eq .chezmoi.os "linux" -}}
+{{- if and (eq .chezmoi.os "linux") (lookPath "update-alternatives") (lookPath "sudo") -}}
 #!/usr/bin/env sh
 
 # ==================================================
@@ -7,8 +7,10 @@
 
 set -eu
 
-editor_bin='{{ .chezmoi.homeDir }}/.local/share/mise/installs/github-micro-editor-micro/latest/micro'
+editor_bin='{{ .chezmoi.homeDir }}/.local/share/mise/installs/neovim/latest/bin/nvim'
 
-sudo update-alternatives --install /usr/bin/editor editor "${editor_bin}" 50
-sudo update-alternatives --set editor "${editor_bin}"
+sudo update-alternatives --remove editor "${editor_bin}"
+editor_prio=$(update-alternatives --query editor 2> /dev/null | awk '/^Priority: / { if ($2 > max) max = $2 } END { print max + 10 - max % 10 }')
+sudo update-alternatives --install /usr/bin/editor editor "${editor_bin}" "${editor_prio}"
+sudo update-alternatives --auto editor
 {{- end }}
