@@ -2,15 +2,17 @@
 #!/usr/bin/env sh
 
 # ==================================================
-# 通过 update-alternatives 设置系统默认编辑器（editor 组）
+# 将系统编辑器命令统一到同一编辑器
 # ==================================================
 
 set -eu
 
-editor_bin='{{ .chezmoi.homeDir }}/.local/share/mise/installs/neovim/latest/bin/nvim'
+wrapper='{{ .chezmoi.homeDir }}/.local/libexec/nvim/wrapper'
 
-sudo update-alternatives --remove editor "${editor_bin}"
-editor_prio=$(update-alternatives --query editor 2> /dev/null | awk '/^Priority: / { if ($2 > max) max = $2 } END { print max + 10 - max % 10 }')
-sudo update-alternatives --install /usr/bin/editor editor "${editor_bin}" "${editor_prio}"
-sudo update-alternatives --auto editor
+for group in editor vi vim view vimdiff; do
+  sudo update-alternatives --remove "${group}" "${wrapper}"
+  prio=$(update-alternatives --query "${group}" 2> /dev/null | awk '/^Priority: / { if ($2 > max) max = $2 } END { print max + 10 - max % 10 }')
+  sudo update-alternatives --install "/usr/bin/${group}" "${group}" "${wrapper}" "${prio}"
+  sudo update-alternatives --auto "${group}"
+done
 {{- end }}
